@@ -49,6 +49,125 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// Navigation menu toggle
+const burger = document.querySelector('.burger');
+const nav = document.querySelector('.nav-links');
+const navLinks = document.querySelectorAll('.nav-links li');
+
+burger.addEventListener('click', () => {
+    // Toggle navigation
+    nav.classList.toggle('nav-active');
+    
+    // Toggle burger animation
+    burger.classList.toggle('toggle');
+    
+    // Animate links
+    navLinks.forEach((link, index) => {
+        if (link.style.animation) {
+            link.style.animation = '';
+        } else {
+            link.style.animation = `navLinkFade 0.5s ease forwards ${index / 7 + 0.3}s`;
+        }
+    });
+});
+
+// Close mobile menu when clicking on a link
+navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+        if (nav.classList.contains('nav-active')) {
+            nav.classList.remove('nav-active');
+            burger.classList.remove('toggle');
+        }
+    });
+});
+
+// Form submission handling
+const contactForm = document.querySelector('.contact-form');
+if (contactForm) {
+    contactForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Get form data
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const message = document.getElementById('message').value;
+        
+        // Here you would typically send the data to a server
+        // For now, we'll just log it and show a success message
+        console.log('Form submission:', { name, email, message });
+        
+        // Show success message
+        alert('Thank you for your message! I will get back to you soon.');
+        
+        // Reset form
+        contactForm.reset();
+    });
+}
+
+// Add smooth scrolling to all links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+
+        const targetId = this.getAttribute('href');
+        const targetElement = document.querySelector(targetId);
+        
+        if (targetElement) {
+            window.scrollTo({
+                top: targetElement.offsetTop - 70, // Adjust for header height
+                behavior: 'smooth'
+            });
+        }
+    });
+});
+
+// Add animation to sections when they come into view
+const animateSections = () => {
+    const sections = document.querySelectorAll('section');
+    
+    sections.forEach(section => {
+        const sectionTop = section.getBoundingClientRect().top;
+        const windowHeight = window.innerHeight;
+        
+        if (sectionTop < windowHeight * 0.75) {
+            section.classList.add('fade-in');
+        }
+    });
+};
+
+// Add fade-in class to CSS
+const style = document.createElement('style');
+style.textContent = `
+    section {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    
+    section.fade-in {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    
+    @keyframes navLinkFade {
+        from {
+            opacity: 0;
+            transform: translateX(50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+`;
+document.head.appendChild(style);
+
+// Initial call to animate sections that are already in view
+animateSections();
+
+// Listen for scroll events to animate sections as they come into view
+window.addEventListener('scroll', animateSections);
+
 // Mobile Navigation Toggle
 const navSlide = () => {
     const burger = document.querySelector('.burger');
