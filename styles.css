@@ -92,6 +92,62 @@ section h3 {
     margin-bottom: 0.15rem;
 }
 
+.entry {
+    margin-bottom: 1.75rem;
+}
+
+.entry:last-child {
+    margin-bottom: 0;
+}
+
+.entry-meta {
+    margin-bottom: 0.4rem;
+}
+
+.entry-meta .org {
+    font-weight: 700;
+}
+
+.entry-meta .place {
+    font-style: italic;
+    color: var(--muted);
+}
+
+.entry-meta .role-line {
+    display: block;
+    color: var(--muted);
+    margin-top: 0.1rem;
+}
+
+.entry-meta .role-line em {
+    color: var(--muted);
+}
+
+.entry-meta .date {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-top: 0.1rem;
+}
+
+.entry-body ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.entry-body li {
+    margin-bottom: 0.55rem;
+    padding-left: 1.1rem;
+    position: relative;
+}
+
+.entry-body li::before {
+    content: "\2014";
+    position: absolute;
+    left: 0;
+    color: var(--ink);
+}
+
 footer {
     border-top: 1px solid var(--rule);
     padding-top: 1.25rem;
