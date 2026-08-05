@@ -70,14 +70,14 @@ nav {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
+    gap: 0.8rem;
 }
 
 nav .brand {
     font-family: var(--mono);
-    font-size: 0.82rem;
+    font-size: 0.74rem;
     font-weight: 500;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
     text-decoration: none;
     white-space: nowrap;
@@ -86,17 +86,18 @@ nav .brand {
 nav ul {
     list-style: none;
     display: flex;
-    flex-wrap: wrap;
-    gap: 1.15rem;
+    flex-wrap: nowrap;
+    gap: 0.9rem;
 }
 
 nav ul a {
     font-family: var(--mono);
-    font-size: 0.72rem;
+    font-size: 0.68rem;
     text-transform: uppercase;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.1em;
     text-decoration: none;
     color: var(--muted);
+    white-space: nowrap;
     transition: color 0.15s ease;
 }
 
@@ -430,23 +431,19 @@ footer .fine {
     }
 
     nav {
-        align-items: flex-start;
+        align-items: center;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
 
     nav ul {
-        gap: 0.8rem 1rem;
-        justify-content: flex-end;
+        gap: 0.8rem;
     }
 }
 
 @media (max-width: 480px) {
     nav .brand {
         display: none;
-    }
-
-    nav ul {
-        justify-content: space-between;
-        width: 100%;
     }
 }
 
