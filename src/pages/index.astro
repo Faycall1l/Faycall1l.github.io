@@ -1,32 +1,27 @@
 ---
 import Base from '../layouts/Base.astro';
-
-const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 ---
 
 <Base title="Faycal Amrouche — AI Engineer & AI Researcher">
     <header>
-        <div class="header-text">
-            <h1>Faycal Amrouche</h1>
-            <p class="role">AI Engineer · AI Researcher · Enterprise Data Architect</p>
-            <p class="contact">
-                Algiers, Algeria · +213 542 09 58 37 · <a href="mailto:faycal.amrouche@ensia.edu.dz">faycal.amrouche@ensia.edu.dz</a>
-            </p>
-            <p class="contact">
-                <a href="https://github.com/Faycall1l" target="_blank" rel="noopener">github.com/Faycall1l</a> · <a href="https://linkedin.com/in/amrouche-faycal" target="_blank" rel="noopener">linkedin.com/in/amrouche-faycal</a>
-            </p>
-        </div>
-        <img class="portrait" src={base + 'portfolio.jpg'} alt="Faycal Amrouche" />
+        <h1>Faycal Amrouche</h1>
+        <p class="role">AI Engineer · AI Researcher · Enterprise Data Architect</p>
+        <p class="contact">
+            Algiers, Algeria · +213 542 09 58 37 · <a href="mailto:faycal.amrouche@ensia.edu.dz">faycal.amrouche@ensia.edu.dz</a>
+        </p>
+        <p class="contact">
+            <a href="https://github.com/Faycall1l" target="_blank" rel="noopener">github.com/Faycall1l</a> · <a href="https://linkedin.com/in/amrouche-faycal" target="_blank" rel="noopener">linkedin.com/in/amrouche-faycal</a>
+        </p>
     </header>
 
     <main>
         <section id="about">
             <h2><span class="sec-num">01</span>About</h2>
             <p>
-                AI engineer and AI researcher focused on agentic memory, neuro-symbolic
-                knowledge representation, and high-reliability infrastructure. I build state-governed agent
-                runtimes, enterprise RAG systems, and real-time telemetry pipelines — currently researching
-                transactional active-memory architectures at Insight SFI Research Centre (Dublin).
+                I'm an AI engineer and researcher into agent memory, knowledge graphs, and
+                infra that actually holds up. I mostly build agent runtimes, RAG systems,
+                and live telemetry pipelines — right now I'm playing with transactional
+                memory for agents at Insight SFI Research Centre (Dublin).
             </p>
         </section>
 
@@ -43,26 +38,25 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
                 <div class="entry-body">
                     <ul>
                         <li>
-                            <strong>Transactional Agentic Memory Runtime (Project GMem):</strong>
-                            engineered a Neo4j-backed, state-governed active-memory runtime enforcing write-time
-                            structural invariant validation to prevent context drift, memory contamination, and
-                            hallucination in long-horizon autonomous agents (LangChain/AutoGen).
+                            <strong>Agentic memory runtime (Project GMem):</strong>
+                            built a Neo4j-backed memory layer that sanity-checks writes as they come
+                            in, so long-running agents don't drift off, mix up memories, or start
+                            making things up (LangChain/AutoGen).
                         </li>
                         <li>
-                            <strong>Model Context Protocol (MCP) Integration:</strong>
-                            implemented standardized MCP server interfaces for agent tool execution, dynamic
-                            context retrieval, and structured inter-agent communication.
+                            <strong>Model Context Protocol (MCP) stuff:</strong>
+                            wired up standard MCP servers so agents can call tools, pull in context,
+                            and talk to each other without duct tape.
                         </li>
                         <li>
-                            <strong>Bitemporal State Auditing Ledgers:</strong>
-                            programmed dual-timeline transactional logging for deterministic trajectory replay,
-                            state rollback, and real-time runtime observability over autonomous decision loops.
+                            <strong>Bitemporal audit logs:</strong>
+                            dual-timeline logging so you can replay what the agent did, roll things
+                            back, and actually see what's going on at runtime.
                         </li>
                         <li>
-                            <strong>Symbolic Schema &amp; Transition Induction:</strong>
-                            built automated parsing pipelines combining LLMs with symbolic validation to convert
-                            unstructured text feeds into verified relational schemas, graph models, and
-                            deterministic execution rules.
+                            <strong>Schema &amp; rule induction:</strong>
+                            pipelines that mix LLMs with old-school validation to turn messy text
+                            into clean schemas, graphs, and runnable rules.
                         </li>
                     </ul>
                 </div>
@@ -82,26 +76,25 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
                 <div class="entry-body">
                     <ul>
                         <li>
-                            <strong>Field Telemetry Stream Ingestion Microservices:</strong>
-                            architected and deployed scalable ingestion microservices (Django, PostgreSQL, Apache
-                            Kafka) processing continuous real-time sensor streams from gas plant field
-                            infrastructure.
+                            <strong>Field telemetry ingestion:</strong>
+                            put together ingestion microservices (Django, PostgreSQL, Apache
+                            Kafka) that chew through live sensor streams from the gas plant.
                         </li>
                         <li>
-                            <strong>Latency &amp; Operational Efficiency Optimization:</strong>
-                            streamlined downstream reporting pipelines, reducing administrative data processing
-                            and compliance reporting latency from 15 days to under 1 hour.
+                            <strong>Speeding up reporting:</strong>
+                            cleaned up the reporting pipelines and took admin/compliance
+                            reporting from 15 days down to under an hour.
                         </li>
                         <li>
-                            <strong>Agentic Telemetry Monitoring Assistant:</strong>
-                            prototype-developed a tool-calling LangChain agent letting site engineers run
-                            natural-language queries over live Kafka telemetry streams with real-time diagnostic
-                            summaries.
+                            <strong>Telemetry chat assistant:</strong>
+                            hacked together a LangChain agent so site engineers can just ask
+                            questions in plain English over live Kafka streams and get quick
+                            diagnostics back.
                         </li>
                         <li>
-                            <strong>Statistical Quality Control Gates:</strong>
-                            programmed automated statistical verification filters to eliminate sensor anomalies,
-                            transient spikes, and telemetry noise before database entry.
+                            <strong>Noise filters:</strong>
+                            added simple statistical checks to catch bad sensor readings,
+                            spikes, and junk before they hit the database.
                         </li>
                     </ul>
                 </div>
@@ -117,24 +110,24 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
                 <div class="entry-body">
                     <ul>
                         <li>
-                            <strong>Enterprise Agentic RAG Pipelines:</strong>
-                            architected end-to-end RAG systems (LangChain, LlamaIndex) to parse, structure, and
-                            query large multi-format legal, technical, and industrial engineering documentation.
+                            <strong>Enterprise RAG pipelines:</strong>
+                            built end-to-end RAG setups (LangChain, LlamaIndex) that can dig through
+                            big messy piles of legal, technical, and engineering docs.
                         </li>
                         <li>
-                            <strong>Multi-Step Tool Reasoning &amp; Query Decomposition:</strong>
-                            integrated function-calling workflows decomposing complex queries into parallel
-                            retrieval tasks across dense vector indexes and Neo4j knowledge graphs.
+                            <strong>Smarter querying:</strong>
+                            broke complex questions into smaller parallel lookups across vector
+                            indexes and Neo4j graphs, with function calling holding it together.
                         </li>
                         <li>
-                            <strong>Multilingual Search &amp; Indexing Optimization:</strong>
-                            optimized hybrid vector/keyword search across Arabic and English corpora, cutting
-                            retrieval latency while improving context precision via asynchronous indexing.
+                            <strong>Arabic + English search:</strong>
+                            tuned hybrid vector/keyword search across both languages — faster
+                            retrieval, better hits, async indexing under the hood.
                         </li>
                         <li>
-                            <strong>Production Backend Integration:</strong>
-                            built high-throughput Python/FastAPI endpoints connecting multi-agent RAG pipelines
-                            with enterprise databases and identity provider security protocols.
+                            <strong>Backend glue:</strong>
+                            shipped fast Python/FastAPI endpoints hooking the RAG pipelines up to
+                            company databases and login/security stuff.
                         </li>
                     </ul>
                 </div>
@@ -150,15 +143,15 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
                 <div class="entry-body">
                     <ul>
                         <li>
-                            <strong>Geophysical Signal Processing:</strong>
-                            programmed digital signal filtering routines (Fourier, Butterworth, Wavelet) and
-                            cross-validation pipelines for volatile, non-stationary environmental measurements.
+                            <strong>Signal processing:</strong>
+                            messed with digital filters (Fourier, Butterworth, Wavelet) and
+                            cross-validation for jumpy, non-stationary environmental data.
                         </li>
                         <li>
-                            <strong>Predictive Analytics &amp; Risk Modeling:</strong>
-                            formulated predictive time-series regression and classification models for critical
-                            environmental variables, enforcing data isolation protocols to prevent forecasting
-                            bias.
+                            <strong>Forecasting &amp; risk:</strong>
+                            put together time-series regression and classification models for
+                            key environmental variables, keeping things properly separated so
+                            forecasts stay honest.
                         </li>
                     </ul>
                 </div>
@@ -235,53 +228,28 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
                 </div>
                 <div class="entry-body">
                     <p>
-                        Recent advances in Large Language Models (LLMs) have enabled the development of autonomous
-                        AI agents capable of sophisticated reasoning, planning, tool use, web navigation, and
-                        interaction with external environments. Despite these capabilities, current agents lack
-                        structured and persistent mechanisms for learning from experience — most systems store
-                        interaction histories as raw textual traces and retrieve them when faced with similar
-                        situations, resulting in high computational costs, limited scalability, and reduced
-                        robustness.
+                        LLM agents are great at reasoning, planning, using tools, and clicking
+                        around — but they're pretty bad at actually learning from experience.
+                        Most of them just save everything as one giant chat log and re-read
+                        the whole thing next time, which gets slow, expensive, and brittle fast.
                     </p>
                     <p>
-                        This doctoral project bridges human cognitive development and AI by introducing the concept
-                        of <strong>cognitive distillation</strong>: rather than retaining every detail of an
-                        experience, agents will abstract recurring patterns into compact mental structures — or
-                        <strong>schemas</strong> — that guide future behavior. The research designs, implements, and
-                        formally analyzes a new class of autonomous agents capable of continuously transforming raw
-                        experiences into organized, executable knowledge schemas: a structured "mental playbook"
-                        enabling efficient decision-making, adaptation, and expertise acquisition. It investigates
-                        mechanisms for schema formation, consolidation, maintenance, and forgetting, aiming to
-                        establish a principled framework for autonomous expertise development in AI agents.
-                    </p>
-                    <p>
-                        <strong>Research Problem.</strong> Current autonomous agents operating in environments such
-                        as web navigation, software interaction, and complex virtual worlds typically record every
-                        observation, action, and outcome as part of an interaction history, then retrieve and
-                        process large amounts of historical data when facing similar tasks. This approach gives rise
-                        to three major challenges:
+                        My PhD idea is <strong>cognitive distillation</strong>: instead of hoarding
+                        every detail, agents boil repeated experiences down into small reusable
+                        playbooks — <strong>schemas</strong> — they can just run next time. The
+                        work is about how agents form those schemas, keep them fresh, and forget
+                        the ones that stop being useful. Full write-up on the blog.
                     </p>
                     <ul>
                         <li>
-                            <strong>Inefficiency:</strong> processing extensive interaction histories for every
-                            decision requires significant computational resources, increasing inference latency,
-                            memory consumption, and operational costs.
+                            <strong>The issue in a nutshell:</strong> re-reading everything is
+                            slow, tiny changes throw agents off, and memory fills up with junk.
                         </li>
                         <li>
-                            <strong>Fragility:</strong> agents rely on literal similarities between current and past
-                            experiences rather than on abstract behavioral knowledge, so even minor environmental
-                            changes can significantly degrade performance.
-                        </li>
-                        <li>
-                            <strong>Information Overload:</strong> as interaction histories grow, memory repositories
-                            become saturated with redundant, noisy, and outdated information; existing systems lack
-                            principled mechanisms to distinguish valuable knowledge from irrelevant details.
+                            <strong>The fix I'm going for:</strong> turn raw experience into compact,
+                            tested, runnable knowledge — and prune it like a garden, not a hard drive.
                         </li>
                     </ul>
-                    <p>
-                        These limitations highlight the need for memory architectures capable of transforming
-                        episodic experiences into compact, reusable, and adaptive knowledge structures.
-                    </p>
                 </div>
             </div>
 
@@ -295,19 +263,18 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
                 <div class="entry-body">
                     <ul>
                         <li>
-                            <strong>Graduation Thesis:</strong> Grounded Memory Systems for Autonomous Agent
-                            Architectures under Long-Horizon Stress Testing (grade 17.88/20) — transactionally
-                            secured agent runtimes enforcing schema validation under noise.
+                            <strong>Grad thesis:</strong> grounded memory for agents that holds up under
+                            noisy, long-horizon stress tests (17.88/20) — basically making sure agent
+                            memory doesn't fall apart when things get messy.
                         </li>
                         <li>
-                            <strong>National Academic Distinction:</strong> ranked 1st in the Wilaya of Tipasa on
-                            the National Baccalaureate Exam (score 18.84/20).
+                            <strong>Fun fact:</strong> ranked 1st in Tipasa on the national Bac exam
+                            (18.84/20).
                         </li>
                         <li>
-                            <strong>Core Curriculum:</strong> distributed systems, agentic workflows, advanced
-                            database systems, NLP, automated reasoning, knowledge representation, constraint
-                            programming &amp; optimization, hybrid AI systems, information security, advanced graph
-                            theory, statistical learning.
+                            <strong>What I studied:</strong> distributed systems, agentic workflows,
+                            databases, NLP, reasoning, knowledge representation, constraint
+                            programming &amp; optimization, hybrid AI, security, graph theory, stats.
                         </li>
                     </ul>
                 </div>
@@ -327,19 +294,16 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
                 <div class="entry-body">
                     <ul>
                         <li>
-                            <strong>Real-Time Transactional Anomaly Detector (1st place):</strong> anomaly detection
-                            engine combining Neo4j graph topology features with Isolation Forest to pinpoint irregular
-                            data flows and financial fraud within a 48-hour build window.
+                            <strong>Real-time fraud detector (1st place):</strong> mixed Neo4j graph
+                            features with Isolation Forest to flag weird money flows — built in 48 hours.
                         </li>
                         <li>
-                            <strong>Macroeconomic Risk &amp; Forecasting Engine (1st place):</strong> decision-support
-                            platform combining time-series modeling, volatility parameters, and stochastic optimization
-                            for operational risk evaluation.
+                            <strong>Risk &amp; forecasting engine (1st place):</strong> time-series modeling
+                            + stochastic optimization for sizing up operational risk.
                         </li>
                         <li>
-                            <strong>Graph-Based Optimization Engine (1st place):</strong> real-time mathematical
-                            optimization system coupling graph analytics with constraint programming for resource
-                            allocation under tight latency constraints.
+                            <strong>Graph optimizer (1st place):</strong> graph analytics + constraint
+                            programming for assigning resources fast under tight deadlines.
                         </li>
                     </ul>
                 </div>
@@ -351,9 +315,9 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
                 </div>
                 <div class="entry-body">
                     <p>
-                        Technical Lead &amp; IT Manager at GDG/GDSC ENSIA — planned and coordinated technical
-                        initiatives and student hackathons; animated workshops on Docker containerization, backend
-                        design, and LangChain/LlamaIndex agent development.
+                        Tech lead &amp; IT manager at GDG/GDSC ENSIA — ran hackathons and tech
+                        meetups, plus hands-on workshops on Docker, backends, and building
+                        agents with LangChain/LlamaIndex.
                     </p>
                 </div>
             </div>
