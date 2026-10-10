@@ -38,6 +38,14 @@ const links: Array<[string, string]> = [
             rel="stylesheet"
         />
         <link rel="icon" href={base + 'favicon.svg'} />
+        <script is:inline>
+            try {
+                document.documentElement.dataset.theme =
+                    localStorage.getItem('theme') || 'dark';
+            } catch (e) {
+                document.documentElement.dataset.theme = 'dark';
+            }
+        </script>
     </head>
     <body id="top">
         <div class="topbar">
@@ -57,6 +65,9 @@ const links: Array<[string, string]> = [
                         ))
                     }
                 </ul>
+                <button id="theme-toggle" type="button" aria-label="Toggle light and dark theme">
+                    ☀
+                </button>
             </nav>
         </div>
         <slot />
@@ -69,5 +80,27 @@ const links: Array<[string, string]> = [
             </p>
             <p class="fine">© 2026 Faycal Amrouche · Last updated August 2026</p>
         </footer>
+        <script is:inline>
+            (function () {
+                var btn = document.getElementById('theme-toggle');
+                if (!btn) return;
+                function sync() {
+                    btn.textContent =
+                        document.documentElement.dataset.theme === 'light' ? '☾' : '☀';
+                }
+                btn.addEventListener('click', function () {
+                    var next =
+                        document.documentElement.dataset.theme === 'light'
+                            ? 'dark'
+                            : 'light';
+                    document.documentElement.dataset.theme = next;
+                    try {
+                        localStorage.setItem('theme', next);
+                    } catch (e) {}
+                    sync();
+                });
+                sync();
+            })();
+        </script>
     </body>
 </html>
