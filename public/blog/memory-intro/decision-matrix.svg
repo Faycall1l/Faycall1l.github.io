@@ -1,0 +1,59 @@
+<svg width="760" height="500" viewBox="0 0 760 500" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Decision matrix: memory substrate fit per requirement">
+  <rect x="1" y="1" width="758" height="498" rx="10" fill="#fff" stroke="#e3e3e3"/>
+  <text x="28" y="38" font-family="ui-monospace, Menlo, monospace" font-size="13" letter-spacing="2" fill="#999">WHICH SUBSTRATE FOR WHICH REQUIREMENT — AUTHOR'S SYNTHESIS</text>
+
+  <!-- columns x: flat 392, graph 462, hier 532, param 602, adapt 662, latent 722 -->
+  <g font-family="ui-monospace, Menlo, monospace" font-size="12" fill="#555" text-anchor="middle">
+    <text x="392" y="72">FLAT 1D</text>
+    <text x="462" y="72">GRAPH 2D</text>
+    <text x="532" y="72">HIER. 3D</text>
+    <text x="602" y="72">PARAM.</text>
+    <text x="662" y="72">ADAPT.</text>
+    <text x="722" y="72">LATENT</text>
+  </g>
+  <line x1="28" y1="88" x2="744" y2="88" stroke="#e3e3e3"/>
+  <g font-family="Georgia, serif" font-size="15" fill="#111">
+    <text x="28" y="145">Answers must cite sources</text>
+    <text x="28" y="215">Facts change over time</text>
+    <text x="28" y="285">Must refuse when unsure</text>
+    <text x="28" y="355">Millisecond retrieval</text>
+    <text x="28" y="425">No training required</text>
+  </g>
+  <g font-size="20" text-anchor="middle">
+    <text x="392" y="152" fill="#111">●</text>
+    <text x="462" y="152" fill="#111">●</text>
+    <text x="532" y="152" fill="#111">●</text>
+    <text x="602" y="152" fill="#bbb">○</text>
+    <text x="662" y="152" fill="#bbb">○</text>
+    <text x="722" y="152" fill="#bbb">○</text>
+    <text x="392" y="222" fill="#777">◐</text>
+    <text x="462" y="222" fill="#777">◐</text>
+    <text x="532" y="222" fill="#777">◐</text>
+    <text x="602" y="222" fill="#bbb">○</text>
+    <text x="662" y="222" fill="#777">◐</text>
+    <text x="722" y="222" fill="#bbb">○</text>
+    <text x="392" y="292" fill="#777">◐</text>
+    <text x="462" y="292" fill="#777">◐</text>
+    <text x="532" y="292" fill="#777">◐</text>
+    <text x="602" y="292" fill="#bbb">○</text>
+    <text x="662" y="292" fill="#bbb">○</text>
+    <text x="722" y="292" fill="#bbb">○</text>
+    <text x="392" y="362" fill="#bbb">○</text>
+    <text x="462" y="362" fill="#777">◐</text>
+    <text x="532" y="362" fill="#777">◐</text>
+    <text x="602" y="362" fill="#111">●</text>
+    <text x="662" y="362" fill="#111">●</text>
+    <text x="722" y="362" fill="#111">●</text>
+    <text x="392" y="432" fill="#111">●</text>
+    <text x="462" y="432" fill="#111">●</text>
+    <text x="532" y="432" fill="#111">●</text>
+    <text x="602" y="432" fill="#bbb">○</text>
+    <text x="662" y="432" fill="#bbb">○</text>
+    <text x="722" y="432" fill="#111">●</text>
+  </g>
+  <g font-family="ui-monospace, Menlo, monospace" font-size="12" fill="#555">
+    <text x="28" y="472">● strong fit</text>
+    <text x="180" y="472">◐ partial or conditional</text>
+    <text x="440" y="472">○ poor fit</text>
+  </g>
+</svg>
