@@ -106,6 +106,18 @@ nav ul a:hover {
     color: var(--ink);
 }
 
+nav ul a.blog-link {
+    color: var(--paper);
+    background: var(--ink);
+    padding: 0.22rem 0.75rem;
+    border-radius: 999px;
+}
+
+nav ul a.blog-link:hover {
+    color: var(--paper);
+    opacity: 0.8;
+}
+
 /* ---------- Header ---------- */
 
 header {

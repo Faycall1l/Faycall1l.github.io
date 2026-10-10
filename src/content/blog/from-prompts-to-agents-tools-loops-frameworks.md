@@ -1,7 +1,7 @@
 ---
 title: "From Prompts to Agents: Tools, Loops, and Frameworks"
 description: "What turns a language model into an agent, how the ReAct loop works, and a hands-on minimal agent in LangGraph — with notes on when not to use one."
-date: 2026-10-10
+date: 2026-09-04
 tags: ["agents", "langchain", "langgraph", "tutorial"]
 ---
 

@@ -47,7 +47,12 @@ const links: Array<[string, string]> = [
                     {
                         links.map(([id, label]) => (
                             <li>
-                                <a href={base + (id === 'blog' ? 'blog/' : `#${id}`)}>{label}</a>
+                                <a
+                                    href={base + (id === 'blog' ? 'blog/' : `#${id}`)}
+                                    class:list={{ 'blog-link': id === 'blog' }}
+                                >
+                                    {label}
+                                </a>
                             </li>
                         ))
                     }
