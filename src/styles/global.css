@@ -1,10 +1,11 @@
 :root {
-    --ink: #111;
-    --paper: #fff;
-    --muted: #555;
-    --faint: #999;
-    --hairline: #e3e3e3;
-    --line: #000;
+    color-scheme: dark;
+    --ink: #eae7df;
+    --paper: #141414;
+    --muted: #a3a3a3;
+    --faint: #6f6f6f;
+    --hairline: #2b2b2b;
+    --line: #dedbd4;
     --measure: 76ch;
     --serif: "Source Serif 4", Georgia, "Times New Roman", Times, serif;
     --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
@@ -57,7 +58,7 @@ a {
     position: sticky;
     top: 0;
     z-index: 20;
-    background: rgba(255, 255, 255, 0.92);
+    background: rgba(20, 20, 20, 0.92);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     border-bottom: 1px solid var(--line);
@@ -409,8 +410,9 @@ section h3 {
 }
 
 .prose pre {
-    background: var(--ink);
-    color: var(--paper);
+    background: #1f1f1f;
+    color: #f0ede6;
+    border: 1px solid var(--hairline);
     padding: 1rem;
     overflow-x: auto;
     margin: 1rem 0;
