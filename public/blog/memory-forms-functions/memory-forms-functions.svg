@@ -1,0 +1,68 @@
+<svg width="760" height="560" viewBox="0 0 760 560" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Memory taxonomy: forms versus functions, with GMem layer mapping">
+  <defs>
+    <marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#555"/>
+    </marker>
+  </defs>
+  <rect x="1" y="1" width="758" height="558" rx="10" fill="#fff" stroke="#e3e3e3"/>
+  <text x="28" y="38" font-family="IBM Plex Mono, monospace" font-size="13" letter-spacing="2" fill="#999">FORMS vs FUNCTIONS — ADAPTED TAXONOMY</text>
+
+  <!-- FORMS column -->
+  <text x="28" y="72" font-family="Georgia, serif" font-size="19" font-weight="bold" fill="#111">Forms</text>
+  <text x="28" y="92" font-family="IBM Plex Mono, monospace" font-size="11" fill="#555">what carries memory</text>
+
+  <rect x="28" y="104" width="320" height="64" rx="8" fill="#111"/>
+  <text x="44" y="130" font-family="Georgia, serif" font-size="15" fill="#fff">Token-level</text>
+  <text x="44" y="150" font-family="IBM Plex Mono, monospace" font-size="11" fill="#bbb">1D flat · 2D planar · 3D hierarchical</text>
+
+  <rect x="28" y="176" width="320" height="64" rx="8" fill="#fff" stroke="#111" stroke-width="1.5"/>
+  <text x="44" y="202" font-family="Georgia, serif" font-size="15" fill="#111">Parametric</text>
+  <text x="44" y="222" font-family="IBM Plex Mono, monospace" font-size="11" fill="#555">internal (weights) · external (adapters)</text>
+
+  <rect x="28" y="248" width="320" height="64" rx="8" fill="#fff" stroke="#111" stroke-width="1.5"/>
+  <text x="44" y="274" font-family="Georgia, serif" font-size="15" fill="#111">Latent</text>
+  <text x="44" y="294" font-family="IBM Plex Mono, monospace" font-size="11" fill="#555">generate · reuse · transform (opaque)</text>
+
+  <!-- FUNCTIONS column -->
+  <text x="412" y="72" font-family="Georgia, serif" font-size="19" font-weight="bold" fill="#111">Functions</text>
+  <text x="412" y="92" font-family="IBM Plex Mono, monospace" font-size="11" fill="#555">why agents need memory</text>
+
+  <rect x="412" y="104" width="320" height="64" rx="8" fill="#111"/>
+  <text x="428" y="130" font-family="Georgia, serif" font-size="15" fill="#fff">Factual</text>
+  <text x="428" y="150" font-family="IBM Plex Mono, monospace" font-size="11" fill="#bbb">user prefs · world state</text>
+
+  <rect x="412" y="176" width="320" height="64" rx="8" fill="#fff" stroke="#111" stroke-width="1.5"/>
+  <text x="428" y="202" font-family="Georgia, serif" font-size="15" fill="#111">Experiential</text>
+  <text x="428" y="222" font-family="IBM Plex Mono, monospace" font-size="11" fill="#555">cases · strategies · skills</text>
+
+  <rect x="412" y="248" width="320" height="64" rx="8" fill="#fff" stroke="#111" stroke-width="1.5"/>
+  <text x="428" y="274" font-family="Georgia, serif" font-size="15" fill="#111">Working</text>
+  <text x="428" y="294" font-family="IBM Plex Mono, monospace" font-size="11" fill="#555">single-turn condense · multi-turn fold</text>
+
+  <!-- Divider -->
+  <line x1="28" y1="336" x2="732" y2="336" stroke="#e3e3e3"/>
+
+  <!-- GMem mapping -->
+  <text x="28" y="366" font-family="Georgia, serif" font-size="19" font-weight="bold" fill="#111">What GMem adds: a representation contract</text>
+  <text x="28" y="386" font-family="IBM Plex Mono, monospace" font-size="11" fill="#555">factual token-level memory, 3D hierarchical, with warrant edges</text>
+
+  <rect x="28" y="400" width="216" height="72" rx="8" fill="#f6f6f6" stroke="#111" stroke-width="1.5"/>
+  <text x="44" y="428" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="bold" fill="#111">L0 · Evidence</text>
+  <text x="44" y="448" font-family="IBM Plex Mono, monospace" font-size="11" fill="#555">immutable episodes</text>
+
+  <rect x="260" y="400" width="240" height="72" rx="8" fill="#f6f6f6" stroke="#111" stroke-width="1.5"/>
+  <text x="276" y="428" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="bold" fill="#111">L1 · Distilled</text>
+  <text x="276" y="448" font-family="IBM Plex Mono, monospace" font-size="11" fill="#555">adjudicated, versioned</text>
+
+  <rect x="516" y="400" width="216" height="72" rx="8" fill="#fff" stroke="#999" stroke-dasharray="5 4"/>
+  <text x="532" y="428" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="bold" fill="#111">L2 · Synthesized</text>
+  <text x="532" y="448" font-family="IBM Plex Mono, monospace" font-size="11" fill="#555">derived, never warranted</text>
+
+  <line x1="244" y1="436" x2="258" y2="436" stroke="#555" stroke-width="1.5" marker-end="url(#arr2)"/>
+  <line x1="500" y1="436" x2="514" y2="436" stroke="#555" stroke-width="1.5" marker-end="url(#arr2)"/>
+  <text x="248" y="424" font-family="IBM Plex Mono, monospace" font-size="10" fill="#555">grounds</text>
+  <text x="480" y="424" font-family="IBM Plex Mono, monospace" font-size="10" fill="#555">lists sources</text>
+
+  <text x="28" y="502" font-family="Georgia, serif" font-size="13" font-style="italic" fill="#555">Every L1 proposition drills to its L0 span in ≤ 3 steps; empty evidence abstains instead of answering.</text>
+  <text x="28" y="526" font-family="IBM Plex Mono, monospace" font-size="11" fill="#999">Taxonomy adapted from Hu et al., “Memory in the Age of AI Agents” (2026), CC BY 4.0. GMem row is the author’s contribution.</text>
+</svg>
