@@ -1,12 +1,11 @@
 ---
 title: "Cognitive Distillation, or How to Teach an Agent to Remember"
-description: "A summary of my doctoral proposal: turning raw agent experience into executable schemas, one sandboxed experiment at a time."
+description: "Asking how raw agent experience becomes executable schemas, one sandboxed experiment at a time."
 date: 2026-08-06
-tags: ["agents", "memory", "schemas", "phd"]
+tags: ["agents", "memory", "schemas"]
 ---
 
 **Title:** Cognitive Distillation and Schema Formation for Autonomous AI Agents
-**Supervisors:** Prof. Okba Tibermacine
 
 This is the short version. The short version is still long. Proceed accordingly.
 
@@ -22,7 +21,7 @@ This is not technically accurate — they have seen it. Every observation, actio
 
 Humans solved this problem millennia ago, largely by not filing the whole of yesterday before making breakfast. We intend to copy their homework and cite them.
 
-## The proposal
+## The idea
 
 We introduce **cognitive distillation**: the systematic transformation of raw experience into compact, executable *schemas* — reusable behavioral structures that function as the agent's mental playbook.
 
@@ -32,7 +31,7 @@ The project designs, implements, and formally analyzes agents that do this conti
 
 > How can an autonomous AI agent dynamically compress its unstructured experiences into a structured and executable "mental playbook" that maximizes task success while minimizing computational cost?
 
-The answer is not included in this abstract. It is, in a sense, the entire point of the next four years.
+The answer is not included in this abstract. It is, in a sense, the open question this write-up is organized around.
 
 ## Objectives
 
