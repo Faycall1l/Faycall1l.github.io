@@ -1,0 +1,58 @@
+<svg width="760" height="430" viewBox="0 0 760 430" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ReAct agent loop: reason, act with tools, observe, repeat">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#111"/>
+    </marker>
+  </defs>
+  <rect x="1" y="1" width="758" height="428" rx="10" fill="#fff" stroke="#e3e3e3"/>
+  <text x="28" y="38" font-family="IBM Plex Mono, monospace" font-size="13" letter-spacing="2" fill="#999">THE REACT AGENT LOOP — ORIGINAL DIAGRAM</text>
+
+  <!-- LLM core -->
+  <rect x="280" y="70" width="200" height="86" rx="8" fill="#111"/>
+  <text x="380" y="104" text-anchor="middle" font-family="Georgia, serif" font-size="20" fill="#fff">LLM core</text>
+  <text x="380" y="128" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" fill="#bbb">thought + action choice</text>
+
+  <!-- Thought -->
+  <rect x="60" y="70" width="160" height="86" rx="8" fill="#fff" stroke="#111" stroke-width="1.5"/>
+  <text x="140" y="104" text-anchor="middle" font-family="Georgia, serif" font-size="17" fill="#111">Thought</text>
+  <text x="140" y="128" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#555">reason / plan</text>
+
+  <!-- Action / tools -->
+  <rect x="540" y="70" width="160" height="86" rx="8" fill="#fff" stroke="#111" stroke-width="1.5"/>
+  <text x="620" y="104" text-anchor="middle" font-family="Georgia, serif" font-size="17" fill="#111">Action</text>
+  <text x="620" y="128" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#555">tool call</text>
+
+  <!-- Observation -->
+  <rect x="280" y="220" width="200" height="86" rx="8" fill="#fff" stroke="#111" stroke-width="1.5"/>
+  <text x="380" y="254" text-anchor="middle" font-family="Georgia, serif" font-size="17" fill="#111">Observation</text>
+  <text x="380" y="278" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#555">tool result / env state</text>
+
+  <!-- Context -->
+  <rect x="60" y="220" width="160" height="86" rx="8" fill="#f6f6f6" stroke="#999" stroke-dasharray="5 4"/>
+  <text x="140" y="254" text-anchor="middle" font-family="Georgia, serif" font-size="17" fill="#111">Context</text>
+  <text x="140" y="278" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#555">prompt + memory</text>
+
+  <!-- Answer -->
+  <rect x="540" y="220" width="160" height="86" rx="8" fill="#111"/>
+  <text x="620" y="254" text-anchor="middle" font-family="Georgia, serif" font-size="17" fill="#fff">Answer</text>
+  <text x="620" y="278" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#bbb">when confident</text>
+
+  <!-- Arrows: Thought -> LLM -->
+  <line x1="220" y1="100" x2="272" y2="100" stroke="#111" stroke-width="1.5" marker-end="url(#arr)"/>
+  <!-- LLM -> Action -->
+  <line x1="480" y1="100" x2="532" y2="100" stroke="#111" stroke-width="1.5" marker-end="url(#arr)"/>
+  <!-- Action -> Observation -->
+  <path d="M620 156 L620 200 L480 200 L480 220" stroke="#111" stroke-width="1.5" marker-end="url(#arr)"/>
+  <!-- Observation -> Context -->
+  <line x1="280" y1="263" x2="228" y2="263" stroke="#111" stroke-width="1.5" marker-end="url(#arr)"/>
+  <!-- Context -> Thought (loop back, left side) -->
+  <path d="M140 220 L140 180 L60 180 L60 156" stroke="#111" stroke-width="1.5" marker-end="url(#arr)"/>
+  <!-- Observation -> LLM (re-reason) -->
+  <line x1="380" y1="220" x2="380" y2="164" stroke="#111" stroke-width="1.5" marker-end="url(#arr)"/>
+  <!-- Observation -> Answer -->
+  <line x1="480" y1="263" x2="532" y2="263" stroke="#111" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <text x="28" y="352" font-family="Georgia, serif" font-size="14" font-style="italic" fill="#555">Loop until done or budget spent: each turn appends (thought, action, observation) to context.</text>
+  <text x="28" y="376" font-family="IBM Plex Mono, monospace" font-size="12" fill="#555">Guardrails live outside the loop: max steps, timeouts, tool allow-lists, human approval for side effects.</text>
+  <text x="28" y="400" font-family="IBM Plex Mono, monospace" font-size="12" fill="#999">After Yao et al., ReAct (2022). Frameworks (LangChain, LangGraph) implement this loop; they do not change it.</text>
+</svg>
