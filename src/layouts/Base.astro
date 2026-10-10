@@ -101,6 +101,12 @@ const links: Array<[string, string]> = [
                 });
                 sync();
             })();
+
+            // Open external links in a new tab.
+            document.querySelectorAll('a[href^="http"]').forEach(function (a) {
+                a.target = '_blank';
+                a.rel = 'noopener';
+            });
         </script>
     </body>
 </html>
