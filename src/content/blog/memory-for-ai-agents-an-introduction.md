@@ -67,7 +67,31 @@ Formation (turning raw interaction into memory units), evolution (consolidating,
 
 *Figure 8 from Hu et al. (2026). The memory lifecycle: (1) formation transforms raw data into memory units, (2) evolution integrates them with the existing repository through consolidation, updating, and forgetting, (3) retrieval serves the agent backbone through timed, constructed, and consolidated queries.*
 
-## 4. The tensions that define the field
+## 4. A critical reading: what the taxonomy implies
+
+Summarizing is not contributing, so here are three claims I will defend. Each is grounded in the figures above; each will be tested against systems in later installments.
+
+**Claim 1: citability draws the real line, not dimensionality.** The survey's own paradigm comparison sorts the field the way this article does. Token-level memory is symbolic and addressable, which places it in high-stakes domains (law, finance, medicine). Parametric and latent memory trade that away for generalization and efficiency. Dimensionality (1D vs. 2D vs. 3D) then decides *how well* token memory serves multi-hop and abstraction needs, not *whether* it can be cited at all.
+
+![Three memory paradigms: token-level, parametric, and latent, with features and suitable applications](/blog/memory-intro/paradigm-comparison.png)
+
+*Figure 5 from Hu et al. (2026). The three paradigms differ in representational form, update dynamics, interpretability, and efficiency, which places them in different application domains.*
+
+The practical consequence is a selection matrix. If answers must cite sources, half the substrate space is eliminated before any benchmark runs. If facts change over time, no substrate earns full marks, because updating is a policy, not a storage property. And if the system must refuse when unsure, nothing earns full marks either, because abstention lives in consultation, not in storage.
+
+![Decision matrix of memory substrate fit per requirement](/blog/memory-intro/decision-matrix.svg)
+
+*Author's synthesis of survey judgments (Hu et al., 2026, §§3-4). Qualitative. Note the two rows with no full marks: change and refusal are policies the taxonomy does not assign to any substrate.*
+
+**Claim 2: auditability and cost form a frontier, and parametric factual memory sits off it.** Plotted schematically, latent vectors are cheap and unauditable, token stores are auditable at growing maintenance cost, and weights cost the most to change while offering the least to audit. That makes parametric storage the worst substrate for facts and a reasonable one for skills, yet systems are routinely benchmarked on factual recall over parametric stores. The mismatch between what is stored where and what is measured is, in my view, one of the field's quieter methodological problems.
+
+![Schematic trade-off between auditability and operational cost across memory substrates](/blog/memory-intro/tradeoff-schematic.svg)
+
+*Author's schematic, positions qualitative. Solid dots sit on the efficient frontier; hollow dots are dominated on both axes under the survey's own judgments.*
+
+**Claim 3: the taxonomy classifies what memory is, not what it does.** Formation, evolution, and retrieval (Figure 8) describe operations, but the write path, the update policy, and the refusal rule are where deployed systems actually diverge. Two systems can share a quadrant of the landscape and differ completely in admission control, versioning, and abstention behavior. The series will therefore evaluate systems on those policies first and on their taxonomy address second.
+
+## 5. The tensions that define the field
 
 If there is one thing to carry into the series, it is that every memory design is a position on four tensions. Papers should be read as arguments about them:
 
@@ -78,7 +102,7 @@ If there is one thing to carry into the series, it is that every memory design i
 
 Reasonable researchers disagree on each of these, and the series will present the disagreements rather than flatten them.
 
-## 5. The series ahead
+## 6. The series ahead
 
 Each installment takes one approach, direction, or tool, reconstructs its argument, and states plainly what it contributes and where it stops:
 
@@ -91,6 +115,6 @@ No flooding: one piece at a time, each self-contained, each with figures credite
 
 ## References
 
-1. Hu, Y. et al. (2026). *Memory in the Age of AI Agents.* https://arxiv.org/abs/2512.13564 (the map this series follows; CC BY 4.0; all figures reproduced from this work with attribution)
+1. Hu, Y. et al. (2026). *Memory in the Age of AI Agents.* https://arxiv.org/abs/2512.13564 (the map this series follows; CC BY 4.0; Figures 1, 2, 3, 5, 6, and 8 reproduced from this work with attribution; remaining figures are the author's schematics)
 2. Xu, W. et al. (2025). *A-MEM: Agentic Memory for LLM Agents.* https://arxiv.org/abs/2502.12110
 3. Maharana, A. et al. (2024). *LoCoMo: Evaluating Very Long-Term Conversational Memory.* https://arxiv.org/abs/2402.17753
