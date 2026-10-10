@@ -6,9 +6,21 @@
     --faint: #6f6f6f;
     --hairline: #2b2b2b;
     --line: #dedbd4;
-    --measure: 76ch;
+    --topbar: rgba(20, 20, 20, 0.92);
+    --measure: 96ch;
     --serif: "Source Serif 4", Georgia, "Times New Roman", Times, serif;
     --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+
+:root[data-theme="light"] {
+    color-scheme: light;
+    --ink: #111;
+    --paper: #fff;
+    --muted: #555;
+    --faint: #999;
+    --hairline: #e3e3e3;
+    --line: #000;
+    --topbar: rgba(255, 255, 255, 0.92);
 }
 
 * {
@@ -18,7 +30,7 @@
 }
 
 html {
-    font-size: 17px;
+    font-size: 18px;
     scroll-behavior: smooth;
 }
 
@@ -58,7 +70,7 @@ a {
     position: sticky;
     top: 0;
     z-index: 20;
-    background: rgba(20, 20, 20, 0.92);
+    background: var(--topbar);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     border-bottom: 1px solid var(--line);
@@ -67,16 +79,16 @@ a {
 nav {
     max-width: var(--measure);
     margin: 0 auto;
-    padding: 0.7rem 1.25rem;
+    padding: 0.85rem 1.5rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 0.8rem;
+    gap: 1rem;
 }
 
 nav .brand {
     font-family: var(--mono);
-    font-size: 0.74rem;
+    font-size: 0.84rem;
     font-weight: 500;
     letter-spacing: 0.06em;
     text-transform: uppercase;
@@ -88,12 +100,13 @@ nav ul {
     list-style: none;
     display: flex;
     flex-wrap: nowrap;
-    gap: 0.9rem;
+    align-items: center;
+    gap: 1.1rem;
 }
 
 nav ul a {
     font-family: var(--mono);
-    font-size: 0.68rem;
+    font-size: 0.78rem;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     text-decoration: none;
@@ -116,6 +129,27 @@ nav ul a.blog-link {
 nav ul a.blog-link:hover {
     color: var(--paper);
     opacity: 0.8;
+}
+
+#theme-toggle {
+    font-family: var(--mono);
+    font-size: 0.95rem;
+    line-height: 1;
+    color: var(--ink);
+    background: transparent;
+    border: 1px solid var(--hairline);
+    border-radius: 999px;
+    width: 2.1rem;
+    height: 2.1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+#theme-toggle:hover {
+    border-color: var(--muted);
 }
 
 /* ---------- Header ---------- */
