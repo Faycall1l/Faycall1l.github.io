@@ -7,6 +7,8 @@ tags: ["agents", "memory", "schemas"]
 
 **Title:** Cognitive Distillation and Schema Formation for Autonomous AI Agents
 
+*Topic originally proposed by Prof. Okba Tibermacine; the synthesis and commentary here are my own.*
+
 This is the short version. The short version is still long. Proceed accordingly.
 
 ## The problem, filed as a support ticket
