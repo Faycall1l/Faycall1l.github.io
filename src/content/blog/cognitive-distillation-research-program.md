@@ -45,7 +45,7 @@ The answer is not included in this abstract. It is, in a sense, the open questio
 
 ## Methodology
 
-Four phases. They are sequential, because phases that are not sequential are called chaos.
+The work is organized into four sequential phases, each building on the previous one.
 
 **Phase 1 — Program Induction.** Transform raw interaction histories into compact, executable programs. The agent identifies recurring behavioral patterns and synthesizes reusable procedures from a dynamically evolving library of actions and abstractions. Generated programs are executed and validated in the sandbox before being promoted to memory. Correctness, safety, and effectiveness are checked first. The order of these checks matters.
 
