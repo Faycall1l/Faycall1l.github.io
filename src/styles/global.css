@@ -9,7 +9,7 @@
     --topbar: rgba(20, 20, 20, 0.92);
     --measure: 96ch;
     --serif: "Source Serif 4", Georgia, "Times New Roman", Times, serif;
-    --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+    --mono: var(--serif);
 }
 
 :root[data-theme="light"] {
