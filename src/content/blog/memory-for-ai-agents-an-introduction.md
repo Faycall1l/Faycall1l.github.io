@@ -23,7 +23,7 @@ Increasing the context window mitigates none of these structurally. It postpones
 
 Three boundaries, following Hu et al. (2026, §2), prevent most category errors. Stated briefly here; each gets revisited in its own installment:
 
-- **Not RAG.** Retrieval-augmented generation fetches external documents at query time. Memory additionally manages what gets *written*, how it changes, and what is forgotten. A RAG index with no write policy is not a memory.
+- **Not RAG.** Retrieval-augmented generation fetches external documents at query time. Memory also manages what gets *written*, how it changes, and what is forgotten. A RAG index with no write policy is not a memory.
 - **Not context engineering.** Assembling the current prompt is stagecraft; deciding what survives *between* prompts is record-keeping. Both matter, and they are different jobs.
 - **Not the model's weights.** What a language model "knows" parametrically is hard to inspect, harder to retract, and impossible to cite. Memory systems exist precisely because weights are a poor substrate for facts that change.
 
