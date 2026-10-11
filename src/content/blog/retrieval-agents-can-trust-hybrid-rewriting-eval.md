@@ -58,7 +58,7 @@ lexical = sorted(range(len(DOCS)), key=lambda i: -bm25.scores(query)[i])
 print("BM25 order:", lexical, "->", DOCS[lexical[0]])
 ```
 
-Swap the second channel for real dense retrieval (embeddings plus cosine) and fuse with the same `rrf`. The fusion function does not change, which is the point: **channels come and go, fusion stays.** A useful third channel costs nothing: exact-phrase match over the same index, which rescues error codes, names, and version strings that both BM25 tokenization and dense models mangle.
+Swap the second channel for real dense retrieval (embeddings plus cosine) and fuse with the same rank-fusion function. The fusion function does not change, which is the point: **channels come and go, fusion stays.** A useful third channel costs nothing: exact-phrase match over the same index, which rescues error codes, names, and version strings that both BM25 tokenization and dense models mangle.
 
 A note on chunking, since retrieval quality is decided at ingestion: keep chunks small enough that one chunk holds one idea (a few hundred tokens is the common default), overlap boundaries so ideas split across edges survive, and attach metadata (source, date, section) at write time. Metadata attached late is metadata reconstructed wrong. These are heuristics with wide support, not laws; your measurements in section 4 are how you tune them for your corpus.
 
@@ -124,7 +124,7 @@ Include unanswerable cases deliberately. Without them, the setup rewards guessin
 
 1. Extend Tutorial A with the exact-phrase third channel and measure recall@5 before and after on 20 hand-written queries, 5 of them unanswerable. Keep the script; you will reuse it all year.
 2. Implement the confidence router with a real embedder and find your corpus's threshold: sweep 0.2 to 0.5 and plot gain versus rewrite rate. The curve, not the constant, is the deliverable.
-3. Add citation enforcement to generation: require every factual sentence to carry a `[doc n]` marker, then hand-score 20 answers for citation precision. The gap between recall and precision is your next quarter of work.
+3. Add citation enforcement to generation: require every factual sentence to carry a document marker, then hand-score 20 answers for citation precision. The gap between recall and precision is your next quarter of work.
 
 ## References
 

@@ -9,7 +9,7 @@ Last week managed a single context window. This week persists across windows. Th
 
 ## 1. Layer one: thread continuity with a checkpointer
 
-A checkpointer snapshots graph state at every step, keyed by `thread_id`. Same thread, the agent remembers; new thread, fresh start. Everything below runs without any model API key, using a stub, because continuity is a state mechanic, not a model behavior. Do not pay for tokens to test plumbing.
+A checkpointer snapshots graph state at every step, keyed by thread ID. Same thread, the agent remembers; new thread, fresh start. Everything below runs without any model API key, using a stub, because continuity is a state mechanic, not a model behavior. Do not pay for tokens to test plumbing.
 
 ```python
 from langgraph.graph import StateGraph, START, MessagesState
@@ -37,11 +37,11 @@ fresh = app.invoke(
 print("fresh thread holds", len(fresh["messages"]), "messages")
 ```
 
-Checkpoints also buy fault tolerance (failed steps resume without recomputing successful ones), human-in-the-loop (inspect and edit state mid-run), and time travel (replay from any prior checkpoint). Those three are why a checkpointer is infrastructure rather than a convenience. Two operational notes from the docs: `InMemorySaver` evaporates on restart (use `PostgresSaver` or `SqliteSaver` for anything real; call `setup()` once to create tables), and checkpoints accumulate without bound, so set a retention policy on long-lived threads. Keep thread IDs under 255 characters on Postgres backends.
+Checkpoints also buy fault tolerance (failed steps resume without recomputing successful ones), human-in-the-loop (inspect and edit state mid-run), and time travel (replay from any prior checkpoint). Those three are why a checkpointer is infrastructure rather than a convenience. Two operational notes from the docs: the in-memory saver evaporates on restart (use the Postgres or SQLite backends for anything real; run setup once to create tables), and checkpoints accumulate without bound, so set a retention policy on long-lived threads. Keep thread IDs under 255 characters on Postgres backends.
 
 ## 2. Layer two: cross-thread facts with a store
 
-The store is a namespaced key-value memory: tuples like `("ada", "preferences")` scope facts, keys identify them, values are plain dicts with `created_at`/`updated_at` bookkeeping. Same mechanics, no API key:
+The store is a namespaced key-value memory: tuples like ("ada", "preferences") scope facts, keys identify them, values are plain dicts with creation and update timestamps attached. Same mechanics, no API key:
 
 ```python
 from langgraph.store.memory import InMemoryStore
@@ -56,9 +56,9 @@ for item in store.search(("ada",)):
     print(item.namespace, item.key, item.value)
 ```
 
-Three behaviors worth knowing before they surprise you: prefix search matches by prefix (`("ada",)` returns preferences *and* facts), results past `limit` truncate silently (default 10), and ordering is backend-dependent (insertion order in memory, `updated_at` descending on Postgres). If order matters, sort client-side on `updated_at`. If you need to enumerate users rather than memories, `list_namespaces` exists for exactly that.
+Three behaviors worth knowing before they surprise you: prefix search matches by prefix (searching ("ada",) returns preferences *and* facts), results past the limit truncate silently (default 10), and ordering is backend-dependent (insertion order in memory, last-updated-first on Postgres). If order matters, sort client-side on the update timestamp. If you need to enumerate users rather than memories, namespace listing exists for exactly that.
 
-For semantic recall, the store takes an `index` configuration with an embedding provider, after which `search` accepts a natural-language `query` and returns ranked items. That path needs an embedding API and is therefore shown here from the docs rather than executed:
+For semantic recall, the store takes an index configuration with an embedding provider, after which search accepts a natural-language query and returns ranked items. That path needs an embedding API and is therefore shown here from the docs rather than executed:
 
 ```python
 from langchain.embeddings import init_embeddings
@@ -71,7 +71,7 @@ store = InMemoryStore(index={
 hits = store.search(("ada", "facts"), query="where do we deploy?", limit=3)
 ```
 
-Control what gets embedded per item with `index=["field"]` on `put`, or `index=False` for records that should be retrievable but never ranked. Embedding everything is how stores get slow and weird; the `fields` list is a retrieval policy, treat it like one.
+Control what gets embedded per item by naming fields on write, or flag records that should be retrievable but never ranked. Embedding everything is how stores get slow and weird; the field list is a retrieval policy, treat it like one.
 
 ## 3. Combining them: the node that reads memory
 
@@ -114,7 +114,7 @@ app.invoke(
 )
 ```
 
-A companion write path decides what deserves persisting: after turns that establish durable facts, extract and `put` them (a small model call with an extraction prompt), namespaced by user and topic. The discipline from the memory literature applies directly: **store decisions, not transcripts.** Transcripts belong in the checkpointer; conclusions belong in the store. Anything that has not proven durable across at least two turns has not earned a write.
+A companion write path decides what deserves persisting: after turns that establish durable facts, extract and store them (a small model call with an extraction prompt), namespaced by user and topic. The discipline from the memory literature applies directly: **store decisions, not transcripts.** Transcripts belong in the checkpointer; conclusions belong in the store. Anything that has not proven durable across at least two turns has not earned a write.
 
 ## 4. The managed options, honestly compared
 
@@ -131,9 +131,9 @@ The selection logic mirrors last month's substrate matrix: need citations, choos
 
 ## Exercises
 
-1. Give the echo agent a `SqliteSaver` backend, restart the process, and confirm thread `demo-1` still answers from history. Persistence you have not restart-tested is a demo.
-2. Implement the write path: after each turn, ask a cheap model to extract durable `{fact, topic}` pairs and `put` them under `(user_id, topic)`. Then query from a fresh thread and confirm recall without history.
-3. Break scoping on purpose: store two users' conflicting preferences, query with the wrong `user_id`, and confirm isolation. Namespace bugs are privacy bugs; test them like it.
+1. Give the echo agent a SQLite backend, restart the process, and confirm the first thread still answers from history. Persistence you have not restart-tested is a demo.
+2. Implement the write path: after each turn, ask a cheap model to extract durable fact/topic pairs and store them under the user's topic namespace. Then query from a fresh thread and confirm recall without history.
+3. Break scoping on purpose: store two users' conflicting preferences, query with the wrong user ID, and confirm isolation. Namespace bugs are privacy bugs; test them like it.
 
 ## References
 

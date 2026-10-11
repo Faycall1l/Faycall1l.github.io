@@ -21,7 +21,7 @@ The distinction that matters: trimming messages before a model call is **transie
 
 ## 2. Tutorial A: enforce a token budget with valid trimming
 
-The cheapest context policy is a budget: never send more than N tokens of history, keep the system prompt, keep the recent tail, and always produce history the model accepts. `trim_messages` implements exactly this, and its validity rules are worth memorizing: history should start with a human message (or system then human), tool messages must follow the assistant message that requested them, and the system message should survive trimming.
+The cheapest context policy is a budget: never send more than N tokens of history, keep the system prompt, keep the recent tail, and always produce history the model accepts. The trimming function implements exactly this, and its validity rules are worth memorizing: history should start with a human message (or system then human), tool messages must follow the assistant message that requested them, and the system message should survive trimming.
 
 ```python
 from langchain_core.messages import (
@@ -49,9 +49,9 @@ for m in trimmed:
     print(type(m).__name__, "-", m.content[:60])
 ```
 
-With `token_counter=len`, the budget counts messages; with a chat model (or `"approximate"`) it counts tokens. The parameters above are the ones the reference docs recommend as defaults, and deviating from any of them has a known failure attached: dropping `include_system` loses your instructions mid-conversation, dropping `start_on` produces histories some providers reject, and trimming tool-call pairs apart produces orphan tool messages the next call chokes on. That last one deserves emphasis: **never trim between an assistant tool call and its tool result.** Trim around complete pairs.
+With length-based counting, the budget counts messages; with a chat model (or the approximate counter) it counts tokens. The settings above are the ones the reference docs recommend as defaults, and deviating from any of them has a known failure attached: dropping the system-message flag loses your instructions mid-conversation, dropping the human-start rule produces histories some providers reject, and trimming tool-call pairs apart produces orphan tool messages the next call chokes on. That last one deserves emphasis: **never trim between an assistant tool call and its tool result.** Trim around complete pairs.
 
-Where this belongs in an agent: wrap it in the model-call path (LangChain's `wrap_model_call` middleware in recent versions) so the stored history stays complete while each individual call sees a bounded window. Transient control, persistent record. That separation is the whole game.
+Where this belongs in an agent: wrap it in the model-call path (middleware hooks in recent LangChain versions) so the stored history stays complete while each individual call sees a bounded window. Transient control, persistent record. That separation is the whole game.
 
 ## 3. Tutorial B: running summaries that compound
 
@@ -101,12 +101,12 @@ def maybe_summarize(state: State):
 Three details that separate working implementations from broken ones:
 
 1. **The summary prompt must say what to keep.** "Summarize" alone produces narrative; "durable facts, open questions, decisions" produces working memory. The compaction literature (Anthropic, 2025) converges on the same point: summaries need a schema, even an informal one.
-2. **Removal requires the messages reducer.** `RemoveMessage` only works on state declared with `MessagesState` (or `add_messages`). On a plain list field it is appended as a literal message, which I verified the embarrassing way. If your deletions silently do nothing, check the reducer first.
+2. **Removal requires the messages reducer.** Deletion markers only take effect on state declared with MessagesState (or the equivalent message reducer). On a plain list field they are appended as literal messages, which I verified the embarrassing way. If your deletions silently do nothing, check the reducer first.
 3. **Summarize on count or on tokens, never on vibes.** A fixed threshold (messages, or better, measured tokens against the model's window) makes the behavior testable. A common production setting is compacting at 70 to 80 percent of the window while keeping the last 10 to 20 messages verbatim.
 
 ## 4. The UI bug everyone ships once
 
-Summarization permanently rewrites checkpointer state: after compaction, the thread holds `[summary] + [recent N]`, and the originals are gone. That is correct for the model and catastrophic for the product if your interface reads from the same state, because the user's visible history vanishes mid-conversation. The fix, articulated well in LangChain community practice: **keep two records.** An append-only table of every message ever (for the UI, owned by your application code, never rewritten) and the checkpointer's working context (for the model, rewritten freely). One is a log; the other is memory. They serve different readers.
+Summarization permanently rewrites checkpointer state: after compaction, the thread holds the summary plus the recent tail, and the originals are gone. That is correct for the model and catastrophic for the product if your interface reads from the same state, because the user's visible history vanishes mid-conversation. The fix, articulated well in LangChain community practice: **keep two records.** An append-only table of every message ever (for the UI, owned by your application code, never rewritten) and the checkpointer's working context (for the model, rewritten freely). One is a log; the other is memory. They serve different readers.
 
 ## 5. Beyond the window: compaction, notes, and just-in-time context
 
