@@ -36,7 +36,7 @@ If the loop is the engine, tools are the transmission. A tool is a documented fu
 
 - **Descriptions are the API.** The model selects tools by reading their descriptions. Vague descriptions ("searches data") produce vague tool choices; precise ones ("returns current sensor readings for a named site unit, 2024 to present") produce precise ones.
 - **Schemas beat prose.** Typed parameters with examples and constraints outperform free-text arguments. Validate in code and return errors as observations. The loop can recover from a well-described error, but not from a silent wrong call.
-- **Prefer idempotent, scoped tools.** A `get_reading(unit)` tool is safer than a `run_sql(query)` tool. Broad tools (shell, raw SQL, arbitrary HTTP) concentrate risk; narrow tools distribute it.
+- **Prefer idempotent, scoped tools.** A sensor-reading tool is safer than a raw-SQL tool. Broad tools (shell, raw SQL, arbitrary HTTP) concentrate risk; narrow tools distribute it.
 - **Standardize where possible.** The [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) gives tools a uniform discovery and invocation envelope across hosts, which matters as soon as two teams share tools. It does not remove the need for the rules above. A badly described tool is badly described in any protocol.
 
 ## 4. Frameworks, objectively compared
@@ -106,7 +106,7 @@ print(run_agent("Where does Ada work?"))
 print(run_agent("What is sqrt(841)?"))
 ```
 
-Note the two load-bearing lines: the `for` bound (termination policy) and the final abstention string. Real agents fail most often by omitting exactly these.
+Note the two load-bearing lines: the loop bound (termination policy) and the final abstention string. Real agents fail most often by omitting exactly these.
 
 ### 5b. The same agent in LangGraph
 
@@ -149,8 +149,8 @@ print(result["messages"][-1].content)
 
 **Exercises** (each isolates one real-world concern):
 
-1. Add a `recursion_limit` experiment: set it to 3 on a two-hop question and watch the agent fail honestly. Budgets are behavior.
-2. Add an approval gate: wrap `calculator` so expressions containing anything but digits and operators return `"Refused: out-of-scope input."` Tool-level refusal is governance in miniature.
+1. Add a recursion-limit experiment: set it to 3 on a two-hop question and watch the agent fail honestly. Budgets are behavior.
+2. Add an approval gate: wrap the calculator tool so expressions containing anything but digits and operators return `"Refused: out-of-scope input."` Tool-level refusal is governance in miniature.
 3. Swap the model for a local one (e.g. via Ollama) and note what degrades first: usually tool-argument formatting, not reasoning. That observation motivates schema strictness.
 
 ## 6. When not to use an agent
