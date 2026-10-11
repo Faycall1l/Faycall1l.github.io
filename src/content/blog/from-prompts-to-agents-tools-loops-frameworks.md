@@ -34,7 +34,7 @@ Two failure modes of this loop are worth naming early, because every framework f
 
 If the loop is the engine, tools are the transmission. A tool is a documented function the model may invoke: a name, a natural-language description, a parameter schema, and executable code. Practical experience converges on a few rules:
 
-- **Descriptions are the API.** The model selects tools by reading their descriptions. Vague descriptions ("searches data") produce vague tool choices; precise ones ("returns current sensor readings for a named site unit, 2024–present") produce precise ones.
+- **Descriptions are the API.** The model selects tools by reading their descriptions. Vague descriptions ("searches data") produce vague tool choices; precise ones ("returns current sensor readings for a named site unit, 2024 to present") produce precise ones.
 - **Schemas beat prose.** Typed parameters with examples and constraints outperform free-text arguments. Validate in code and return errors as observations. The loop can recover from a well-described error, but not from a silent wrong call.
 - **Prefer idempotent, scoped tools.** A `get_reading(unit)` tool is safer than a `run_sql(query)` tool. Broad tools (shell, raw SQL, arbitrary HTTP) concentrate risk; narrow tools distribute it.
 - **Standardize where possible.** The [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) gives tools a uniform discovery and invocation envelope across hosts, which matters as soon as two teams share tools. It does not remove the need for the rules above. A badly described tool is badly described in any protocol.

@@ -1,4 +1,4 @@
-# Faycal Amrouche — Portfolio
+# Faycal Amrouche | Portfolio
 
 Personal website built with [Astro](https://astro.build). Static single-page portfolio with a blog,
 deployed to GitHub Pages via GitHub Actions.

@@ -2,7 +2,7 @@
 import Base from '../layouts/Base.astro';
 ---
 
-<Base title="Faycal Amrouche — AI Engineer & AI Researcher">
+<Base title="Faycal Amrouche | AI Engineer & AI Researcher">
     <header>
         <h1>Faycal Amrouche</h1>
         <p class="role">AI Engineer · AI Researcher · Enterprise Data Architect</p>
@@ -18,10 +18,10 @@ import Base from '../layouts/Base.astro';
         <section id="about">
             <h2><span class="sec-num">01</span>About</h2>
             <p>
-                I'm an AI engineer and researcher into agent memory, knowledge graphs, and
-                infra that actually holds up. I mostly build agent runtimes, RAG systems,
-                and live telemetry pipelines — right now I'm playing with transactional
-                memory for agents at Insight SFI Research Centre (Dublin).
+                I'm an AI engineer and researcher working on agent memory, knowledge graphs,
+                and reliable infrastructure. I build agent runtimes, RAG systems, and live
+                telemetry pipelines. Currently I research transactional memory for agents
+                at Insight SFI Research Centre (Dublin).
             </p>
         </section>
 
@@ -33,30 +33,30 @@ import Base from '../layouts/Base.astro';
                     <span class="org">Insight SFI Research Centre, University College Dublin</span>
                     <span class="place">Dublin, Ireland · Remote</span>
                     <span class="role-line">AI Agent Systems Researcher <em>(Supervisor: Prof. Boualem Benatallah)</em></span>
-                    <span class="date">Sept 2025 — Present</span>
+                    <span class="date">Sept 2025 to Present</span>
                 </div>
                 <div class="entry-body">
                     <ul>
                         <li>
                             <strong>Agentic memory runtime (Project GMem):</strong>
-                            built a Neo4j-backed memory layer that sanity-checks writes as they come
-                            in, so long-running agents don't drift off, mix up memories, or start
-                            making things up (LangChain/AutoGen).
+                            built a Neo4j-backed memory layer that validates writes as they arrive,
+                            so long-running agents do not drift, mix up memories, or hallucinate
+                            (LangChain/AutoGen).
                         </li>
                         <li>
-                            <strong>Model Context Protocol (MCP) stuff:</strong>
-                            wired up standard MCP servers so agents can call tools, pull in context,
-                            and talk to each other without duct tape.
+                            <strong>Model Context Protocol (MCP) integration:</strong>
+                            set up standard MCP servers so agents can call tools, retrieve context,
+                            and communicate with each other.
                         </li>
                         <li>
                             <strong>Bitemporal audit logs:</strong>
-                            dual-timeline logging so you can replay what the agent did, roll things
-                            back, and actually see what's going on at runtime.
+                            dual-timeline logging to replay agent actions, roll back state, and
+                            inspect runtime behavior.
                         </li>
                         <li>
                             <strong>Schema &amp; rule induction:</strong>
-                            pipelines that mix LLMs with old-school validation to turn messy text
-                            into clean schemas, graphs, and runnable rules.
+                            pipelines that combine LLMs with classical validation to turn unstructured
+                            text into schemas, graphs, and executable rules.
                         </li>
                     </ul>
                 </div>
@@ -71,30 +71,29 @@ import Base from '../layouts/Base.astro';
                     <span class="org">TotalEnergies</span>
                     <span class="place">Timimoun, Algeria</span>
                     <span class="role-line">Industrial AI &amp; Systems Engineering Intern</span>
-                    <span class="date">June 2025 — Sept 2025</span>
+                    <span class="date">June 2025 to Sept 2025</span>
                 </div>
                 <div class="entry-body">
                     <ul>
                         <li>
                             <strong>Field telemetry ingestion:</strong>
-                            put together ingestion microservices (Django, PostgreSQL, Apache
-                            Kafka) that chew through live sensor streams from the gas plant.
+                            built ingestion microservices (Django, PostgreSQL, Apache Kafka)
+                            that process live sensor streams from the gas plant.
                         </li>
                         <li>
-                            <strong>Speeding up reporting:</strong>
-                            cleaned up the reporting pipelines and took admin/compliance
-                            reporting from 15 days down to under an hour.
+                            <strong>Reporting speedup:</strong>
+                            reworked the reporting pipelines and cut admin/compliance
+                            reporting from 15 days to under an hour.
                         </li>
                         <li>
                             <strong>Telemetry chat assistant:</strong>
-                            hacked together a LangChain agent so site engineers can just ask
-                            questions in plain English over live Kafka streams and get quick
-                            diagnostics back.
+                            built a LangChain agent that lets site engineers ask questions in
+                            plain English over live Kafka streams and get quick diagnostics.
                         </li>
                         <li>
                             <strong>Noise filters:</strong>
-                            added simple statistical checks to catch bad sensor readings,
-                            spikes, and junk before they hit the database.
+                            added statistical checks that catch bad sensor readings and spikes
+                            before they reach the database.
                         </li>
                     </ul>
                 </div>
@@ -105,29 +104,29 @@ import Base from '../layouts/Base.astro';
                     <span class="org">Qantra AI</span>
                     <span class="place">Remote, Algeria</span>
                     <span class="role-line">Enterprise Agentic RAG &amp; Software Engineering Intern</span>
-                    <span class="date">May 2025 — Sept 2025</span>
+                    <span class="date">May 2025 to Sept 2025</span>
                 </div>
                 <div class="entry-body">
                     <ul>
                         <li>
                             <strong>Enterprise RAG pipelines:</strong>
-                            built end-to-end RAG setups (LangChain, LlamaIndex) that can dig through
-                            big messy piles of legal, technical, and engineering docs.
+                            built end-to-end RAG systems (LangChain, LlamaIndex) over large
+                            collections of legal, technical, and engineering documents.
                         </li>
                         <li>
                             <strong>Smarter querying:</strong>
-                            broke complex questions into smaller parallel lookups across vector
-                            indexes and Neo4j graphs, with function calling holding it together.
+                            decomposed complex questions into parallel lookups across vector
+                            indexes and Neo4j graphs, coordinated through function calling.
                         </li>
                         <li>
                             <strong>Arabic + English search:</strong>
-                            tuned hybrid vector/keyword search across both languages — faster
-                            retrieval, better hits, async indexing under the hood.
+                            tuned hybrid vector/keyword search across both languages, with
+                            faster retrieval, better relevance, and async indexing.
                         </li>
                         <li>
-                            <strong>Backend glue:</strong>
-                            shipped fast Python/FastAPI endpoints hooking the RAG pipelines up to
-                            company databases and login/security stuff.
+                            <strong>Backend integration:</strong>
+                            shipped Python/FastAPI endpoints connecting the RAG pipelines to
+                            company databases and authentication.
                         </li>
                     </ul>
                 </div>
@@ -137,21 +136,21 @@ import Base from '../layouts/Base.astro';
                 <div class="entry-meta">
                     <span class="org">Schlumberger (SLB)</span>
                     <span class="place">Algiers, Algeria</span>
-                    <span class="role-line">Data Science Intern — Geophysical Time-Series Analytics</span>
-                    <span class="date">Aug 2024 — Sept 2024</span>
+                    <span class="role-line">Data Science Intern, Geophysical Time-Series Analytics</span>
+                    <span class="date">Aug 2024 to Sept 2024</span>
                 </div>
                 <div class="entry-body">
                     <ul>
                         <li>
                             <strong>Signal processing:</strong>
-                            messed with digital filters (Fourier, Butterworth, Wavelet) and
-                            cross-validation for jumpy, non-stationary environmental data.
+                            applied digital filters (Fourier, Butterworth, Wavelet) and
+                            cross-validation to non-stationary environmental data.
                         </li>
                         <li>
                             <strong>Forecasting &amp; risk:</strong>
-                            put together time-series regression and classification models for
-                            key environmental variables, keeping things properly separated so
-                            forecasts stay honest.
+                            built time-series regression and classification models for key
+                            environmental variables, with strict train/test separation to avoid
+                            leakage.
                         </li>
                     </ul>
                 </div>
@@ -224,20 +223,17 @@ import Base from '../layouts/Base.astro';
                     <span class="org">National Higher School of Artificial Intelligence (ENSIA)</span>
                     <span class="place">Algiers, Algeria</span>
                     <span class="role-line">State Engineer Degree in AI &amp; Master of Science in AI (Dual Degree)</span>
-                    <span class="date">Sept 2021 — June 2026</span>
+                    <span class="date">Sept 2021 to June 2026</span>
                 </div>
                 <div class="entry-body">
                     <ul>
                         <li>
-                            <strong>Grad thesis:</strong> grounded memory for agents that holds up under
-                            noisy, long-horizon stress tests (17.88/20) — basically making sure agent
-                            memory doesn't fall apart when things get messy.
+                            <strong>Grad thesis:</strong> grounded memory for agents that stays reliable under
+                            noisy, long-horizon stress tests (17.88/20).
                         </li>
                         <li>
-                            <strong>Fun fact:</strong> ranked 1st in the state of Tipasa
-                            on the national Bac exam (18.84/20), top 1% in the
-                            country — then ended higher education in the top 30%.
-                            Downhill, I know.
+                            <strong>Earlier:</strong> ranked 1st in the state of Tipasa
+                            on the national Bac exam (18.84/20), top 1% in the country.
                         </li>
                         <li>
                             <strong>What I studied:</strong> distributed systems, agentic workflows,
@@ -257,21 +253,21 @@ import Base from '../layouts/Base.astro';
                     <span class="org">National AI &amp; Algorithmic Engineering Hackathons</span>
                     <span class="place">Algeria</span>
                     <span class="role-line">10-time champion (6x 1st place, 3x 2nd place)</span>
-                    <span class="date">Sept 2021 — Present</span>
+                    <span class="date">Sept 2021 to Present</span>
                 </div>
                 <div class="entry-body">
                     <ul>
                         <li>
-                            <strong>Real-time fraud detector (1st place):</strong> mixed Neo4j graph
-                            features with Isolation Forest to flag weird money flows — built in 48 hours.
+                            <strong>Real-time fraud detector (1st place):</strong> combined Neo4j graph
+                            features with Isolation Forest to flag anomalous money flows. Built in 48 hours.
                         </li>
                         <li>
                             <strong>Risk &amp; forecasting engine (1st place):</strong> time-series modeling
-                            + stochastic optimization for sizing up operational risk.
+                            and stochastic optimization to quantify operational risk.
                         </li>
                         <li>
-                            <strong>Graph optimizer (1st place):</strong> graph analytics + constraint
-                            programming for assigning resources fast under tight deadlines.
+                            <strong>Graph optimizer (1st place):</strong> graph analytics and constraint
+                            programming for fast resource assignment under tight deadlines.
                         </li>
                     </ul>
                 </div>
@@ -283,8 +279,8 @@ import Base from '../layouts/Base.astro';
                 </div>
                 <div class="entry-body">
                     <p>
-                        Tech lead &amp; IT manager at GDG/GDSC ENSIA — ran hackathons and tech
-                        meetups, plus hands-on workshops on Docker, backends, and building
+                        Tech lead &amp; IT manager at GDG/GDSC ENSIA. Ran hackathons, tech
+                        meetups, and hands-on workshops on Docker, backends, and building
                         agents with LangChain/LlamaIndex.
                     </p>
                 </div>
@@ -296,9 +292,9 @@ import Base from '../layouts/Base.astro';
                 </div>
                 <div class="entry-body">
                     <ul>
-                        <li><strong>English</strong> — Fluent (IELTS 8.0/9.0)</li>
-                        <li><strong>French</strong> — Fluent (TCF C1)</li>
-                        <li><strong>Arabic</strong> — Native (formal register)</li>
+                        <li><strong>English</strong>: Fluent (IELTS 8.0/9.0)</li>
+                        <li><strong>French</strong>: Fluent (TCF C1)</li>
+                        <li><strong>Arabic</strong>: Native (formal register)</li>
                     </ul>
                 </div>
             </div>

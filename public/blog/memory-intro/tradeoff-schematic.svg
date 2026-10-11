@@ -5,7 +5,7 @@
     </marker>
   </defs>
   <rect x="1" y="1" width="758" height="478" rx="10" fill="#fff" stroke="#e3e3e3"/>
-  <text x="28" y="38" font-family="Source Serif 4, Georgia, serif" font-size="13" letter-spacing="2" fill="#999">AUDITABILITY vs OPERATIONAL COST — SCHEMATIC</text>
+  <text x="28" y="38" font-family="Source Serif 4, Georgia, serif" font-size="13" letter-spacing="2" fill="#999">AUDITABILITY vs OPERATIONAL COST: SCHEMATIC</text>
 
   <!-- axes -->
   <line x1="90" y1="400" x2="720" y2="400" stroke="#111" stroke-width="1.5" marker-end="url(#ax)"/>

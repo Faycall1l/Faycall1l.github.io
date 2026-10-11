@@ -1,6 +1,6 @@
 <svg width="760" height="500" viewBox="0 0 760 500" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Decision matrix: memory substrate fit per requirement">
   <rect x="1" y="1" width="758" height="498" rx="10" fill="#fff" stroke="#e3e3e3"/>
-  <text x="28" y="38" font-family="Source Serif 4, Georgia, serif" font-size="13" letter-spacing="2" fill="#999">WHICH SUBSTRATE FOR WHICH REQUIREMENT — DECISION MATRIX</text>
+  <text x="28" y="38" font-family="Source Serif 4, Georgia, serif" font-size="13" letter-spacing="2" fill="#999">WHICH SUBSTRATE FOR WHICH REQUIREMENT: DECISION MATRIX</text>
 
   <!-- columns x: flat 392, graph 462, hier 532, param 602, adapt 662, latent 722 -->
   <g font-family="Source Serif 4, Georgia, serif" font-size="12" fill="#555" text-anchor="middle">
