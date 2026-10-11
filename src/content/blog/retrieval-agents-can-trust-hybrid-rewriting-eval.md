@@ -5,7 +5,7 @@ date: 2026-09-25
 tags: ["agents", "retrieval", "rag", "context-management", "tutorial"]
 ---
 
-The first three tutorials gave agents a loop, a budget, and a memory. This one gives them evidence worth reasoning over. Retrieval is where agent answers succeed or fail, and the 2026 literature is unusually unanimous on two points: **no single retrieval strategy wins**, and **unevaluated retrieval is decoration**. So this tutorial builds a hybrid retriever from scratch (no API keys, fully runnable), adds rewriting and reranking as explicit policies with measured trade-offs, and wraps it all in an evaluation harness you can steal for any project.
+The first three tutorials gave agents a loop, a budget, and a memory. This one gives them evidence worth reasoning over. Retrieval is where agent answers succeed or fail, and the 2026 literature converges on two points: **no single retrieval strategy wins**, and **unevaluated retrieval is decoration**. So this tutorial builds a hybrid retriever from scratch (no API keys, fully runnable), adds rewriting and reranking as explicit policies with measured trade-offs, and wraps it all in an evaluation harness you can steal for any project.
 
 ## 1. Tutorial A: hybrid search from scratch with RRF
 
@@ -60,21 +60,23 @@ print("BM25 order:", lexical, "->", DOCS[lexical[0]])
 
 Swap the second channel for real dense retrieval (embeddings plus cosine) and fuse with the same `rrf`. The fusion function does not change, which is the point: **channels come and go, fusion stays.** A useful third channel costs nothing: exact-phrase match over the same index, which rescues error codes, names, and version strings that both BM25 tokenization and dense models mangle.
 
-A note on chunking, since retrieval quality is decided at ingestion: keep chunks small enough that one chunk holds one idea (a few hundred tokens is the common default), overlap boundaries so ideas split across edges survive, and attach metadata (source, date, section) at write time. Metadata attached late is metadata reconstructed wrong. These are heuristics with wide support, not laws; your eval harness (section 4) is how you tune them for your corpus.
+A note on chunking, since retrieval quality is decided at ingestion: keep chunks small enough that one chunk holds one idea (a few hundred tokens is the common default), overlap boundaries so ideas split across edges survive, and attach metadata (source, date, section) at write time. Metadata attached late is metadata reconstructed wrong. These are heuristics with wide support, not laws; your measurements in section 4 are how you tune them for your corpus.
 
-## 2. Query rewriting: coverage source, not replacement
+## 2. When rewriting the query helps, and when it hurts
 
-Queries and documents speak different dialects: users ask questions, documents state facts. Rewriting bridges the gap, and the September 2026 evidence pins down exactly how. Tested against a strong baseline (dense retrieval plus cross-encoder reranking plus diversification), no single rewriting method beats the baseline alone, but a **union of complementary methods** gains +12.5 HIT@10 points on enterprise data, because different strategies fail on different questions. And rewriting can hurt: on ambiguous questions the same fusion scored *below* the best solo method. The correct mental model, per the authors: rewriting is a complementary coverage source applied through cost-aware routing, not a default stage.
+Users phrase questions; documents phrase facts. Query rewriting addresses that mismatch. A September 2026 study tested four rewriting methods and two LLM baselines against a strong pipeline (dense retrieval, cross-encoder rerank, diversification) on three datasets. No single method beat the baseline on its own. Combining four of them added 12.5 HIT@10 points on enterprise data, because each method failed on different questions. On ambiguous questions, the same combination scored below the best single method.
+
+The practical reading: rewriting adds coverage at a price, and the price is not always repaid. Budget-matched controls captured only 40 percent of the union's gain, so the gain comes from complementary failures rather than from spending more. The study's router ran rewriting only when the baseline top-1 score was low, keeping about half the full-merge gain while paying for rewrites on under 40 percent of queries. Gate rewriting on confidence instead of running it by default.
 
 Concretely, three rewrite policies worth implementing as tools your agent can choose between:
 
-1. **Decompose.** Split multi-hop questions into sub-questions, retrieve per sub-question, then synthesize. Best when the question names two facts that live in different documents.
-2. **HyDE (hypothetical documents).** Ask the model to write the passage that *would* answer the question, then retrieve by the passage embedding rather than the question embedding. The 2026 comparison prompt is disarmingly plain: "Please write a passage to answer the question. Question: {q} Passage:". Best when vocabulary mismatch is the bottleneck.
-3. **Route, don't always rewrite.** Run the cheap baseline first; rewrite only when its top-1 score is low. Simulation captures about half the full-merge gain while paying rewriting cost on under 40 percent of queries, and automatically declines on question types where rewriting hurts. A confidence gate is three lines and saves real money.
+1. **Decompose.** Split multi-hop questions into sub-questions, retrieve per sub-question, then synthesize. Use it when the question names two facts that live in different documents.
+2. **HyDE (hypothetical documents).** Ask the model to write the passage that *would* answer the question, then retrieve by the passage embedding instead of the question embedding. The 2026 comparison prompt is plain: "Please write a passage to answer the question. Question: {q} Passage:". Use it when vocabulary mismatch is the bottleneck.
+3. **Route first.** Run the cheap baseline, check its top-1 score, rewrite only below a threshold. The threshold is corpus-specific; section 4's exercises show how to find it.
 
 ```python
 def retrieve_with_routing(query, baseline_top1_score, threshold=0.35):
-    """Cost-aware rewriting: pay for HyDE only when baseline looks weak."""
+    """Pay for HyDE only when the baseline looks weak."""
     if baseline_top1_score >= threshold:
         return fused_search(query)              # cheap path
     hypo = llm(f"Please write a passage to answer the question.\n"
@@ -82,15 +84,15 @@ def retrieve_with_routing(query, baseline_top1_score, threshold=0.35):
     return fused_search(query, extra_queries=[hypo, decompose(query)])
 ```
 
-Teach the agent these as separate tools (`search`, `search_with_rewrite`) with honest descriptions, and let the loop decide. Rewriting the agent cannot decline is a tax; rewriting it chooses is a skill.
+Expose rewriting as a separate tool the agent can choose. Forced rewriting on every query is a standing cost. Chosen rewriting is a capability.
 
 ## 3. Reranking: spend compute where it matters
 
 Retrieval optimizes recall over hundreds of candidates; generation needs precision in the top handful. Reranking bridges the two: a cross-encoder (or listwise LLM judge) scores query-document pairs jointly, which is far more accurate than embedding similarity and far too expensive to run over the whole corpus. The standard pipeline is therefore **retrieve-then-rerank**: cheap channels fetch 50 to 100 candidates, the reranker orders them, the top 3 to 5 enter context. Frameworks ship this as one line (Cohere, Jina, and open cross-encoders all plug into the same slot), but understand what the line does: every rerank call is a model inference per pair, so candidate count is a cost dial, and the reranker's own biases (position, verbosity, literal matching, all documented in 2026 work) become your system's biases. Evaluate with the reranker on, never off, since rankings interact with everything downstream.
 
-## 4. Tutorial B: the eval harness that makes all of this real
+## 4. Tutorial B: measure everything
 
-None of the above means anything without measurement. The minimal harness has four metrics and one rule. Recall@k (is the answer present?), citation precision (does each claim point at a supporting span?), abstention rate on unanswerables (does it say "I don't know" when the corpus cannot answer?), and tokens per query (what did quality cost?). The rule, from Ragas' own improvement guides: **change one thing at a time**, naive baseline first, then each addition measured against it. Their worked example is instructive: naive single-shot RAG at 65 percent, agentic multi-search RAG at 88 percent, same corpus, same judge. The gain came from retrieval behavior, not a bigger model.
+None of the above means anything without measurement. The minimal setup has four metrics and one rule. Recall@k (is the answer present?), citation precision (does each claim point at a supporting span?), abstention rate on unanswerables (does it say "I don't know" when the corpus cannot answer?), and tokens per query (what did quality cost?). The rule, from Ragas' own improvement guides: **change one thing at a time**, naive baseline first, then each addition measured against it. Their worked example puts numbers on it: naive single-shot RAG at 65 percent, agentic multi-search RAG at 88 percent, same corpus, same judge. The gain came from retrieval behavior, not a bigger model.
 
 ```python
 def evaluate(retriever, cases):
@@ -116,11 +118,11 @@ candidate = evaluate(hybrid_rrf_retriever, CASES)
 print(baseline, candidate)  # ship it only if recall rises at honest cost
 ```
 
-Include unanswerable cases deliberately. A harness without them rewards guessing, and guessing is the failure mode the abstention metric exists to catch. Report all four numbers on every change: recall, citation precision (spot-checked by hand on a sample; judges help but do not replace reading), abstention, tokens. A retrieval change that gains two recall points at triple the tokens is a cost decision, not a win, and should be presented as one.
+Include unanswerable cases deliberately. Without them, the setup rewards guessing, and guessing is the failure mode the abstention metric exists to catch. Report all four numbers on every change: recall, citation precision (spot-checked by hand on a sample; judges help but do not replace reading), abstention, tokens. A retrieval change that gains two recall points at triple the tokens is a cost decision, not a win, and should be presented as one.
 
 ## Exercises
 
-1. Extend Tutorial A with the exact-phrase third channel and measure recall@5 before and after on 20 hand-written queries, 5 of them unanswerable. Keep the harness; you will reuse it all year.
+1. Extend Tutorial A with the exact-phrase third channel and measure recall@5 before and after on 20 hand-written queries, 5 of them unanswerable. Keep the script; you will reuse it all year.
 2. Implement the confidence router with a real embedder and find your corpus's threshold: sweep 0.2 to 0.5 and plot gain versus rewrite rate. The curve, not the constant, is the deliverable.
 3. Add citation enforcement to generation: require every factual sentence to carry a `[doc n]` marker, then hand-score 20 answers for citation precision. The gap between recall and precision is your next quarter of work.
 
