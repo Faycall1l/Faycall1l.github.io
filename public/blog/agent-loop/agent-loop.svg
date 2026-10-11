@@ -45,8 +45,8 @@
   <path d="M620 156 L620 200 L480 200 L480 220" stroke="#111" stroke-width="1.5" marker-end="url(#arr)"/>
   <!-- Observation -> Context -->
   <line x1="280" y1="263" x2="228" y2="263" stroke="#111" stroke-width="1.5" marker-end="url(#arr)"/>
-  <!-- Context -> Thought (loop back, left side) -->
-  <path d="M140 220 L140 180 L60 180 L60 156" stroke="#111" stroke-width="1.5" marker-end="url(#arr)"/>
+  <!-- Context -> Thought (loop back, straight up the left column) -->
+  <line x1="140" y1="220" x2="140" y2="164" stroke="#111" stroke-width="1.5" marker-end="url(#arr)"/>
   <!-- Observation -> LLM (re-reason) -->
   <line x1="380" y1="220" x2="380" y2="164" stroke="#111" stroke-width="1.5" marker-end="url(#arr)"/>
   <!-- Observation -> Answer -->
