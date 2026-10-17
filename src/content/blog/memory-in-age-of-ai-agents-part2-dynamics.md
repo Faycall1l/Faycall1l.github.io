@@ -1,5 +1,5 @@
 ---
-title: "Memory in the Age of AI Agents, Part II — Dynamics"
+title: "Memory in the Age of AI Agents, Part II: Dynamics"
 description: "How agent memory is formed, evolved, and retrieved: the survey's dynamics half, with the trade-offs that decide which mechanism fits which system."
 date: 2026-10-17
 tags: ["memory", "survey", "agents", "series"]
@@ -11,9 +11,36 @@ All figures are reproduced from Hu et al. (2026), released under CC BY 4.0, via 
 
 ## 1. The lifecycle in one view
 
-![The three dynamics pipelines around a central memory base: formation, evolution, retrieval](/blog/memory-intro/dynamics/lifecycle-pipeline.svg)
+```mermaid
+flowchart LR
+    subgraph Formation["1. Formation"]
+        F1[Summarize<br/>incremental or partitioned]
+        F2[Distill<br/>facts vs strategies]
+        F3[Construct<br/>entities, chunks, provenance]
+        F4[Adjudicate<br/>checked before stored]
+    end
 
-*Original diagram adapted from Figure 8 of Hu et al. (2026). Formation turns raw experience into memory units; evolution maintains the existing store through consolidation, updating, and forgetting; retrieval serves the agent through timed, constructed, and consolidated queries.*
+    subgraph Evolution["2. Evolution"]
+        E1[Consolidate<br/>local, cluster, global]
+        E2[Update<br/>close windows, never delete]
+        E3[Forget<br/>time, frequency, importance]
+    end
+
+    subgraph Retrieval["3. Retrieval"]
+        R1[Timing<br/>always-on or autonomous]
+        R2[Query construction<br/>decompose, rewrite, route]
+        R3[Strategy<br/>lexical, semantic, graph, hybrid]
+        R4[Post-processing<br/>rerank, filter, cite spans]
+    end
+
+    MB[(Memory Base<br/>facts, episodes, derived items<br/>with validity windows)]
+
+    Formation --> MB
+    MB --> Evolution
+    MB --> Retrieval
+```
+
+*Original diagram adapted from Figure 8 of Hu et al. (2026), CC BY 4.0. Formation turns raw experience into memory units; evolution maintains the existing store through consolidation, updating, and forgetting; retrieval serves the agent through timed, constructed, and consolidated queries.*
 
 Three observations before the details. First, the pipelines are not sequential stages of one job: formation and evolution both write to the same store, and retrieval reads from it, so the design question is which mechanisms each pipeline uses and how they interact. Second, the survey's verdict across all three is consistent: naive append fails, and every fix trades something away. Third, the mechanisms below are where the September tutorials connect: summarization is the compaction tutorial, updating is the memory-layer tutorial, and retrieval is the hybrid-search tutorial.
 
