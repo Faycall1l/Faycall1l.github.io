@@ -38,27 +38,45 @@ const links: Array<[string, string]> = [
             rel="stylesheet"
         />
         <link rel="icon" href={base + 'favicon.svg'} />
-        <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
         <script is:inline>
-            mermaid.initialize({
-                startOnLoad: true,
-                theme: 'base',
-                themeVariables: {
-                    fontFamily: 'ui-monospace, Menlo, monospace',
-                    primaryColor: '#1f1f1f',
-                    primaryTextColor: '#eae7df',
-                    primaryBorderColor: '#555',
-                    lineColor: '#a3a3a3',
-                    secondaryColor: '#2b2b2b',
-                    tertiaryColor: '#1f1f1f',
-                    background: '#141414',
-                    mainBkg: '#1f1f1f',
-                    nodeBorder: '#555',
-                    clusterBkg: '#1f1f1f',
-                    titleColor: '#eae7df',
-                    edgeLabelBackground: '#141414'
+            (function () {
+                function render() {
+                    var blocks = document.querySelectorAll('pre[data-language="mermaid"]');
+                    if (!blocks.length) return;
+                    var s = document.createElement('script');
+                    s.src = 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js';
+                    s.onload = function () {
+                        mermaid.initialize({
+                            startOnLoad: false,
+                            theme: 'neutral',
+                            themeVariables: {
+                                fontFamily: 'ui-monospace, Menlo, monospace'
+                            }
+                        });
+                        var nodes = [];
+                        blocks.forEach(function (pre) {
+                            var lines = pre.querySelectorAll('.line');
+                            var text = lines.length
+                                ? Array.prototype.map.call(lines, function (l) {
+                                      return l.textContent;
+                                  }).join('\n')
+                                : pre.textContent;
+                            var div = document.createElement('div');
+                            div.className = 'mermaid';
+                            div.textContent = text;
+                            pre.replaceWith(div);
+                            nodes.push(div);
+                        });
+                        mermaid.run({ nodes: nodes });
+                    };
+                    document.head.appendChild(s);
                 }
-            });
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', render);
+                } else {
+                    render();
+                }
+            })();
         </script>
         <script is:inline>
             try {
