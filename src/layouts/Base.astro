@@ -38,6 +38,28 @@ const links: Array<[string, string]> = [
             rel="stylesheet"
         />
         <link rel="icon" href={base + 'favicon.svg'} />
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+        <script is:inline>
+            mermaid.initialize({
+                startOnLoad: true,
+                theme: 'base',
+                themeVariables: {
+                    fontFamily: 'ui-monospace, Menlo, monospace',
+                    primaryColor: '#1f1f1f',
+                    primaryTextColor: '#eae7df',
+                    primaryBorderColor: '#555',
+                    lineColor: '#a3a3a3',
+                    secondaryColor: '#2b2b2b',
+                    tertiaryColor: '#1f1f1f',
+                    background: '#141414',
+                    mainBkg: '#1f1f1f',
+                    nodeBorder: '#555',
+                    clusterBkg: '#1f1f1f',
+                    titleColor: '#eae7df',
+                    edgeLabelBackground: '#141414'
+                }
+            });
+        </script>
         <script is:inline>
             try {
                 document.documentElement.dataset.theme =
