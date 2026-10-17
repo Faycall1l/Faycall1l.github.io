@@ -50,7 +50,15 @@ const links: Array<[string, string]> = [
                             startOnLoad: false,
                             theme: 'neutral',
                             themeVariables: {
-                                fontFamily: 'ui-monospace, Menlo, monospace'
+                                fontFamily: 'ui-monospace, Menlo, monospace',
+                                fontSize: '20px'
+                            },
+                            flowchart: {
+                                htmlLabels: true,
+                                useMaxWidth: true,
+                                padding: 18,
+                                nodeSpacing: 50,
+                                rankSpacing: 60
                             }
                         });
                         var nodes = [];

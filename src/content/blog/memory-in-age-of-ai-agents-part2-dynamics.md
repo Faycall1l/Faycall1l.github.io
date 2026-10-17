@@ -12,32 +12,24 @@ All figures are reproduced from Hu et al. (2026), released under CC BY 4.0, via 
 ## 1. The lifecycle in one view
 
 ```mermaid
-flowchart LR
+flowchart TB
     subgraph Formation["1. Formation"]
-        F1[Summarize<br/>incremental or partitioned]
-        F2[Distill<br/>facts vs strategies]
-        F3[Construct<br/>entities, chunks, provenance]
-        F4[Adjudicate<br/>checked before stored]
+        F1["<b>Summarize</b><br/><span style='font-size:14px'>incremental or partitioned</span>"] --> F2["<b>Distill</b><br/><span style='font-size:14px'>facts vs strategies</span>"] --> F3["<b>Construct</b><br/><span style='font-size:14px'>entities, chunks, provenance</span>"] --> F4["<b>Adjudicate</b><br/><span style='font-size:14px'>checked before stored</span>"]
     end
 
     subgraph Evolution["2. Evolution"]
-        E1[Consolidate<br/>local, cluster, global]
-        E2[Update<br/>close windows, never delete]
-        E3[Forget<br/>time, frequency, importance]
+        E1["<b>Consolidate</b><br/><span style='font-size:14px'>local, cluster, global</span>"] --> E2["<b>Update</b><br/><span style='font-size:14px'>close windows, never delete</span>"] --> E3["<b>Forget</b><br/><span style='font-size:14px'>time, frequency, importance</span>"]
     end
 
     subgraph Retrieval["3. Retrieval"]
-        R1[Timing<br/>always-on or autonomous]
-        R2[Query construction<br/>decompose, rewrite, route]
-        R3[Strategy<br/>lexical, semantic, graph, hybrid]
-        R4[Post-processing<br/>rerank, filter, cite spans]
+        R1["<b>Timing</b><br/><span style='font-size:14px'>always-on or autonomous</span>"] --> R2["<b>Query construction</b><br/><span style='font-size:14px'>decompose, rewrite, route</span>"] --> R3["<b>Strategy</b><br/><span style='font-size:14px'>lexical, semantic, graph, hybrid</span>"] --> R4["<b>Post-processing</b><br/><span style='font-size:14px'>rerank, filter, cite spans</span>"]
     end
 
-    MB[(Memory Base<br/>facts, episodes, derived items<br/>with validity windows)]
+    MB["<b>Memory Base</b><br/><span style='font-size:14px'>facts, episodes, derived items<br/>with validity windows</span>"]
 
-    Formation --> MB
-    MB --> Evolution
-    MB --> Retrieval
+    F4 --> MB
+    MB --> E1
+    MB --> R1
 ```
 
 *Original diagram adapted from Figure 8 of Hu et al. (2026), CC BY 4.0. Formation turns raw experience into memory units; evolution maintains the existing store through consolidation, updating, and forgetting; retrieval serves the agent through timed, constructed, and consolidated queries.*
