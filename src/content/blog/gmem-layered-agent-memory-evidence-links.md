@@ -5,14 +5,14 @@ date: 2026-08-20
 tags: ["memory", "agents", "technical-report"]
 ---
 
-Most agent memory stores history first and governs it afterward, if at all. GMem reverses the order: every item is checked on the way in, versioned when it changes, and the system answers "I don't know" when the file is empty. This report describes the design, the measured standing against mem0 and cognee, and the approaches that failed. The failures are included because they constrain the design more than the wins do.
+Most agent memory stores history first and governs it afterward, if at all. GMem reverses the order: every item is checked on the way in, versioned when it changes, and the system answers "I don't know" when it has no supporting evidence. This report describes the design, the measured standing against mem0 and cognee, and the approaches that failed. The failures are included because they constrain the design more than the wins do.
 
 **Summary of findings.**
 
 - On a matched 105-question LoCoMo slice, GMem reaches F1 0.423 against mem0's 0.435 and the highest exact match of the three (0.247 vs 0.148 vs 0.037).
 - On HaluMem QA (70 questions) GMem leads overall (0.457 vs 0.400 and 0.386) and abstains correctly on all 13 boundary probes.
 - Off the tuning slice, on the full 1,986-question corpus, the lead reverses: GMem F1 is 0.300, behind mem0 (0.411) and behind a no-memory base model given raw context (0.390). The headline claim cannot be F1 leadership.
-- The measured defensible edges are exact match, abstention honesty (0.991 vs 0.959 for raw context), and auditable provenance at roughly 1,350 context tokens per question.
+- The measured defensible edges are exact match, abstention honesty (0.991 vs 0.959 for raw context), and cited answers from roughly 1,350 context tokens per question.
 
 ## 1. Problem
 
@@ -62,7 +62,7 @@ flowchart TB
     class E1,S1 l0
 ```
 
-Every claim returned from L2 or L1 reaches L0 by following the double arrows, at most three hops. Links between layers use a closed, domain-free vocabulary: sourcing (proposition to span), derivation, gist membership, lateral relation, community grouping, and temporal succession with lineage. Every distilled proposition links to at least one source span; every synthesis lists its full source set. Any returned claim drills to its source span in at most three steps.
+Links between layers use a closed, domain-free vocabulary: sourcing (proposition to span), derivation, gist membership, lateral relation, community grouping, and temporal succession with lineage. Every distilled proposition links to at least one source span; every synthesis lists its full source set. Following the double arrows, any returned claim drills to its source span in at most three steps.
 
 ### 2.1 The write path
 
@@ -81,11 +81,11 @@ flowchart LR
     AD -- "otherwise" --> EN["ENDORSE<br/>new proposition"]
 ```
 
-Three design decisions, each pinned by a test in the conformance suite:
+Three design decisions:
 
-- **The span gate is a hard threshold, and it was measured.** The gate requires 60 percent of object tokens to occur in the source span, with all subject tokens present. A pilot sweep put 0.5 at the same recall as 0.6 but precision 0.82 versus 1.00, so 0.6 is the default.
+- **The span gate is a threshold chosen by sweep.** The gate requires 60 percent of object tokens to occur in the source span, with all subject tokens present. A pilot sweep put 0.5 at the same recall as 0.6 but precision 0.82 versus 1.00, so 0.6 is the default, pinned by a test.
 - **Closure uses the system clock, never model time.** When a conflicting value arrives, the old proposition's validity window closes at write time. A hallucinated date cannot rewrite history.
-- **Gate failures are extraction misses, never repairs.** The system does not guess its way into storing something the source does not support.
+- **Gate failures are extraction misses, never repairs.**
 
 Governance is packaged as priority-ordered norms with a corroboration lifecycle (for example, dosage-required and recalled-drug-forbidden in a healthcare adapter, citation-shaped identity in a legal one, per-service deploy succession and main-branch-protected in an engineering one). The core stays domain-blind: it reasons about layers, never about patients, drugs, or contracts.
 
@@ -93,13 +93,13 @@ Governance is packaged as priority-ordered norms with a corroboration lifecycle 
 
 Reading is read-only and cited, through seven operations: overviews that start at syntheses, drill-downs that expand syntheses into propositions and then spans, coverage checks in the reverse direction, lateral walks with temporal and namespace filters, faceted slices by kind or provenance, time travel that reconstructs past states from validity windows, and provenance traces back to source spans for any returned item.
 
-The consultation procedure is deliberately small and deterministic. It seeds entities by name overlap (at most 6), traverses at most 2 hops, filters on namespace equality and the active predicate `vf ≤ t < vt`, ranks the top 30 by a lexical score plus bonuses (subject, content, morphology, date, temporal intent, proximity), and abstains on an empty view. Temporal bonuses fire only when a nonzero content signal is present, a rule that came out of the failure analysis in §4. Empty evidence returns an explicit empty with a reason. It never synthesizes filler.
+Consultation is deterministic. It seeds entities by name overlap (at most 6), traverses at most 2 hops, filters on namespace equality and the active predicate `vf ≤ t < vt`, ranks the top 30 by a lexical score plus bonuses (subject, content, morphology, date, temporal intent, proximity), and abstains on an empty view. Temporal bonuses fire only when a nonzero content signal is present, a rule that came out of the failure analysis in §4. An empty view returns an explicit empty with a reason, never filler.
 
 Retention is tiered without deletion: hot and cold tiers hold consultation cost flat while every byte stays drillable. The only destructive operation, `forget`, removes claims, never log entries.
 
 ## 3. Measured standing
 
-All numbers below come from the project's committed results ledger. Every external comparison uses the same harness, the same seed (42), the same questions, a shared answer composer and a shared token-F1/exact-match scorer. Figures marked slice are diagnostic and carry no interval; only full runs are citable.
+All numbers below come from the project's committed results ledger. Every external comparison uses the same harness, the same seed (42), the same questions, a shared answer composer and a shared token-F1/exact-match scorer. Single-conversation slices are diagnostic and carry no interval; only full runs do.
 
 ### 3.1 LoCoMo, matched slice
 
@@ -113,7 +113,7 @@ October 2026 remeasure on LoCoMo full-QA, conversation 30 (105 questions):
 
 ![Bar chart of F1 and exact match on LoCoMo 105 questions for gmem, mem0 and cognee](/blog/gmem/locomo-105.svg)
 
-The gap to mem0 on F1 is 0.012, about two questions. cognee fell from 0.443 to 0.321 on version 1.6.2 because its temporal search path raises `QueryInterval` validation errors and degrades silently; that is an upstream bug, not a harness artifact, and it is recorded in the log rather than hidden.
+The gap to mem0 on F1 is 0.012, about two questions. cognee fell from 0.443 to 0.321 on version 1.6.2 because its temporal search path raises `QueryInterval` validation errors and degrades silently; that is an upstream bug, not a harness artifact.
 
 ### 3.2 HaluMem, where abstention is scored
 
@@ -132,7 +132,7 @@ HaluMem QA probes whether a memory system answers, corrects, or refuses. Twenty 
 
 Per-slice notes:
 
-- **Boundary is a tie, and mem0's tie is accidental.** mem0 abstains most often (0.629) because its retriever frequently returns nothing, which is correct by luck. GMem abstains on all 13 boundary probes through the gate. The difference only shows when the retriever returns something plausible.
+- **Boundary is a tie, and mem0's tie is accidental.** mem0 abstains most often (0.629) because its retriever frequently returns nothing, which is correct by luck. GMem scores 13 of 13 on this slice. The two only separate when a retriever returns something plausible.
 - **Conflict belongs to cognee.** Its graph context carries corrections that GMem's composer misses. Under a strict F1 scorer, GMem's conflict score was 0.048; four misses were correct but verbose and were recovered by a fairer polarity-plus-content scorer.
 - **Dynamic update is a three-way tie at 0.273.** §4.5 traces this to a single mechanism.
 - **Over-answering is not the disease.** On this slice, every GMem abstention had non-empty evidence. The conservatism is on the composer side, facing retrieved but diffuse evidence.
@@ -141,7 +141,7 @@ On the doubled-length, distractor-packed variant (HaluMem-Long, 81 questions), t
 
 ### 3.3 Off the tuning slice
 
-The two tables above are on the conversation the system was tuned against. The ledger also holds what happens when that stops being true.
+The LoCoMo table above is on the conversation the system was tuned against. The next two tables are not.
 
 | Conversation | gmem F1 / EM | mem0 F1 / EM | cognee F1 / EM |
 |---|---|---|---|
@@ -172,7 +172,7 @@ The 1,986-question GMem run produced a classified failure split:
 
 ![Horizontal bars of failure categories: temporal_drop 649, abstention_miss 495, resolution_split 165, extraction_miss 59, retrieval_miss 7](/blog/gmem/fail-split.svg)
 
-Of 1,375 classified failures, only 7 are retrieval misses and 59 are extraction misses. The mass is in temporal handling (649) and composer abstentions (495). The system is not failing to find the memory; it is failing to use it.
+Of 1,375 classified failures, only 7 are retrieval misses and 59 are extraction misses. The mass is in temporal handling (649) and composer abstentions (495). Most failures come from composing and dating answers, not from finding or extracting the fact, though coverage@K below shows evidence is still incomplete.
 
 A 20-case manual audit of strong-coverage abstentions, each with evidence read in full, gives the mechanisms:
 
@@ -219,7 +219,7 @@ The SLM tax is about 0.06 F1 with coverage intact (3 extraction misses, same as 
 
 The competitor cells on this hardware are blocked, and the reasons are specific. mem0's extraction scaffold alone is about 7.9K input tokens (a 12K server context is required; the T4 ceiling is 8K usable). Qwen malforms mem0's update-decision envelope about 21 times per 369-turn run, silently dropping facts. cognee's single subtasks exceed a 100-second origin timeout at T4 throughput. A vendor system needs its vendor's native context and throughput, not just ours.
 
-### 3.7 Retrieval ceiling: a probe that never answers a question
+### 3.7 Retrieval ceiling
 
 LoCoMo QA rewards end-to-end answering and never probes the retriever. The LoCoMo-Plus probe isolates first-stage retrieval on 401 cue-to-trigger pairs with a closed corpus and the same embedder (bge-small-en-v1.5):
 
@@ -253,13 +253,13 @@ Exact match understates capability. Re-scoring the compact-configuration 12-ques
 
 ## 4. What did not work
 
-The ledger records negatives with the same care as wins, because each one removed an option from the design space. The repository's negatives file lists twelve earlier null results (span threshold 0.5, destructive succession, dual grounding paths, per-sentence LLM ingestion at 700 or more calls per conversation, a rule-based extractor yielding 5 propositions from 369 turns, a gate ablation that tied at 1.00 on clean data because nothing hallucinated, and others). The restudy round adds the following.
+Each negative below removed an option from the design space. The repository's negatives file lists twelve earlier null results (span threshold 0.5, destructive succession, dual grounding paths, per-sentence LLM ingestion at 700 or more calls per conversation, a rule-based extractor yielding 5 propositions from 369 turns, a gate ablation that tied at 1.00 on clean data because nothing hallucinated, and others). The restudy round adds the following.
 
 ### 4.1 Retrieval and ranking
 
 - **Semantic reranking.** Local embedding fusion wired end to end: within run variance of baseline at roughly twice the wall time. Default stays off. Retrieval breadth was adequate; precision into the top ranks and composer focus were the bottlenecks, in that order. At micro scale the same fusion added 100 to 400 times the latency for no recall delta.
 - **Query expansion.** LLM terms appended for recall: F1 fell while one correct abstention flipped to a confident wrong answer. Query drift in, honesty out. Rejected as a default.
-- **Unconditional temporal bonuses.** Dated noise outscored an undated content-gold fact because the date, past, future and event bonuses fired on any dated fact ("When did Gina get her tattoo?" lost to other dated Gina facts). Gating all four on a nonzero content signal moved the 12-question slice from 0.719 to 0.749 and abstention misses from 1 to 0. This one is a win that came out of a negative.
+- **Unconditional temporal bonuses.** Dated noise outscored an undated content-gold fact because the date, past, future and event bonuses fired on any dated fact ("When did Gina get her tattoo?" lost to other dated Gina facts). Gating all four on a nonzero content signal moved the 12-question slice from 0.719 to 0.749 and abstention misses from 1 to 0.
 - **Query-date proximity.** A decaying boost for evidence near the question's own date fixed the motivating case at retrieval level (gold material now top-4) but left end-to-end HaluMem flat at 0.457 because the composer still picked line 5 over lines 1 to 4. Selection among good evidence is the exposed bottleneck.
 
 ### 4.2 Composition
@@ -293,7 +293,7 @@ The obvious fix, a head-verb canonicalization, was tried and reverted:
 | Head-verb canon, unguarded | 0.404 | 0.528 |
 | Head-verb canon, guarded | 0.277 | 0.665 |
 
-The unguarded rule nearly doubles succession and costs 0.19 F1, because relations packed with their complements make "same act" undecidable lexically. Embedding-tier or slot-aware succession remains open, and this is the result most likely to turn into a future paper section.
+The unguarded rule raises succession from 0.234 to 0.404 and costs 0.19 F1, because relations packed with their complements make "same act" undecidable lexically. Embedding-tier or slot-aware succession remains open.
 
 ### 4.6 The pattern
 
@@ -301,7 +301,7 @@ Prompt-level rules are noise-fragile, lexical fixes fail where the phenomenon is
 
 ## 5. Position against related systems
 
-Three 2025 to 2026 systems bound the design space. All three were checked against the full paper text (arXiv HTML versions).
+Three 2025 to 2026 systems are the closest relatives. All three were checked against the full paper text (arXiv HTML versions).
 
 **A-MEM** (Xu et al., 2025) builds Zettelkasten-style atomic notes with LLM-generated context, links and memory evolution. It reports an 85 to 93 percent token reduction against baselines on LoCoMo. Every interaction becomes a note, with no admission step. Evolution is destructive: the evolved note "replaces the original memory", with a timestamp but no validity interval. Notes keep their original interaction content, which gives partial provenance. Its metrics are F1, BLEU, ROUGE, METEOR and SBERT similarity; the LoCoMo adversarial category is a question type, not a memory-side abstention mechanism. The two ideas compose rather than compete: A-MEM's linking could sit above an adjudicated store.
 
@@ -322,8 +322,8 @@ Memanto is the closest relative on the write side, so the claim here is narrower
 ## 6. Threats to validity
 
 - **Shared composer and scorer.** Every external row measures retrieval under GMem's composer and token-F1/EM scorer on conversation-level slices. It is never a vendor end-to-end result. mem0's published 92.5 headline is managed-platform only and is not comparable.
-- **Tuning leakage.** The system was developed against conversation 30. The sub-corpus lead reverses off-slice, as §3.3 shows. All forward claims use full-suite numbers only.
-- **Version drift.** mem0 moved from 0.471 to 0.340 to 0.435 across 2.x versions, and cognee from 0.443 to 0.321. Pins are recorded and results are dated.
+- **Tuning leakage.** The system was developed against conversation 30. The tuning-slice lead reverses off-slice, as §3.3 shows. All forward claims use full-suite numbers only.
+- **Version drift.** mem0 moved from 0.471 to 0.340 to 0.435 across versions, and cognee from 0.443 to 0.321. Pins are recorded and results are dated.
 - **Judge bias.** Same-model judging is declared; pinned judge versions and span reporting reduce it but do not eliminate it.
 - **Errors counted as misses.** 140 of 1,986 cognee questions errored on transient provider resets and one ingest failed, so its true capability reads slightly higher by an unknowable amount.
 - **Single extractor, English only, no distributed deployment, no privacy or access-control evaluation.**
