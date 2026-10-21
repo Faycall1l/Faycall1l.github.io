@@ -5,11 +5,11 @@ date: 2026-10-21
 tags: ["memory", "agents", "neuroscience", "survey"]
 ---
 
-Agent memory fails in four ways that get discussed as separate problems: drift, poisoning, catastrophic forgetting and hallucination. This post argues they are one problem seen from four sides. Several stored or in-context states compete, one wins, and nothing in the system tracks that a contest happened. Perceptual science has studied exactly this situation for a century, under the name multistability. I surveyed the literature to see what it suggests for memory and context design. The short answer: the pieces exist in separate fields, and I did not find anyone who has put them together.
+Drift, poisoning, catastrophic forgetting and hallucination usually get their own papers, their own benchmarks and their own fixes. Read enough of them and they start to look alike. Two things want the same slot in memory or context, one of them wins, and nothing in the system records that there was a fight. Vision science has a name for that situation, multistability, and decades of models for it. I read through the literature to see what it offers agent memory, and this post is what I found. The ingredients exist, spread across separate fields. I could not find anyone who has put them together.
 
-This is a survey with opinions, not a result. I ran no new experiments for it. Where a claim rests on an abstract only, I say so.
+Treat this as a survey with opinions. I ran no new experiments for it, and wherever a claim rests on an abstract alone, I say so. Where a paper has a figure or table that backs a point, I point to it, so you can check the source instead of taking my word.
 
-## 1. Four failures, one shape
+## 1. Four failures with one thing in common
 
 | Failure | What it looks like | What is competing |
 |---|---|---|
@@ -18,92 +18,86 @@ This is a survey with opinions, not a result. I ran no new experiments for it. W
 | Catastrophic forgetting | New learning overwrites old knowledge | New traces versus old traces in a shared store |
 | Hallucination | A confident answer with no support | A fluent completion versus nothing stored |
 
-In each row two or more states want the same slot, and the output looks equally confident whichever wins. That is why output-level monitoring (watching entropy, asking the model if it is sure) struggles with all four.
+In every row the output looks equally confident whichever side wins. That is why watching entropy or asking the model whether it is sure helps so little: the signal you would want is exactly the one that is missing.
 
-## 2. What multistability is
+## 2. What the perception people worked out
 
-Show someone a Necker cube or two different images, one per eye. They do not see a blend. They see one interpretation, which then flips to the other, over and over. The flipping has structure:
+Put a Necker cube in front of someone, or show each eye a different image. They never see a blend. They see one interpretation, and after a while it flips to the other, then flips back. The flips follow rules:
 
-- **Dwell times are variable.** Alternations are stochastic, and noise appears to play a fundamental role in setting their timing ([Brascamp et al., 2006](https://doi.org/10.1167/6.11.8); [Kim et al., 2005](https://doi.org/10.1016/j.visres.2005.08.009)).
-- **The winner fatigues.** Models of rivalry give adaptation a central role in producing the switches ([Theodoni et al., 2011](https://doi.org/10.3389/fnhum.2011.00145)).
-- **There is memory.** Rivalry shows hysteresis, so the next percept depends on the recent one ([Wilson, 2007](https://doi.org/10.1016/j.visres.2007.07.007)).
-- **It looks like inference.** Gershman, Vul and Tenenbaum argue that switching, patchy percepts, fusion and traveling waves can be explained as MCMC sampling over simple graphical models ([2012](https://dspace.mit.edu/handle/1721.1/70125)). Moreno-Bote, Knill and Pouget report that how long each percept dominates follows what Bayesian sampling predicts ([PNAS 2011](https://pmc.ncbi.nlm.nih.gov/articles/PMC3145684)). A separate line argues that predictive coding explains rivalry (Hohwy, Roepstorff and Friston, [2008](https://doi.org/10.1016/j.cognition.2008.05.010)).
+- **Timing is noisy.** Dwell times vary from flip to flip, and noise seems to be a fundamental ingredient, not a nuisance ([Brascamp et al., 2006](https://doi.org/10.1167/6.11.8); [Kim et al., 2005](https://doi.org/10.1016/j.visres.2005.08.009)).
+- **The winner gets tired.** Models of rivalry lean on adaptation to explain why the dominant percept eventually loses ([Theodoni et al., 2011](https://doi.org/10.3389/fnhum.2011.00145)).
+- **There is memory.** The next percept depends on the recent one, which is hysteresis ([Wilson, 2007](https://doi.org/10.1016/j.visres.2007.07.007)).
+- **It looks like inference.** Gershman, Vul and Tenenbaum argue that switching, patchy percepts, fusion and traveling waves all fall out of MCMC sampling over simple graphical models ([2012](https://dspace.mit.edu/handle/1721.1/70125)). Moreno-Bote, Knill and Pouget report that the share of time each percept dominates follows what Bayesian sampling predicts ([PNAS 2011](https://pmc.ncbi.nlm.nih.gov/articles/PMC3145684)), and Hohwy, Roepstorff and Friston make the predictive coding version of the argument ([2008](https://doi.org/10.1016/j.cognition.2008.05.010)).
 
 ![Simulated alternation between two percepts: each dominates in turn while the dominant one's adaptation builds up, with noise jittering the switch times](/blog/multistability/rivalry-dynamics.svg)
 
-I read the abstracts of the Gershman paper and the PNAS paper summary, not their full text. I could not confirm that the Gershman paper makes dwell-time or hysteresis claims, so I do not attribute those to it.
+*See Figure 1 in Moreno-Bote et al. for the bistable stimulus they used, and Figure 5 for the attractor-network model that reproduces their dominance statistics.*
+
+I only read the abstract of the Gershman paper and a summary of the PNAS one. I could not confirm that Gershman makes dwell-time or hysteresis claims, so I am not attributing those to it.
 
 ![Double-well landscape before and after evidence tilts it, showing the state staying in the old basin](/blog/multistability/energy-landscape.svg)
 
-The two figures above are my own schematics, not data from the cited papers. The useful reading for engineers: the brain does not resolve an ambiguous input once and for all. It keeps a distribution over interpretations, shows one at a time, and lets evidence, fatigue and noise move the winner.
+The two figures above are my own schematics, not data from the cited papers. What I take from the literature as an engineer: the brain does not settle an ambiguous input once. It keeps a distribution over readings, shows you one, and lets evidence, fatigue and noise move the winner.
 
-## 3. The same dynamics already live inside LLMs
+## 3. LLMs do this too
 
-This is the part that surprised me. The vocabulary of multistability is already being used for language models, just not for memory design. One caution: a 2026 preprint that framed knowledge conflict and hallucination as attractor-basin competition has since been withdrawn by its author for premature posting, so I do not rely on it.
+The vocabulary already shows up in work on language models, just not in memory design. A caution first: a 2026 preprint that described knowledge conflict and hallucination as attractor-basin competition was withdrawn by its author for premature posting, so I am not relying on it.
 
-- **Metastable states in attention.** In modern Hopfield networks, the update rule is equivalent to transformer attention, and the energy landscape has fixed points that average over all stored patterns, fixed points that average over a subset, and fixed points that store a single pattern (Ramsauer et al., [Hopfield Networks is All You Need](https://arxiv.org/abs/2008.02217)). Blended retrievals are a built-in outcome of the retrieval mechanism, not a bug.
-- **Winner-take-all in vision-language models.** On 29 bistable images with 116 manipulations, most of the twelve models tested strongly preferred one interpretation (Panagopoulou et al., [Evaluating VLMs on Bistable Images](https://arxiv.org/abs/2405.19423)). In a controlled illusion probe, models often keep their answer when the illusion is inverted, which raises the question of whether they perceive or recall (Sun et al., [VI-Probe](https://arxiv.org/abs/2601.22150)).
-- **Hysteresis in conversation.** Shnaidman's [Reset Is Not Recovery](https://arxiv.org/abs/2609.33672) measures it directly. After a user repeatedly pushes a wrong answer and then stops, ordinary reset leaves a residue. Across 14 model and dataset pairs the mean gap to a clean-context baseline is 0.303, and the post-reset wrong-following rate is 41.2%. A same-length neutral history produces a gap of -0.007, so the effect is about content, not length.
+- **Blended retrieval is built in.** In modern Hopfield networks, the update rule is equivalent to transformer attention. The energy landscape has fixed points that average over all stored patterns, ones that average over a subset, and ones that store a single pattern ([Ramsauer et al., Hopfield Networks is All You Need](https://arxiv.org/abs/2008.02217)). Getting a blend back is a property of the mechanism, not a glitch.
+- **Vision-language models pick one reading and stick.** Across 29 bistable images and 116 manipulations, most of twelve models strongly favored a single interpretation ([Panagopoulou et al., Evaluating VLMs on Bistable Images](https://arxiv.org/abs/2405.19423)). See Figure 2 there, panel (a), for the per-image preference, and Figure 1 for the duck-rabbit example. A separate probe asks whether models perceive or just recall, since they often keep their answer when an illusion is inverted ([Sun et al., VI-Probe](https://arxiv.org/abs/2601.22150)).
+- **Conversations have hysteresis.** Shnaidman's [Reset Is Not Recovery](https://arxiv.org/abs/2609.33672) measures it directly. A user repeatedly pushes a wrong answer and then stops. Across 14 model and dataset pairs the mean gap to a clean-context baseline is 0.303, and the model still follows the wrong answer 41.2% of the time after a reset. A same-length neutral history gives a gap of -0.007, so this is about content, not length. See Table 2 for the gap by model.
 
-That last paper also tests repairs, and the pattern is the most design-relevant result I found:
-
-| Repair | Pairs recovered (of 14) |
-|---|---|
-| Ordinary reset, user retraction, system reset | 2 each |
-| Self-verification | 3 |
-| Neutral summarization | 11 |
-| Factual-state reconstruction | 12 |
-| Truncation, fresh-context deletion | 14 (oracle conditions) |
+The same paper tests repairs, and the pattern is the most useful thing I found (Table 4 has the counts):
 
 ![Bar chart of how many of 14 model-dataset pairs each repair recovers](/blog/multistability/repair-recovery.svg)
 
-Telling the model to forget does almost nothing. Rebuilding the state from facts works much better. Removing the pressure turns entirely works best, and the authors are clear that deletion is an upper bound, not a deployable fix. Partial removal helps only partway: the mean gap was 0.462 with full history, 0.278 after dropping medium and strong turns, and 0.001 after dropping all pressure turns. The study uses multiple-choice questions, seven open-weight models, templated pressure and a single seed, so treat the numbers as a demonstration of the effect, not a general rate.
+Telling the model to forget does almost nothing. Rebuilding state from facts does much better. Removing the pressure turns entirely works best, but the authors are clear that deletion is an upper bound, not something you can deploy. Partial removal only helps partway: the mean gap was 0.462 with the full history, 0.278 after dropping the medium and strong turns, and 0.001 after dropping all of them (Table 5). The setup is multiple-choice questions, seven open-weight models, templated pressure and a single seed. Read it as a demonstration of the effect, not a general rate.
 
-## 4. What this suggests for each failure
+## 4. What each failure needs
 
 ### Drift: keep state, not history
 
-If instructions to disregard earlier turns barely work, the history itself is the problem. The design lever is to stop treating the transcript as the state. Keep a small set of validated facts with validity windows, and rebuild the working context from them each turn. This is where neutral summarization and factual-state reconstruction win in the table above. Bitemporal stores do this by closing a validity window on update instead of deleting, so "what is true now" and "what was said" stay separable.
+If telling a model to disregard earlier turns barely works, the transcript is the problem. Stop treating it as the state. Keep a small set of validated facts with validity windows, and rebuild the working context from them each turn. That is where neutral summarization and factual-state reconstruction win in the chart above. Bitemporal stores already work this way: an update closes a window instead of deleting, so "what is true now" and "what was said" stay separate.
 
-### Poisoning: gate on source, not on content
+### Poisoning: gate on the source
 
-[MemProbe](https://arxiv.org/abs/2609.30558) (Ding et al.) is the most useful recent evaluation here. It turns cognitive-memory paradigms (interference, misinformation, consolidation strength, reconsolidation window) into tests on 56 episodes across six memory systems. Overall scores ranged from 41.5% (Mem0) to 88.4% (A-MEM), against 88.8% for full context. The weak spot was source fidelity: 17.7% for Mem0, 41.9% for Graphiti and 66.1% for full context. A memory that cannot tell who said something cannot defend itself against a confident false claim. The design lever is an admission step that records source and refuses or demotes claims that conflict with a well-supported memory unless the evidence is strong. MemProbe's own framing of "consolidation strength" says the same: well-supported memories should resist weak challenges and still yield to reliable ones.
+[MemProbe](https://arxiv.org/abs/2609.30558) (Ding et al.) is the most useful recent evaluation here. It turns cognitive-memory paradigms (interference, misinformation, consolidation strength, reconsolidation window) into tests, and runs 56 episodes through six memory systems. Overall scores run from 41.5% (Mem0) to 88.4% (A-MEM), against 88.8% for full context. Source fidelity is the weak spot: 17.7% for Mem0, 41.9% for Graphiti and 66.1% for full context (Table 5). A memory that cannot tell who said something has no defense against a confident false claim. So the admission step should record the source, and refuse or demote claims that contradict a well-supported memory unless the evidence is strong. MemProbe's "consolidation strength" paradigm says the same thing: well-supported memories should resist weak challenges and still give way to reliable ones. Figure 5 there plots each system on a stability and plasticity plane, which is a good picture of the tradeoff.
 
-### Catastrophic forgetting: two stores and selective replay
+### Catastrophic forgetting: two stores, selective replay
 
-The neuroscience answer is old. McClelland, McNaughton and O'Reilly argued in 1995 that the brain needs a fast hippocampal store and a slow neocortical one, because a single dense store learning quickly overwrites itself ([Psychological Review](https://doi.org/10.1037/0033-295x.102.3.419)). Fontaine and a co-author built a predictive-coding model of the neocortex that found the matching capacity limit: episodic-like recall emerged from a few examples, then disappeared when trained on many, because dense overlapping representations hold only a limited number of individual memories ([2509.01987](https://arxiv.org/abs/2509.01987)).
+The neuroscience answer is old. McClelland, McNaughton and O'Reilly argued in 1995 that the brain needs a fast hippocampal store and a slow neocortical one, because a single dense store that learns fast overwrites itself ([Psychological Review](https://doi.org/10.1037/0033-295x.102.3.419)). A recent predictive-coding model of the neocortex found the matching capacity limit. Fontaine and a co-author saw episodic-like recall emerge from a few examples and vanish with many, because dense overlapping representations can only hold so many individual memories ([2509.01987](https://arxiv.org/abs/2509.01987)).
 
-Two cautions from the replay literature:
+Two cautions from the replay work:
 
-- Replay is not automatically good. In a surprise-gated memory study, offline replay recovered 17.7 and 51.3 points of retention on the oldest classes for two backbones, but replaying only a recent window was worse than no replay at all (Mouchon, [2606.31495](https://arxiv.org/abs/2606.31495), ImageNet, single seed).
-- Timing matters. Forgetting in LLMs appears to follow an Ebbinghaus-style curve, which motivates scheduling replay against the model's own notion of time instead of fixed step counts (Feng et al., [FOREVER](https://arxiv.org/abs/2601.03938)).
+- Replay is not automatically good. In a surprise-gated memory study, offline replay recovered 17.7 and 51.3 points of retention on the oldest classes for two backbones, but replaying only a recent window was worse than no replay ([Mouchon, 2606.31495](https://arxiv.org/abs/2606.31495); ImageNet, single seed).
+- Timing matters. Forgetting in LLMs seems to follow an Ebbinghaus-style curve, which is why Feng et al. schedule replay against the model's own sense of time instead of fixed step counts ([FOREVER](https://arxiv.org/abs/2601.03938)).
 
-The design lever for agents is to never overwrite. Keep an append-only episode layer, distill into a second layer under admission rules, and consolidate selectively. Many 2026 systems now do some version of this, under names like sleep, dreaming and Hebbian consolidation (Xie's [SleepGate](https://arxiv.org/abs/2603.14517), Potineni et al.'s [EngramRAG](https://arxiv.org/abs/2609.32049), Zhu et al.'s [HeLa-Mem](https://arxiv.org/abs/2604.16839), Mody et al.'s [CraniMem](https://arxiv.org/abs/2603.15642)). SleepGate reports a drop in the interference horizon from O(n) to O(log n) and near-perfect retrieval, but on a 793K-parameter model, so it is a mechanism claim, not a field result.
+For agents, the lever is to never overwrite: an append-only episode layer, a distilled layer behind admission rules, and selective consolidation. A lot of 2026 systems now do some version of this under names like sleep, dreaming and Hebbian consolidation (Xie's [SleepGate](https://arxiv.org/abs/2603.14517), Potineni et al.'s [EngramRAG](https://arxiv.org/abs/2609.32049), Zhu et al.'s [HeLa-Mem](https://arxiv.org/abs/2604.16839), Mody et al.'s [CraniMem](https://arxiv.org/abs/2603.15642)). SleepGate claims the interference horizon drops from O(n) to O(log n) with near-perfect retrieval, but on a 793K-parameter model, so it is a mechanism result, not a field one.
 
-### Hallucination: put the abstention outside the model
+### Hallucination: abstain outside the model
 
-Language models produce fluent, confident text whether or not the fact is stored, so abstention cannot depend on the model's own confidence. It has to live in the memory layer: if no supported evidence exists, return an explicit empty. The limit is that a gate in the memory layer only helps if the component that writes the answer honors it. A small model can simply ignore an empty result and answer anyway, so abstention has to be tested with the answering model in the loop, not assumed from the architecture.
+Language models write fluent, confident text whether or not the fact is stored, so abstention cannot hang on the model's own confidence. It has to live in the memory layer: if nothing supported comes back, return an explicit empty. The catch is that a gate only helps if whatever writes the answer honors it. A small model can ignore an empty result and answer anyway, so test abstention with the answering model in the loop.
 
-## 5. The context window is a dilution problem
+## 5. The window is a dilution problem
 
-The window limit is usually framed as size. The evidence points elsewhere:
+We usually describe the limit as size. The evidence points at something else:
 
-- Attention entropy rises as the number of items to track grows, and the capacity limit has been tied to dispersed attention (Gong et al., [Self-Attention Limits Working Memory Capacity](https://arxiv.org/abs/2409.10715), N-back tasks on vanilla decoder-only transformers).
-- Performance is highest when relevant information sits at the start or end of the context and degrades in the middle (Liu et al., [Lost in the Middle](https://arxiv.org/abs/2307.03172)).
-- MemProbe found that naive retrieval scored 29.2% on episodes whose evidence is split across turns, against 89.6% when the right turns were supplied directly. The window is not the bottleneck there; assembling the right evidence is.
+- Attention entropy rises as the number of things to track grows, and the capacity limit has been tied to attention spreading out ([Gong et al., Self-Attention Limits Working Memory Capacity](https://arxiv.org/abs/2409.10715); Figure 5 shows entropy against N, on vanilla decoder-only transformers doing N-back tasks).
+- Accuracy is highest when the relevant passage sits at the start or end of the context and drops in the middle ([Liu et al., Lost in the Middle](https://arxiv.org/abs/2307.03172); Figure 1 is the U-shaped curve).
+- MemProbe found that naive retrieval scores 29.2% on episodes whose evidence is split across turns, against 89.6% when the right turns are handed over directly (Table 7). Space was not the bottleneck. Assembling the evidence was.
 
-So the lever is selection, not capacity. The systems that work on size do it by splitting memory by fidelity: a lossless recent window plus a compressed long-term store (Fang et al.'s [Artificial Hippocampus Networks](https://arxiv.org/abs/2510.07318), Munkhdalai et al.'s [Infini-attention](https://arxiv.org/abs/2404.07143), Behrouz et al.'s [Titans](https://arxiv.org/abs/2501.00663)). The systems that work on selection use surprise to decide what becomes an event (Fountas et al.'s [EM-LLM](https://arxiv.org/abs/2407.09450), Zhang et al.'s [HiMem](https://arxiv.org/abs/2601.06377)) and relationships to decide what gets retrieved (Gutiérrez et al.'s [HippoRAG](https://arxiv.org/abs/2405.14831)). One cost-oriented variant waits to consolidate until sustained recurrence appears, to save tokens (Dai et al.'s [RecMem](https://arxiv.org/abs/2605.16045)).
+So the lever is selection. The size-oriented systems split memory by fidelity, with a lossless recent window and a compressed long-term store (Fang et al.'s [Artificial Hippocampus Networks](https://arxiv.org/abs/2510.07318), Munkhdalai et al.'s [Infini-attention](https://arxiv.org/abs/2404.07143), Behrouz et al.'s [Titans](https://arxiv.org/abs/2501.00663)). The selection-oriented ones use surprise to decide what becomes an event (Fountas et al.'s [EM-LLM](https://arxiv.org/abs/2407.09450), Zhang et al.'s [HiMem](https://arxiv.org/abs/2601.06377)) and relationships to decide what gets retrieved (Gutiérrez et al.'s [HippoRAG](https://arxiv.org/abs/2405.14831)). One cost-minded variant waits to consolidate until it sees sustained recurrence ([Dai et al., RecMem](https://arxiv.org/abs/2605.16045)).
 
-## 6. What multistability adds, and what it does not
+## 6. Where multistability could add something
 
-Most of the above is established under other names: complementary learning systems, surprise gating, replay, reconsolidation. Song et al.'s [REALM](https://arxiv.org/abs/2609.16053), for example, revises stored memories based on retrieval feedback and shows that this step improves results in ablations. The sleep and Hebbian papers are crowded enough that another "we added sleep" system adds little.
+Most of the above is already established under other names: complementary learning systems, surprise gating, replay, reconsolidation. Song et al.'s [REALM](https://arxiv.org/abs/2609.16053), for instance, revises stored memories from retrieval feedback and shows in ablations that the step helps. The sleep and Hebbian space is crowded enough that another "we added sleep" system contributes little.
 
-What I did not find is anyone treating memory conflict itself as a multistable competition. The ideas I think are worth testing, clearly marked as hypotheses:
+What I did not find is anyone treating memory conflict itself as a multistable competition. These are the ideas I would test, flagged as hypotheses:
 
-1. **Keep candidate readings alive.** When a new claim might or might not be an update of an old one, hold both as candidates and let later evidence resolve it, instead of committing at write time. The motivating failure is easy to reproduce: if two facts are compared by exact relation string, an extractor that varies tense or phrasing ("explored" versus "is exploring") leaves both facts active.
-2. **Adapt away from the winner.** In rivalry the dominant percept fatigues. A retrieval policy that damps recently used evidence could let a lower-ranked but correct fact surface. The failure it targets is distractor saturation, where several near-identical facts compete for the top ranks.
-3. **Measure hysteresis.** Treat residual influence of a retracted or superseded claim as a first-class metric, the way [Reset Is Not Recovery](https://arxiv.org/abs/2609.33672) does for conversations. It would also work as a probe for memory systems: after a correction, how often does the stale value still surface?
-4. **Noise.** Rivalry models give noise a causal role. I searched for evidence that injected noise helps agent memory retrieval and found none, so this one is a pure open question.
+1. **Keep candidate readings alive.** When a new claim might or might not update an old one, hold both and let later evidence decide, instead of committing at write time. The failure is easy to reproduce: if two facts are matched by exact relation string, an extractor that varies tense or phrasing ("explored" versus "is exploring") leaves both active.
+2. **Adapt away from the winner.** In rivalry the dominant percept fatigues. A retrieval policy that damps recently used evidence could let a lower-ranked but correct fact through. It targets distractor saturation, where several near-identical facts fight over the top ranks.
+3. **Measure hysteresis.** Treat the leftover influence of a retracted or superseded claim as a first-class metric, the way Reset Is Not Recovery does for conversations. After a correction, how often does the stale value still surface?
+4. **Noise.** Rivalry models give noise a causal role. I searched for evidence that injected noise helps agent memory retrieval and found none, so this one is wide open.
 
 ```mermaid
 flowchart LR
@@ -119,18 +113,18 @@ flowchart LR
     D --> B
 ```
 
-None of this has been run. The sketch is a design hypothesis built from the evidence above, and the parts that are not already standard (the candidate-readings state, adaptation away from the winner) are exactly the parts without direct support.
+None of this has been run. The sketch is a design hypothesis built on the evidence above, and the parts that are not standard, the candidate-readings state and adapting away from the winner, are the parts with the least direct support.
 
-## 7. Caveats
+## 7. What I am unsure about
 
-- This is a survey of titles and abstracts, with a few full-text reads. The Gershman paper's full PDF was rate-limited, so claims about it come from its abstract.
-- The biological analogy has limits. Neurons are not tokens, and rivalry dynamics were fitted to perception experiments, not to storage and retrieval.
-- Many 2026 memory papers evaluate on different metrics (LLM-judged accuracy versus token-F1), so reported numbers are not comparable across papers.
-- The absence of prior work is based on a bounded set of searches. "I did not find it" is not "it does not exist".
+- This is a survey of abstracts, with a few full-text reads. The Gershman PDF was rate-limited when I tried it, so what I say about it comes from its abstract.
+- The biology only goes so far. Neurons are not tokens, and rivalry models were fitted to perception experiments, not to storage and retrieval.
+- Many 2026 memory papers report different metrics (LLM-judged accuracy versus token-F1), so their numbers cannot be compared across papers.
+- My claim that nobody has combined these ideas rests on a bounded set of searches. Not finding it is not the same as it not existing.
 
 ## 8. What I would build
 
-If I were designing agent memory from this evidence: an immutable episode layer; a distilled layer that admits claims through a source-aware gate and closes validity windows instead of deleting; a working context rebuilt from valid facts every turn, not carried forward as transcript; abstention enforced in the memory layer; selective, surprise-driven consolidation; and hysteresis, stale-value rate and source fidelity reported next to accuracy. Most of that is already within reach. The multistability-specific pieces are the part worth experimenting on.
+An immutable episode layer. A distilled layer that admits claims through a source-aware gate and closes validity windows instead of deleting. A working context rebuilt from valid facts every turn, instead of carrying the transcript forward. Abstention enforced in the memory layer. Selective, surprise-driven consolidation. And hysteresis, stale-value rate and source fidelity reported next to accuracy. Most of that is within reach today. The multistability-specific pieces are where I would spend experiments.
 
 ## References
 
