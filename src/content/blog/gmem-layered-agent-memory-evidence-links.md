@@ -81,7 +81,7 @@ flowchart LR
     AD -- "otherwise" --> EN["ENDORSE<br/>new proposition"]
 ```
 
-Three design decisions are worth stating, because each one is pinned by a test in the repository's conformance suite:
+Three design decisions, each pinned by a test in the conformance suite:
 
 - **The span gate is a hard threshold, and it was measured.** The gate requires 60 percent of object tokens to occur in the source span, with all subject tokens present. A pilot sweep put 0.5 at the same recall as 0.6 but precision 0.82 versus 1.00, so 0.6 is the default.
 - **Closure uses the system clock, never model time.** When a conflicting value arrives, the old proposition's validity window closes at write time. A hallucinated date cannot rewrite history.
@@ -130,14 +130,14 @@ HaluMem QA probes whether a memory system answers, corrects, or refuses. Twenty 
 
 ![Grouped bars of HaluMem QA score per question type for three backends](/blog/gmem/halumem-slices.svg)
 
-Reading the slices honestly matters more than the headline:
+Per-slice notes:
 
 - **Boundary is a tie, and mem0's tie is accidental.** mem0 abstains most often (0.629) because its retriever frequently returns nothing, which is correct by luck. GMem abstains on all 13 boundary probes through the gate. The difference only shows when the retriever returns something plausible.
 - **Conflict belongs to cognee.** Its graph context carries corrections that GMem's composer misses. Under a strict F1 scorer, GMem's conflict score was 0.048; four misses were correct but verbose and were recovered by a fairer polarity-plus-content scorer.
 - **Dynamic update is a three-way tie at 0.273.** §4.5 traces this to a single mechanism.
 - **Over-answering is not the disease.** On this slice, every GMem abstention had non-empty evidence. The conservatism is on the composer side, facing retrieved but diffuse evidence.
 
-On the doubled-length, distractor-packed variant (HaluMem-Long, 81 questions), the overall score is flat (0.469 vs 0.457) and boundary stays at 21 of 21. What collapses is generalization, from 0.385 to 0.150: near-miss evidence outranks the gold turn and the composer answers confidently from it. This is the single most informative degradation in the ledger, because it isolates the failure to one question type.
+On the doubled-length, distractor-packed variant (HaluMem-Long, 81 questions), the overall score is flat (0.469 vs 0.457) and boundary stays at 21 of 21. What collapses is generalization, from 0.385 to 0.150: near-miss evidence outranks the gold turn and the composer answers confidently from it. The degradation is confined to one question type.
 
 ### 3.3 Off the tuning slice
 
@@ -162,9 +162,9 @@ Across the full corpus (10 conversations, 1,986 questions, per-sample store rese
 
 ![Horizontal bars of full-corpus F1 per backend with context token cost](/blog/gmem/fullcorpus-f1.svg)
 
-Three facts stand out. First, a base model reading the raw conversation beats GMem on F1 (0.390 vs 0.300), which means retrieval and extraction destroy more information than the composer rules recover once the question is off the tuning slice. Second, GMem keeps its edges where the design predicts them: exact match over raw context (0.108 vs 0.064, driven by deterministic date handling) and abstention honesty (0.991 vs 0.959, because the base model hallucinates on about 4 percent of adversarial probes). Third, mem0 leads F1 while answering from about 330 tokens, a result GMem does not match on cost either.
+Three observations. First, a base model reading the raw conversation beats GMem on F1 (0.390 vs 0.300), which means retrieval and extraction destroy more information than the composer rules recover once the question is off the tuning slice. Second, GMem keeps its edges where the design predicts them: exact match over raw context (0.108 vs 0.064, driven by deterministic date handling) and abstention honesty (0.991 vs 0.959, because the base model hallucinates on about 4 percent of adversarial probes). Third, mem0 leads F1 while answering from about 330 tokens, a result GMem does not match on cost either.
 
-A methodological correction belongs in the record. The first full-corpus run measured all ten conversations through one accumulating store and scored 0.286. A per-sample reset re-measured it at 0.300, with 9 questions fixed and 6 newly broken. The contamination effect is real but small, since retrieval is entity-anchored and foreign facts rarely surface. The invalidated number is kept in the ledger as a bound on the artifact, not deleted.
+The first full-corpus run measured all ten conversations through one accumulating store and scored 0.286. A per-sample reset re-measured it at 0.300, with 9 questions fixed and 6 newly broken. The contamination effect is small, since retrieval is entity-anchored and foreign facts rarely surface. The invalidated number is kept in the ledger as a bound on the artifact, not deleted.
 
 ### 3.4 Where the errors come from
 
@@ -190,7 +190,7 @@ Evidence coverage measured offline from the recorded composer log (n = 1,576 mat
 
 ![Line chart of evidence coverage at K: 0.181 at K=1, 0.302 at K=5, 0.363 at K=10, 0.423 at K=20](/blog/gmem/coverage-at-k.svg)
 
-The offline pipeline reproduces the manifest F1 (0.294 vs 0.300) and gives the first honest interval on a headline number: bootstrap 95% CI [0.275, 0.311].
+The offline pipeline reproduces the manifest F1 (0.294 vs 0.300) and gives the first interval on a headline number: bootstrap 95% CI [0.275, 0.311].
 
 ### 3.5 What produces the lead on the tuning slice
 
@@ -198,7 +198,7 @@ An ablation disabled the deterministic date-answer rules (`COMPOSER_NO_OVERRIDE=
 
 ![Bars of 12-question F1: gmem with date rules 0.705, without 0.556, graphiti 0.644, mem0 0.645, cognee 0.623](/blog/gmem/override-ablation.svg)
 
-The rules contribute about +0.11 F1 and +0.17 EM. Without them GMem trails every external system on the slice. The LLM misreads dates even when the right facts are present ("next month" resolved from a raw span; "27 January" off by one day). So the honest statement is that the lead on the tuning slice comes from validator-first date handling, not from superior retrieval. That is the system working as designed, and it is stated here so the table cannot be misread.
+The rules contribute about +0.11 F1 and +0.17 EM. Without them GMem trails every external system on the slice. The LLM misreads dates even when the right facts are present ("next month" resolved from a raw span; "27 January" off by one day). So the lead on the tuning slice comes from validator-first date handling, not from superior retrieval. The design intends this, but the tuning-slice table should not be read as a retrieval win.
 
 ### 3.6 Trust is model-dependent
 
@@ -217,7 +217,7 @@ The same pipeline was run on Qwen3-4B (a Kaggle 2×T4 server behind vLLM) to tes
 
 The SLM tax is about 0.06 F1 with coverage intact (3 extraction misses, same as before). But the 4B model answers everything, including all 13 boundary probes, wrongly. The trust story is model-dependent, not architecture-guaranteed. Memory still beats the lexical floor by +0.161 F1 on the same model.
 
-The competitor cells on this hardware are blocked, and the reasons are informative. mem0's extraction scaffold alone is about 7.9K input tokens (a 12K server context is required; the T4 ceiling is 8K usable). Qwen malforms mem0's update-decision envelope about 21 times per 369-turn run, silently dropping facts. cognee's single subtasks exceed a 100-second origin timeout at T4 throughput. A vendor system needs its vendor's native context and throughput, not just ours.
+The competitor cells on this hardware are blocked, and the reasons are specific. mem0's extraction scaffold alone is about 7.9K input tokens (a 12K server context is required; the T4 ceiling is 8K usable). Qwen malforms mem0's update-decision envelope about 21 times per 369-turn run, silently dropping facts. cognee's single subtasks exceed a 100-second origin timeout at T4 throughput. A vendor system needs its vendor's native context and throughput, not just ours.
 
 ### 3.7 Retrieval ceiling: a probe that never answers a question
 
@@ -243,7 +243,7 @@ The hallucination side of the contribution is measured with a claim-level metric
 | gmem, judge-calibrated | 1,063 | 49 | 0.046 |
 | base model, full context (12-Q) | 12 | 3 | 0.250 |
 
-The heuristic overcounts by about 20 percent; a cached-verdict LLM judge rescues paraphrase-supported claims. A citation-precision proxy (one minus the unsupported rate) reads 0.954 for GMem versus 0.750 for the base model, though the base-model sample is only 12 claims and the judge numbers await a human spot-check and a kappa gate before they count as claims. The honest label is calibration, not result.
+The heuristic overcounts by about 20 percent; a cached-verdict LLM judge rescues paraphrase-supported claims. A citation-precision proxy (one minus the unsupported rate) reads 0.954 for GMem versus 0.750 for the base model, though the base-model sample is only 12 claims and the judge numbers await a human spot-check and a kappa gate before they count as claims. These numbers are calibration, not results.
 
 Cost sits beside quality because the 2026 survey found only about a fifth of memory papers report any efficiency metric. GMem answers from roughly 1,350 context tokens against about 21,700 for raw context, a 16-fold reduction, and finishes the full corpus in about 2.9 hours versus 3.6 to 4.2 for the others. mem0 is cheaper still on context (about 330 tokens), so cost does not rescue the F1 deficit.
 
@@ -307,7 +307,7 @@ Three 2025 to 2026 systems bound the design space. All three were checked agains
 
 **PISA** (Jia et al., 2025) maps Piaget's assimilation and accommodation onto three update modes (schema updation, evolution, creation). Schemas start from templates derived from the agent's goal with empty values and are then created at runtime. Matching uses similarity thresholds (0.70 at schema level), which route an experience to update or create but do not refuse it. Each schema entry carries an Experience ID linking to its source event, so provenance is present. Conflicts deactivate losing records without retaining them as history. Evaluation uses LLM-judged accuracy on LoCoMo and its own AggQA benchmark, with no abstention or hallucination metric.
 
-**Memanto** (Abtahi et al., 2026) uses thirteen predefined memory categories. A built-in conflict check flags contradictions between same-type memories and asks the agent to supersede, retain or annotate before the contradiction is persisted, which is a real write-time gate. It defines the "Memory Tax" as the cumulative increase in compute cost, latency and system complexity. All accuracy figures use Claude Sonnet 4 as judge, a different metric from token-F1, so the numbers should never be compared raw. Provenance is listed as a design goal; the architecture sections do not describe how it is stored. No abstention or hallucination rates are reported.
+**Memanto** (Abtahi et al., 2026) uses thirteen predefined memory categories. A built-in conflict check flags contradictions between same-type memories and asks the agent to supersede, retain or annotate before the contradiction is persisted, which is a write-time gate. It defines the "Memory Tax" as the cumulative increase in compute cost, latency and system complexity. All accuracy figures use Claude Sonnet 4 as judge, a different metric from token-F1, so the numbers should never be compared raw. Provenance is listed as a design goal; the architecture sections do not describe how it is stored. No abstention or hallucination rates are reported.
 
 | Property | A-MEM | PISA | Memanto | GMem |
 |---|---|---|---|---|
@@ -332,7 +332,7 @@ Memanto is the closest relative on the write side, so the claim here is narrower
 
 In order: slot-aware or embedding-tier succession to close the 36 stale pairs; composer selection among good evidence (the exposed bottleneck after ranking fixes); formal model definitions with multi-model evaluation; one unified ablation table (configuration by F1, exact match, abstention, cost); and judge accuracy reported next to exact match everywhere.
 
-Three claims would each constitute a publishable unit if they held at full-suite scale: citation precision at matched recall, temporal reconstruction accuracy, and unsupported-claim rate at bounded abstention cost. None is claimed as held yet. The currently supportable statement is narrower: date precision and abstention honesty at lower cost than raw context, with F1 below the best baseline.
+Three claims would each constitute a publishable unit if they held at full-suite scale: citation precision at matched recall, temporal reconstruction accuracy, and unsupported-claim rate at bounded abstention cost. None is claimed as held yet. The supportable statement today: date precision and abstention honesty at lower cost than raw context, with F1 below the best baseline.
 
 ## References
 
