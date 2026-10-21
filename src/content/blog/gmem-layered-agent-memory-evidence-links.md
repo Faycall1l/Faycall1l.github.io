@@ -29,25 +29,40 @@ The representation contract has three addressable planes with typed cross-layer 
 | L2 Synthesized | Summaries, communities | Always list their sources; can never enter the warranted store |
 
 ```mermaid
-flowchart BT
-    subgraph L0["L0 Evidence (append-only)"]
-        E1["Episode / turn"] --- S1["Span"]
+flowchart TB
+    subgraph L2["<b>L2 Synthesized</b> · lossy gists, never warranted"]
+        direction LR
+        G1["<b>Gist</b><br/><span style='font-size:14px'>summary with full source set</span>"]
+        G2["<b>Community</b><br/><span style='font-size:14px'>grouped related claims</span>"]
     end
-    subgraph L1["L1 Distilled (adjudicated, bitemporal)"]
-        P1["Proposition<br/>subject, relation, object<br/>valid from, valid to"]
-        P2["Successor proposition"]
-        P1 -- "succeeded_by" --> P2
+
+    subgraph L1["<b>L1 Distilled</b> · adjudicated, bitemporal propositions"]
+        direction LR
+        P1["<b>Proposition</b><br/><span style='font-size:14px'>subject · relation · object<br/>valid from → valid to</span>"]
+        P2["<b>Successor</b><br/><span style='font-size:14px'>new value, same relation</span>"]
+        P1 -- "succeeded_by<br/>(window closed)" --> P2
     end
-    subgraph L2["L2 Synthesized (never warranted)"]
-        G1["Gist / community summary"]
+
+    subgraph L0["<b>L0 Evidence</b> · immutable, append-only"]
+        direction LR
+        E1["<b>Episode</b><br/><span style='font-size:14px'>interaction record</span>"] --- S1["<b>Span</b><br/><span style='font-size:14px'>exact source text</span>"]
     end
-    P1 -- "sourced_from" --> S1
-    P2 -- "sourced_from" --> S1
-    G1 -- "derived_from" --> P1
-    G1 -- "derived_from" --> P2
+
+    G1 -- "gist membership" --> G2
+    G1 == "derived_from" ==> P1
+    G2 == "derived_from" ==> P2
+    P1 == "sourced_from" ==> S1
+    P2 == "sourced_from" ==> S1
+
+    classDef l2 fill:#efe7f8,stroke:#8e6bbf,color:#2b1d3f
+    classDef l1 fill:#e2eef6,stroke:#2a6f97,color:#12303f
+    classDef l0 fill:#e6f0e0,stroke:#6a994e,color:#1f2f17
+    class G1,G2 l2
+    class P1,P2 l1
+    class E1,S1 l0
 ```
 
-Links between layers use a closed, domain-free vocabulary: sourcing (proposition to span), derivation, gist membership, lateral relation, community grouping, and temporal succession with lineage. Every distilled proposition links to at least one source span; every synthesis lists its full source set. Any returned claim drills to its source span in at most three steps.
+Every claim returned from L2 or L1 reaches L0 by following the double arrows, at most three hops. Links between layers use a closed, domain-free vocabulary: sourcing (proposition to span), derivation, gist membership, lateral relation, community grouping, and temporal succession with lineage. Every distilled proposition links to at least one source span; every synthesis lists its full source set. Any returned claim drills to its source span in at most three steps.
 
 ### 2.1 The write path
 
