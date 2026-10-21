@@ -1,7 +1,7 @@
 ---
 title: "GMem: Layered Agent Memory with Evidence Links"
 description: "Technical report: a three-layer representation contract with adjudicated writes, versioned facts, and measured abstention, with the full ledger of negatives."
-date: 2026-10-21
+date: 2026-08-20
 tags: ["memory", "agents", "technical-report"]
 ---
 
