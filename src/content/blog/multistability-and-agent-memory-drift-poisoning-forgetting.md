@@ -16,7 +16,7 @@ This is a survey with opinions, not a result. I ran no new experiments for it. W
 | Drift | An answer shifts after the conversation moves on or a user pushes back | The old context versus the current evidence |
 | Poisoning | A false or hostile claim becomes a stored "fact" | An unreliable source versus an established memory |
 | Catastrophic forgetting | New learning overwrites old knowledge | New traces versus old traces in a shared store |
-| Hallucination | A confident answer with no support | A fluent completion versus no stored basin at all |
+| Hallucination | A confident answer with no support | A fluent completion versus nothing stored |
 
 In each row two or more states want the same slot, and the output looks equally confident whichever wins. That is why output-level monitoring (watching entropy, asking the model if it is sure) struggles with all four.
 
@@ -35,9 +35,8 @@ The useful reading for engineers: the brain does not resolve an ambiguous input 
 
 ## 3. The same dynamics already live inside LLMs
 
-This is the part that surprised me. The vocabulary of multistability is already being used for language models, just not for memory design.
+This is the part that surprised me. The vocabulary of multistability is already being used for language models, just not for memory design. One caution: a 2026 preprint that framed knowledge conflict and hallucination as attractor-basin competition has since been withdrawn by its author for premature posting, so I do not rely on it.
 
-- **Attractor basins.** [Attractor Geometry of Transformer Memory](https://arxiv.org/abs/2605.05686) (Liang et al.) argues that learned facts form attractor basins in hidden-state space. Conflict between parametric memory and context is basin competition, which disrupts convergence to the correct basin without raising output entropy. Hallucination is basin absence, where the hidden state drifts freely. Both produce confident output, so monitoring the output is blind by design. I only read the abstract.
 - **Metastable states in attention.** In modern Hopfield networks, the update rule is equivalent to transformer attention, and the energy landscape has fixed points that average over all stored patterns, fixed points that average over a subset, and fixed points that store a single pattern (Ramsauer et al., [Hopfield Networks is All You Need](https://arxiv.org/abs/2008.02217)). Blended retrievals are a built-in outcome of the retrieval mechanism, not a bug.
 - **Winner-take-all in vision-language models.** On 29 bistable images with 116 manipulations, most of the twelve models tested strongly preferred one interpretation (Panagopoulou et al., [Evaluating VLMs on Bistable Images](https://arxiv.org/abs/2405.19423)). In a controlled illusion probe, models often keep their answer when the illusion is inverted, which raises the question of whether they perceive or recall (Sun et al., [VI-Probe](https://arxiv.org/abs/2601.22150)).
 - **Hysteresis in conversation.** Shnaidman's [Reset Is Not Recovery](https://arxiv.org/abs/2609.33672) measures it directly. After a user repeatedly pushes a wrong answer and then stops, ordinary reset leaves a residue. Across 14 model and dataset pairs the mean gap to a clean-context baseline is 0.303, and the post-reset wrong-following rate is 41.2%. A same-length neutral history produces a gap of -0.007, so the effect is about content, not length.
@@ -77,7 +76,7 @@ The design lever for agents is to never overwrite. Keep an append-only episode l
 
 ### Hallucination: put the abstention outside the model
 
-The attractor-basin account says hallucination is basin absence, and that the model's output looks equally confident. If that is right, abstention cannot depend on the model's own confidence. It has to live in the memory layer: if no supported evidence exists, return an explicit empty. The limit is that a gate in the memory layer only helps if the component that writes the answer honors it. A small model can simply ignore an empty result and answer anyway, so abstention has to be tested with the answering model in the loop, not assumed from the architecture.
+Language models produce fluent, confident text whether or not the fact is stored, so abstention cannot depend on the model's own confidence. It has to live in the memory layer: if no supported evidence exists, return an explicit empty. The limit is that a gate in the memory layer only helps if the component that writes the answer honors it. A small model can simply ignore an empty result and answer anyway, so abstention has to be tested with the answering model in the loop, not assumed from the architecture.
 
 ## 5. The context window is a dilution problem
 
@@ -118,7 +117,7 @@ None of this has been run. The sketch is a design hypothesis built from the evid
 
 ## 7. Caveats
 
-- This is a survey of titles and abstracts, with a few full-text reads. The full text of the attractor-geometry paper could not be retrieved, and the Gershman paper's full PDF was rate-limited, so claims about both come from abstracts.
+- This is a survey of titles and abstracts, with a few full-text reads. The Gershman paper's full PDF was rate-limited, so claims about it come from its abstract.
 - The biological analogy has limits. Neurons are not tokens, and rivalry dynamics were fitted to perception experiments, not to storage and retrieval.
 - Many 2026 memory papers evaluate on different metrics (LLM-judged accuracy versus token-F1), so reported numbers are not comparable across papers.
 - The absence of prior work is based on a bounded set of searches. "I did not find it" is not "it does not exist".
@@ -135,15 +134,14 @@ If I were designing agent memory from this evidence: an immutable episode layer;
 4. Moreno-Bote, R., Knill, D. C., Pouget, A. (2011). *Bayesian sampling in visual perception.* PNAS. https://pmc.ncbi.nlm.nih.gov/articles/PMC3145684
 5. Shnaidman, A. *Reset Is Not Recovery: Evaluating Recoverability from False Conversational Context via Sycophancy Hysteresis.* https://arxiv.org/abs/2609.33672
 6. Ding, J. et al. *Probing Stability-Plasticity Tradeoffs in Agent Memory through Cognitive Experimental Paradigms (MemProbe).* https://arxiv.org/abs/2609.30558
-7. Liang, Q. et al. *Attractor Geometry of Transformer Memory: From Conflict Arbitration to Confident Hallucination.* https://arxiv.org/abs/2605.05686
-8. Panagopoulou, A. et al. *Evaluating Vision-Language Models on Bistable Images.* https://arxiv.org/abs/2405.19423
-9. Sun, X. et al. *Do VLMs Perceive or Recall? Probing Visual Perception vs. Memory with Classic Visual Illusions.* https://arxiv.org/abs/2601.22150
-10. Gong, D. et al. *Self-Attention Limits Working Memory Capacity of Transformer-Based Models.* https://arxiv.org/abs/2409.10715
-11. Liu, N. F. et al. (2023). *Lost in the Middle: How Language Models Use Long Contexts.* https://arxiv.org/abs/2307.03172
-12. Mouchon, L. *Surprise as a Signal for Plasticity and Metacognition.* https://arxiv.org/abs/2606.31495
-13. Fontaine, L. et al. *Semantic and episodic memories in a predictive coding model of the neocortex.* https://arxiv.org/abs/2509.01987
-14. Xie, Y. *SleepGate* (https://arxiv.org/abs/2603.14517); Potineni, B. et al. *EngramRAG* (https://arxiv.org/abs/2609.32049); Zhu, J. et al. *HeLa-Mem* (https://arxiv.org/abs/2604.16839); Mody, P. et al. *CraniMem* (https://arxiv.org/abs/2603.15642); Feng, Y. et al. *FOREVER* (https://arxiv.org/abs/2601.03938)
-15. Song, Y. et al. *Retrieval-Driven Memory Reconsolidation for Long-Term LLM Agents (REALM).* https://arxiv.org/abs/2609.16053
-16. Fang, Y. et al. *Artificial Hippocampus Networks* (https://arxiv.org/abs/2510.07318); Munkhdalai, T. et al. *Infini-attention* (https://arxiv.org/abs/2404.07143); Behrouz, A. et al. *Titans* (https://arxiv.org/abs/2501.00663); Fountas, Z. et al. *EM-LLM* (https://arxiv.org/abs/2407.09450); Zhang, N. et al. *HiMem* (https://arxiv.org/abs/2601.06377); Jiménez Gutiérrez, B. et al. *HippoRAG* (https://arxiv.org/abs/2405.14831); Dai, Z. et al. *RecMem* (https://arxiv.org/abs/2605.16045)
-17. Hohwy, J., Roepstorff, A., Friston, K. (2008). *Predictive coding explains binocular rivalry: An epistemological review.* Cognition. https://doi.org/10.1016/j.cognition.2008.05.010
-18. Brascamp, J. W. et al. (2006). *The time course of binocular rivalry reveals a fundamental role of noise.* https://doi.org/10.1167/6.11.8 ; Kim, Y.-J. et al. (2005). *Stochastic resonance in binocular rivalry.* https://doi.org/10.1016/j.visres.2005.08.009 ; Theodoni, P. et al. (2011). *Cortical microcircuit dynamics mediating binocular rivalry.* https://doi.org/10.3389/fnhum.2011.00145 ; Wilson, H. R. (2007). *Minimal physiological conditions for binocular rivalry and rivalry memory.* https://doi.org/10.1016/j.visres.2007.07.007
+7. Panagopoulou, A. et al. *Evaluating Vision-Language Models on Bistable Images.* https://arxiv.org/abs/2405.19423
+8. Sun, X. et al. *Do VLMs Perceive or Recall? Probing Visual Perception vs. Memory with Classic Visual Illusions.* https://arxiv.org/abs/2601.22150
+9. Gong, D. et al. *Self-Attention Limits Working Memory Capacity of Transformer-Based Models.* https://arxiv.org/abs/2409.10715
+10. Liu, N. F. et al. (2023). *Lost in the Middle: How Language Models Use Long Contexts.* https://arxiv.org/abs/2307.03172
+11. Mouchon, L. *Surprise as a Signal for Plasticity and Metacognition.* https://arxiv.org/abs/2606.31495
+12. Fontaine, L. et al. *Semantic and episodic memories in a predictive coding model of the neocortex.* https://arxiv.org/abs/2509.01987
+13. Xie, Y. *SleepGate* (https://arxiv.org/abs/2603.14517); Potineni, B. et al. *EngramRAG* (https://arxiv.org/abs/2609.32049); Zhu, J. et al. *HeLa-Mem* (https://arxiv.org/abs/2604.16839); Mody, P. et al. *CraniMem* (https://arxiv.org/abs/2603.15642); Feng, Y. et al. *FOREVER* (https://arxiv.org/abs/2601.03938)
+14. Song, Y. et al. *Retrieval-Driven Memory Reconsolidation for Long-Term LLM Agents (REALM).* https://arxiv.org/abs/2609.16053
+15. Fang, Y. et al. *Artificial Hippocampus Networks* (https://arxiv.org/abs/2510.07318); Munkhdalai, T. et al. *Infini-attention* (https://arxiv.org/abs/2404.07143); Behrouz, A. et al. *Titans* (https://arxiv.org/abs/2501.00663); Fountas, Z. et al. *EM-LLM* (https://arxiv.org/abs/2407.09450); Zhang, N. et al. *HiMem* (https://arxiv.org/abs/2601.06377); Jiménez Gutiérrez, B. et al. *HippoRAG* (https://arxiv.org/abs/2405.14831); Dai, Z. et al. *RecMem* (https://arxiv.org/abs/2605.16045)
+16. Hohwy, J., Roepstorff, A., Friston, K. (2008). *Predictive coding explains binocular rivalry: An epistemological review.* Cognition. https://doi.org/10.1016/j.cognition.2008.05.010
+17. Brascamp, J. W. et al. (2006). *The time course of binocular rivalry reveals a fundamental role of noise.* https://doi.org/10.1167/6.11.8 ; Kim, Y.-J. et al. (2005). *Stochastic resonance in binocular rivalry.* https://doi.org/10.1016/j.visres.2005.08.009 ; Theodoni, P. et al. (2011). *Cortical microcircuit dynamics mediating binocular rivalry.* https://doi.org/10.3389/fnhum.2011.00145 ; Wilson, H. R. (2007). *Minimal physiological conditions for binocular rivalry and rivalry memory.* https://doi.org/10.1016/j.visres.2007.07.007
