@@ -29,9 +29,13 @@ Show someone a Necker cube or two different images, one per eye. They do not see
 - **There is memory.** Rivalry shows hysteresis, so the next percept depends on the recent one ([Wilson, 2007](https://doi.org/10.1016/j.visres.2007.07.007)).
 - **It looks like inference.** Gershman, Vul and Tenenbaum argue that switching, patchy percepts, fusion and traveling waves can be explained as MCMC sampling over simple graphical models ([2012](https://dspace.mit.edu/handle/1721.1/70125)). Moreno-Bote, Knill and Pouget report that how long each percept dominates follows what Bayesian sampling predicts ([PNAS 2011](https://pmc.ncbi.nlm.nih.gov/articles/PMC3145684)). A separate line argues that predictive coding explains rivalry (Hohwy, Roepstorff and Friston, [2008](https://doi.org/10.1016/j.cognition.2008.05.010)).
 
+![Simulated alternation between two percepts: each dominates in turn while the dominant one's adaptation builds up, with noise jittering the switch times](/blog/multistability/rivalry-dynamics.svg)
+
 I read the abstracts of the Gershman paper and the PNAS paper summary, not their full text. I could not confirm that the Gershman paper makes dwell-time or hysteresis claims, so I do not attribute those to it.
 
-The useful reading for engineers: the brain does not resolve an ambiguous input once and for all. It keeps a distribution over interpretations, shows one at a time, and lets evidence, fatigue and noise move the winner.
+![Double-well landscape before and after evidence tilts it, showing the state staying in the old basin](/blog/multistability/energy-landscape.svg)
+
+The two figures above are my own schematics, not data from the cited papers. The useful reading for engineers: the brain does not resolve an ambiguous input once and for all. It keeps a distribution over interpretations, shows one at a time, and lets evidence, fatigue and noise move the winner.
 
 ## 3. The same dynamics already live inside LLMs
 
@@ -50,6 +54,8 @@ That last paper also tests repairs, and the pattern is the most design-relevant 
 | Neutral summarization | 11 |
 | Factual-state reconstruction | 12 |
 | Truncation, fresh-context deletion | 14 (oracle conditions) |
+
+![Bar chart of how many of 14 model-dataset pairs each repair recovers](/blog/multistability/repair-recovery.svg)
 
 Telling the model to forget does almost nothing. Rebuilding the state from facts works much better. Removing the pressure turns entirely works best, and the authors are clear that deletion is an upper bound, not a deployable fix. Partial removal helps only partway: the mean gap was 0.462 with full history, 0.278 after dropping medium and strong turns, and 0.001 after dropping all pressure turns. The study uses multiple-choice questions, seven open-weight models, templated pressure and a single seed, so treat the numbers as a demonstration of the effect, not a general rate.
 
