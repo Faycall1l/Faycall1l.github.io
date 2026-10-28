@@ -7,7 +7,7 @@ tags: ["memory", "survey", "agents", "series"]
 
 Part II covered the three dynamics pipelines at a distance. This installment and the next two take them one at a time, starting with formation: the process that encodes raw contexts, dialogues, images, trajectories, into compact knowledge. Everything downstream, evolution and retrieval included, inherits whatever this stage gets wrong.
 
-The source remains Hu et al. (2026), released under CC BY 4.0 via [arXiv:2512.13564](https://arxiv.org/abs/2512.13564). Figure numbers follow the original paper. Note that Part II presented four formation mechanisms; the survey's full taxonomy has five. The fifth, parametric internalization, closes this article.
+The source remains Hu et al. (2026), released under CC BY 4.0 via [arXiv:2512.13564](https://arxiv.org/abs/2512.13564). Figure numbers follow the original paper. Where a mechanism deserves its own picture, the article also reproduces figures from the systems papers it cites, each under CC BY 4.0 and credited in place. Note that Part II presented four formation mechanisms; the survey's full taxonomy has five. The fifth, parametric internalization, closes this article.
 
 ## 1. Why formation exists at all
 
@@ -48,6 +48,10 @@ Summarization produces a lossy gist: global semantics in, local precision out. T
 
 **Incremental summarization** fuses each new chunk into a running summary. MemGPT and Mem0 did this with the model's own summarization ability, and the known failure is inconsistency and semantic drift: each pass summarizes the previous summary, so early errors compound. The literature's fixes arrive in three generations, and the progression is instructive. External evaluators first: a discriminator for consistency checks, a classifier to drop trivial content. Then reinforcement learning: Mem1 with PPO, MemAgent with GRPO, training the model to summarize rather than prompting it to. The trend runs from filtering output to shaping the summarizer, which reduces cumulative error but leaves the serial bottleneck intact.
 
+![MemGPT memory-creation operation: on memory pressure, facts from the conversation are appended to the working context](/blog/memory-intro/formation/memgpt-paging.png)
+
+*Figure 1 from Packer et al. (2023), CC BY 4.0. MemGPT's memory-creation operation under context pressure: the conversation is compressed into two facts appended to the working context. The summary is what survives; the turns that produced it are not kept.*
+
 **Partitioned summarization** splits first, summarizes in parallel. MemoryBank segments by day or session; ReadAgent clusters semantically before summarizing; LightMem groups by topic. The efficiency gain is real, and the failure is the mirror image of the incremental case: independent processing of partitions loses cross-partition dependencies. A fact stated on Monday and corrected on Thursday lives in two summaries that never speak.
 
 The practical rule, matching the compaction tutorial's schema requirement: summaries need provenance links back to their source chunks and a separate store for facts. A summary answers "roughly what happened"; it should never be the only record of "what exactly is true".
@@ -60,6 +64,10 @@ Distillation extracts reusable knowledge at a finer granularity than summarizati
 
 **Experiential distillation** produces strategies from trajectories. Two source types: success, where AWM extracts workflow patterns from successful runs and Mem-pro distills gold trajectories into procedures; and failure, where R2D2 compares reasoning traces against ground truth to identify error sources. ExpeL combines both through contrastive reflection. The finer-grained variant, H2R, adds a second tier: after building the pool of high-level planning insights, it segments trajectories by subgoal to derive step-level ones.
 
+![ExpeL pipeline: training trajectories are gathered into an experience pool, insights are extracted with human-style feedback actions, and recalled at evaluation time](/blog/memory-intro/formation/expel-insights.png)
+
+*Figure 1 from Zhao et al. (2023), CC BY 4.0 (left panel). ExpeL's formation loop: gather trajectories into a pool, extract insights from success and failure pairs under upvote/downvote/edit actions, then recall them as guidance at evaluation. The insight pool is the durable artifact; the trajectories are disposable once distilled.*
+
 The direction of travel in this subfield is from fixed extraction prompts to trained extractors: Memory-R1 trains only the fusion component, while Mem-alpha trains the model itself on what to extract and how to preserve it. Prompt-designed extraction is sensitive to prompt quality; trained extraction moves that dependency into the training distribution.
 
 The separation rule matters more than any single system: distill facts and strategies into different stores. A heuristic stored as a fact gets retrieved with a fact's authority, and a fact demoted to a tip loses the verification path that made it useful.
@@ -71,6 +79,10 @@ The first two operations leave memory as flat units. Structured construction add
 **Entity-level construction** atomizes text into entities and relations. The simplest form is direct triple extraction (KGT for user preferences, Mem0's graph variant for conversation triplets), and the survey notes its limit: extraction quality is bounded by the model, so noise and structural errors enter the graph directly. D-SMART responds with a neuro-symbolic pipeline: first distill statements into assertion-like natural language, then extract an OWL-compliant graph fragment. Hierarchical variants follow: GraphRAG runs community detection and generates community summaries; AriGraph and HippoRAG add an episodic layer beside the semantic one; Zep formalizes three layers with a bi-temporal model, logging occurrence and processing times separately so "when it was said" and "when it became true" are distinct queries.
 
 **Chunk-level construction** keeps text spans intact as nodes. RAPTOR recursively clusters chunks and summarizes clusters into a tree; the survey's through-line is static planar structures giving way to dynamic ones that absorb streaming trajectories, then to hierarchical ones. A-MEM's networked notes with semantic links is the representative case here, and it is the system the next installment takes apart in detail.
+
+![RAPTOR tree construction: text chunks are clustered, summarized by an LLM, and the process repeats to form layers up to a root](/blog/memory-intro/formation/raptor-tree.png)
+
+*Figure 1 from Sarthi et al. (2024), CC BY 4.0. RAPTOR's chunk-level construction: cluster text chunks, summarize each cluster into a node holding text plus an embedding, repeat upward until a root layer. The tree is the memory; each node stays citable back to the chunks beneath it.*
 
 The trade the survey names: structural prior buys multi-hop reasoning and interpretability, and costs extraction compute plus schema rigidity. The assert-then-validate gate from Part II is the admission control that keeps the graph from becoming a noise archive.
 
@@ -97,9 +109,11 @@ Part IV takes evolution apart the same way: consolidation at three granularities
 ## References
 
 1. Hu, Y. et al. (2026). *Memory in the Age of AI Agents.* https://arxiv.org/abs/2512.13564 (the map this series follows; CC BY 4.0; Table 5 reproduced with attribution)
-2. Packer, C. et al. (2023). *MemGPT.* https://arxiv.org/abs/2310.08560
+2. Packer, C. et al. (2023). *MemGPT.* https://arxiv.org/abs/2310.08560 (CC BY 4.0; Figure 1 reproduced)
 3. Chhikara, P. et al. (2025). *Mem0: Building Production-Ready AI Agents with Scalable Long-Term Memory.* https://arxiv.org/abs/2504.19413
-4. Edge, D. et al. (2025). *From Local to Global: A Graph RAG Approach to Query-Focused Summarization.* https://arxiv.org/abs/2404.16130
-5. Rasmussen, M. et al. (2025). *Zep: A Temporal Knowledge Graph Architecture for Agent Memory.* https://arxiv.org/abs/2501.13956
-6. Xu, Z. et al. (2025). *A-MEM: Agentic Memory for LLM Agents.* https://arxiv.org/abs/2502.12110
-7. Meng, K. et al. (2022). *Locating and Editing Factual Associations in GPT.* https://arxiv.org/abs/2202.05262
+4. Sarthi, A. et al. (2024). *RAPTOR: Recursive Abstractive Processing for Tree-Oriented Retrieval.* https://arxiv.org/abs/2401.18059 (CC BY 4.0; Figure 1 reproduced)
+5. Zhao, Q. et al. (2023). *ExpeL: LLM Agents Are Experiential Learners.* https://arxiv.org/abs/2308.10144 (CC BY 4.0; Figure 1, left panel, reproduced)
+6. Edge, D. et al. (2025). *From Local to Global: A Graph RAG Approach to Query-Focused Summarization.* https://arxiv.org/abs/2404.16130
+7. Rasmussen, M. et al. (2025). *Zep: A Temporal Knowledge Graph Architecture for Agent Memory.* https://arxiv.org/abs/2501.13956
+8. Xu, Z. et al. (2025). *A-MEM: Agentic Memory for LLM Agents.* https://arxiv.org/abs/2502.12110
+9. Meng, K. et al. (2022). *Locating and Editing Factual Associations in GPT.* https://arxiv.org/abs/2202.05262
