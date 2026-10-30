@@ -1,0 +1,619 @@
+---
+/**
+ * Animated figures for the embeddings explainer.
+ *
+ * Each figure is authored in the post as a self-contained block:
+ *
+ *   <figure class="anim" data-anim="onehot">
+ *     <div class="anim-stage"></div>
+ *     <figcaption>Caption.</figcaption>
+ *   </figure>
+ *
+ * This component provides one small script that finds those blocks and hands
+ * the stage to the matching animator. It does nothing on pages that have no
+ * such blocks. Motion respects prefers-reduced-motion: figures render their
+ * final frame instead of animating.
+ */
+---
+
+<script is:inline>
+    (function () {
+        var NS = 'http://www.w3.org/2000/svg';
+        var reduced =
+            window.matchMedia &&
+            window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        function node(tag, attrs, parent) {
+            var n = document.createElementNS(NS, tag);
+            for (var k in attrs) n.setAttribute(k, attrs[k]);
+            if (parent) parent.appendChild(n);
+            return n;
+        }
+
+        function text(parent, x, y, s, cls) {
+            var t = node('text', { x: x, y: y, class: cls || 'lbl' }, parent);
+            t.textContent = s;
+            return t;
+        }
+
+        function stageSvg(host, w, h) {
+            var s = node(
+                'svg',
+                { viewBox: '0 0 ' + w + ' ' + h, class: 'anim-svg' },
+                host
+            );
+            return s;
+        }
+
+        // Linear interpolation helper over a keyframe list [{t, v}].
+        function track(keys, t) {
+            if (t <= keys[0].t) return keys[0].v;
+            for (var i = 1; i < keys.length; i++) {
+                if (t <= keys[i].t) {
+                    var a = keys[i - 1],
+                        b = keys[i];
+                    var u = (t - a.t) / (b.t - a.t);
+                    return a.v + (b.v - a.v) * u;
+                }
+            }
+            return keys[keys.length - 1].v;
+        }
+
+        // Runs a render(frame) callback over a loop of `dur` ms.
+        function loop(dur, render) {
+            if (reduced) {
+                render(1);
+                return { stop: function () {} };
+            }
+            var start = performance.now();
+            var raf;
+            function step(now) {
+                // rAF timestamps can precede the captured start time, which
+                // would make t negative and index keyframes out of range.
+                var elapsed = Math.max(0, now - start);
+                var t = (elapsed % dur) / dur;
+                render(t);
+                raf = requestAnimationFrame(step);
+            }
+            raf = requestAnimationFrame(step);
+            return {
+                stop: function () {
+                    cancelAnimationFrame(raf);
+                }
+            };
+        }
+
+        // Runs render(frame) once, over dur ms, easing out.
+        function once(dur, render) {
+            if (reduced) {
+                render(1);
+                return;
+            }
+            var start = performance.now();
+            function step(now) {
+                var u = Math.min(1, Math.max(0, (now - start) / dur));
+                var e = 1 - Math.pow(1 - u, 3); // ease-out cubic
+                render(e);
+                if (u < 1) requestAnimationFrame(step);
+            }
+            requestAnimationFrame(step);
+        }
+
+        var A = {};
+        window.__anims = A;
+        window.__ax = {
+            node: node,
+            text: text,
+            svg: stageSvg,
+            track: track,
+            loop: loop,
+            once: once,
+            reduced: reduced
+        };
+
+        function boot() {
+            var blocks = document.querySelectorAll('figure.anim[data-anim]');
+            for (var i = 0; i < blocks.length; i++) {
+                (function (b) {
+                    var kind = b.getAttribute('data-anim');
+                    var fn = A[kind];
+                    var host = b.querySelector('.anim-stage');
+                    if (!fn || !host) return;
+                    try {
+                        fn(host, b);
+                    } catch (e) {
+                        if (window.console)
+                            console.warn('anim failed:', kind, e);
+                    }
+                })(blocks[i]);
+            }
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', boot);
+        } else {
+            boot();
+        }
+    })();
+</script>
+
+<script is:inline>
+    (function () {
+        var A = window.__anims;
+        var x = window.__ax;
+        var node = x.node,
+            text = x.text,
+            svg = x.svg,
+            track = x.track,
+            loop = x.loop;
+
+        /* 1. One-hot vs dense: same three words, one sparse and one shared. */
+        A.onehot = function (host) {
+            var W = 640,
+                H = 260;
+            var s = svg(host, W, H);
+            var words = ['cat', 'dog', 'car'];
+            var dims = 12;
+            var cell = 34,
+                gx = 110,
+                gy = 70;
+            text(s, gx, 44, 'one-hot  (dim = 3)');
+            text(s, gx + 200, 44, 'learned  (dim = 12, shared)');
+
+            // Left grid: 3x3 identity.
+            var hot = [];
+            for (var r = 0; r < 3; r++) {
+                for (var c = 0; c < 3; c++) {
+                    var on = r === c;
+                    var rect = node(
+                        'rect',
+                        {
+                            x: gx + c * cell,
+                            y: gy + r * cell,
+                            width: cell - 4,
+                            height: cell - 4,
+                            rx: 3,
+                            class: 'cell' + (on ? ' on' : '')
+                        },
+                        s
+                    );
+                    hot.push({ rect: rect, r: r, c: c });
+                }
+                text(s, gx - 10, gy + r * cell + cell / 2, words[r], 'lbl lbl-r');
+            }
+
+            // Right grid: 3x12 dense, values animate in.
+            var dgx = gx + 200;
+            var dense = [];
+            var seed = [
+                [0.2, 0.9, 0.1, 0.0, 0.7, 0.3, 0.1, 0.8, 0.0, 0.4, 0.6, 0.2],
+                [0.3, 0.8, 0.2, 0.1, 0.6, 0.4, 0.0, 0.7, 0.1, 0.5, 0.5, 0.3],
+                [0.8, 0.1, 0.7, 0.9, 0.1, 0.2, 0.8, 0.0, 0.7, 0.1, 0.2, 0.9]
+            ];
+            var dc = 26;
+            for (var rr = 0; rr < 3; rr++) {
+                for (var cc = 0; cc < dims; cc++) {
+                    var v = seed[rr][cc];
+                    var shared = cc === 1 || cc === 7;
+                    var d = node(
+                        'rect',
+                        {
+                            x: dgx + cc * dc,
+                            y: gy + rr * dc,
+                            width: dc - 4,
+                            height: dc - 4,
+                            rx: 3,
+                            class: 'cell dense' + (shared ? ' shared' : ''),
+                            opacity: 0
+                        },
+                        s
+                    );
+                    dense.push({ rect: d, v: v });
+                }
+            }
+
+            // Reveal dense cells in a wave, looping with the shared columns lit.
+            loop(3600, function (t) {
+                for (var i = 0; i < dense.length; i++) {
+                    var phase = (i % dims) / dims;
+                    var u = Math.min(1, Math.max(0, (t - 0.1 - phase * 0.5) * 4));
+                    dense[i].rect.setAttribute('opacity', u);
+                    dense[i].rect.setAttribute('fill-opacity', dense[i].v);
+                }
+                // Pulse the shared columns (dims 1 and 7) that cat and dog share.
+                var pulse = 0.5 + 0.5 * Math.sin(t * Math.PI * 4);
+                for (var k = 0; k < dense.length; k++) {
+                    var col = k % dims;
+                    if (col === 1 || col === 7) {
+                        dense[k].rect.setAttribute('stroke-opacity', pulse);
+                    }
+                }
+            });
+
+            text(s, gx + 200, gy + 3 * dc + 34, 'shared columns light for cat & dog', 'lbl lbl-faint');
+            text(s, gx, gy + 3 * cell + 34, 'car shares nothing with either', 'lbl lbl-faint');
+        };
+
+        /* 2. Sliding training window over a sentence (CBOW / skip-gram idea). */
+        A.window = function (host) {
+            var W = 680,
+                H = 220;
+            var s = svg(host, W, H);
+            var toks = ['the', 'cat', 'sat', 'on', 'the', 'mat'];
+            var bw = 88,
+                bx = 40,
+                by = 90;
+            var boxes = [];
+            for (var i = 0; i < toks.length; i++) {
+                var g = node('g', {}, s);
+                var r = node(
+                    'rect',
+                    {
+                        x: bx + i * bw,
+                        y: by,
+                        width: bw - 10,
+                        height: 46,
+                        rx: 6,
+                        class: 'tok'
+                    },
+                    g
+                );
+                text(g, bx + i * bw + (bw - 10) / 2, by + 29, toks[i], 'lbl lbl-c');
+                boxes.push({ rect: r, i: i });
+            }
+            var windowRect = node(
+                'rect',
+                {
+                    x: bx,
+                    y: by - 12,
+                    width: bw * 3 - 10,
+                    height: 70,
+                    rx: 8,
+                    class: 'frame'
+                },
+                s
+            );
+            var caption = text(s, W / 2, 180, '', 'lbl lbl-faint');
+
+            loop(4200, function (t) {
+                var slots = toks.length - 2; // center positions 1..4
+                var fpos = t * (slots + 1);
+                var center = Math.min(slots, Math.floor(fpos));
+                var frac = fpos - center;
+                var cx = bx + (center + 1) * bw - 6;
+                windowRect.setAttribute('x', cx - bw + 6);
+                for (var j = 0; j < boxes.length; j++) {
+                    var isCenter = j === center + 1;
+                    var inWin = j >= center && j <= center + 2;
+                    boxes[j].rect.setAttribute(
+                        'class',
+                        'tok' + (isCenter ? ' center' : inWin ? ' ctx' : '')
+                    );
+                }
+                caption.textContent =
+                    'predict "' +
+                    toks[center + 1] +
+                    '" from its neighbours';
+            });
+        };
+
+        /* 3. King - man + woman = queen, as vector arithmetic on a 2D plane. */
+        A.analogy = function (host) {
+            var W = 620,
+                H = 360;
+            var s = svg(host, W, H);
+            var P = {
+                king: { x: 170, y: 120 },
+                queen: { x: 430, y: 120 },
+                man: { x: 170, y: 250 },
+                woman: { x: 430, y: 250 }
+            };
+            var axes = node('g', {}, s);
+            node('line', { x1: 60, y1: 300, x2: 560, y2: 300, class: 'axis' }, axes);
+            node('line', { x1: 60, y1: 40, x2: 60, y2: 300, class: 'axis' }, axes);
+            text(s, 566, 304, 'dim 1', 'lbl lbl-faint');
+            text(s, 30, 44, 'dim 2', 'lbl lbl-faint');
+
+            function dot(p, label, cls) {
+                var g = node('g', {}, s);
+                node('circle', { cx: p.x, cy: p.y, r: 7, class: 'pt ' + (cls || '') }, g);
+                text(g, p.x + 12, p.y + 4, label, 'lbl');
+                return g;
+            }
+            dot(P.king, 'king');
+            dot(P.man, 'man');
+            dot(P.woman, 'woman');
+            var queenDot = dot(P.queen, 'queen', 'pt-hi');
+            queenDot.setAttribute('opacity', 0.25);
+
+            // The offset vector woman - man, drawn twice: once from man,
+            // once from king. They are parallel and equal by construction.
+            node('line', {
+                x1: P.man.x, y1: P.man.y, x2: P.woman.x, y2: P.woman.y,
+                class: 'arc'
+            }, s);
+            var offsetTop = node('line', {
+                x1: P.king.x, y1: P.king.y, x2: P.king.x, y2: P.king.y,
+                class: 'arc'
+            }, s);
+
+            var resultDot = node('circle', { cx: P.king.x, cy: P.king.y, r: 7, class: 'pt-run' }, s);
+            var lbl = text(s, 0, 0, '', 'lbl lbl-run');
+
+            loop(4600, function (t) {
+                // Straight line: king + (woman - man) = queen.
+                var u = Math.min(1, t * 1.4);
+                var px = P.king.x + (P.queen.x - P.king.x) * u;
+                var py = P.king.y + (P.queen.y - P.king.y) * u;
+                resultDot.setAttribute('cx', px);
+                resultDot.setAttribute('cy', py);
+                offsetTop.setAttribute('x2', px);
+                offsetTop.setAttribute('y2', py);
+                lbl.setAttribute('x', px + 12);
+                lbl.setAttribute('y', py - 10);
+                lbl.textContent = u < 0.9 ? 'king + (woman − man)' : '≈ queen';
+                queenDot.setAttribute('opacity', u > 0.9 ? 1 : 0.25);
+            });
+
+            text(s, 70, 330, 'king − man ≈ queen − woman   (the same offset vector)', 'lbl lbl-faint');
+        };
+
+        /* 4. Contextual embeddings: "bank" lands in a different place per sentence. */
+        A.context = function (host) {
+            var W = 640,
+                H = 300;
+            var s = svg(host, W, H);
+            text(s, 30, 30, 'the same token, two contexts', 'lbl lbl-faint');
+
+            // Sentence rows on the left, a shared 2D projection on the right.
+            var sents = [
+                { txt: 'I sat on the river bank', tone: 'a' },
+                { txt: 'I deposited it at the bank', tone: 'b' }
+            ];
+            var rowY = [90, 150];
+            var sentNodes = [];
+            for (var i = 0; i < 2; i++) {
+                var g = node('g', { class: 'sent', 'data-i': i }, s);
+                text(g, 30, rowY[i], sents[i].txt, 'lbl');
+                // underline the word "bank"
+                node('line', {
+                    x1: 30 + 128, y1: rowY[i] + 6, x2: 30 + 172, y2: rowY[i] + 6,
+                    class: 'uline ' + sents[i].tone
+                }, g);
+                sentNodes.push(g);
+            }
+
+            // Projection plane.
+            var ox = 360,
+                oy = 60,
+                pw = 250,
+                ph = 200;
+            node('rect', { x: ox, y: oy, width: pw, height: ph, class: 'plane' }, s);
+            text(s, ox, oy - 10, 'projection of the vector for "bank"', 'lbl lbl-faint');
+
+            // Two cluster blobs and the moving point.
+            var ca = { x: ox + 70, y: oy + 60 };
+            var cb = { x: ox + 180, y: oy + 150 };
+            node('circle', { cx: ca.x, cy: ca.y, r: 34, class: 'blob a' }, s);
+            text(s, ca.x - 26, ca.y - 40, 'river bank', 'lbl lbl-faint');
+            node('circle', { cx: cb.x, cy: cb.y, r: 34, class: 'blob b' }, s);
+            text(s, cb.x - 34, cb.y + 54, 'money bank', 'lbl lbl-faint');
+
+            var pt = node('circle', { cx: ca.x, cy: ca.y, r: 8, class: 'pt-run' }, s);
+
+            loop(4000, function (t) {
+                var toB = t < 0.5;
+                var u = toB ? t * 2 : (t - 0.5) * 2;
+                var e = u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2;
+                var cx = toB ? ca.x + (cb.x - ca.x) * e : cb.x + (ca.x - cb.x) * e;
+                var cy = toB ? ca.y + (cb.y - ca.y) * e : cb.y + (ca.y - cb.y) * e;
+                pt.setAttribute('cx', cx);
+                pt.setAttribute('cy', cy);
+                var active = toB ? 1 : 0;
+                sentNodes[0].setAttribute('opacity', active ? 0.4 : 1);
+                sentNodes[1].setAttribute('opacity', active ? 1 : 0.4);
+            });
+        };
+
+        /* 5. Self-attention: one token attends to the others with weighted links. */
+        A.attention = function (host) {
+            var W = 660,
+                H = 300;
+            var s = svg(host, W, H);
+            var toks = ['the', 'cat', 'sat', 'it', 'because', 'it', 'was', 'tired'];
+            var n = toks.length;
+            var bw = 74,
+                bx = 24,
+                by = 120;
+            // Fixed, hand-chosen weights so "it" resolves to "cat" and "it" (reflexive).
+            // rows = query token, cols = key token.
+            var Wq = [
+                [0.5, 0.1, 0.1, 0.05, 0.1, 0.05, 0.05, 0.05],
+                [0.1, 0.4, 0.2, 0.1, 0.05, 0.05, 0.05, 0.05],
+                [0.05, 0.2, 0.4, 0.1, 0.1, 0.05, 0.05, 0.05],
+                [0.05, 0.45, 0.1, 0.15, 0.05, 0.1, 0.05, 0.05],
+                [0.05, 0.1, 0.15, 0.1, 0.25, 0.1, 0.1, 0.15],
+                [0.05, 0.4, 0.1, 0.15, 0.05, 0.1, 0.05, 0.1],
+                [0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.25, 0.2],
+                [0.05, 0.35, 0.15, 0.1, 0.05, 0.15, 0.1, 0.1]
+            ];
+
+            var boxes = [];
+            for (var i = 0; i < n; i++) {
+                var r = node('rect', {
+                    x: bx + i * bw, y: by, width: bw - 8, height: 40,
+                    rx: 6, class: 'tok'
+                }, s);
+                text(s, bx + i * bw + (bw - 8) / 2, by + 25, toks[i], 'lbl lbl-c');
+                boxes.push(r);
+            }
+
+            var linkLayer = node('g', {}, s);
+            var links = [];
+            var qi = 3; // the query token we animate around: "it"
+            for (var k = 0; k < n; k++) {
+                var x1 = bx + qi * bw + (bw - 8) / 2;
+                var x2 = bx + k * bw + (bw - 8) / 2;
+                var ln = node('path', {
+                    d: 'M' + x1 + ' ' + by + ' Q ' + ((x1 + x2) / 2) + ' 40 ' + x2 + ' ' + by,
+                    class: 'alink'
+                }, linkLayer);
+                links.push(ln);
+            }
+
+            var cap = text(s, 24, 220, '', 'lbl lbl-faint');
+
+            // Cycle the query token through a few positions.
+            var order = [3, 1, 5];
+            loop(5400, function (t) {
+                var seg = Math.floor(t * order.length) % order.length;
+                var qi2 = order[seg];
+                var w = Wq[qi2];
+                var maxw = Math.max.apply(null, w);
+                for (var m = 0; m < n; m++) {
+                    var x1 = bx + qi2 * bw + (bw - 8) / 2;
+                    var x2 = bx + m * bw + (bw - 8) / 2;
+                    links[m].setAttribute('d',
+                        'M' + x1 + ' ' + by + ' Q ' + ((x1 + x2) / 2) + ' 40 ' + x2 + ' ' + by);
+                    links[m].setAttribute('stroke-width', 1 + w[m] * 12);
+                    links[m].setAttribute('opacity', 0.25 + (w[m] / maxw) * 0.75);
+                }
+                for (var b = 0; b < boxes.length; b++) {
+                    boxes[b].setAttribute('class', 'tok' + (b === qi2 ? ' center' : ''));
+                }
+                cap.textContent = 'attention from "' + toks[qi2] + '" (thicker = more weight)';
+            });
+        };
+
+        /* 6. Cosine similarity: fixed vectors, rotating pair, live readout. */
+        A.cosine = function (host) {
+            var W = 640,
+                H = 300;
+            var s = svg(host, W, H);
+            var ox = 120,
+                oy = 240,
+                len = 170;
+            node('line', { x1: 40, y1: oy, x2: 300, y2: oy, class: 'axis' }, s);
+            node('line', { x1: ox, y1: oy, x2: ox, y2: 40, class: 'axis' }, s);
+
+            var v1 = node('line', {
+                x1: ox, y1: oy,
+                x2: ox + len, y2: oy - len * 0.35,
+                class: 'vec1'
+            }, s);
+            var v2 = node('line', {
+                x1: ox, y1: oy,
+                x2: ox + len, y2: oy,
+                class: 'vec2'
+            }, s);
+            var arc = node('path', { class: 'arc', fill: 'none' }, s);
+
+            var cosReadout = text(s, 340, 90, '', 'lbl big');
+            var angReadout = text(s, 340, 130, '', 'lbl lbl-faint');
+            text(s, 340, 55, 'cosine similarity', 'lbl lbl-faint');
+
+            // Bar from -1 to +1.
+            var bx = 340,
+                by = 170,
+                bw = 250;
+            node('rect', { x: bx, y: by, width: bw, height: 16, rx: 8, class: 'bar-bg' }, s);
+            node('line', { x1: bx + bw / 2, y1: by - 6, x2: bx + bw / 2, y2: by + 22, class: 'axis' }, s);
+            var bar = node('rect', { x: bx + bw / 2, y: by, width: 0, height: 16, rx: 8, class: 'bar-fill' }, s);
+            text(s, bx - 6, by + 13, '-1', 'lbl lbl-faint lbl-r');
+            text(s, bx + bw + 6, by + 13, '+1', 'lbl lbl-faint');
+            text(s, bx + bw / 2, by + 40, '0', 'lbl lbl-faint lbl-c');
+
+            loop(5000, function (t) {
+                // Angle of v2 sweeps 0 -> ~150 deg -> back.
+                var u = 0.5 - 0.5 * Math.cos(t * Math.PI * 2);
+                var ang = u * (150 * Math.PI / 180);
+                var x2 = ox + len * Math.cos(ang);
+                var y2 = oy - len * Math.sin(ang);
+                v2.setAttribute('x2', x2);
+                v2.setAttribute('y2', y2);
+
+                // Arc between the two vectors.
+                var r = 46;
+                var a1 = Math.atan2(-(oy - (oy - len * 0.35)), ox + len - ox);
+                var sweepEnd = { x: ox + r * Math.cos(ang), y: oy - r * Math.sin(ang) };
+                var start = { x: ox + r * 1, y: oy - r * 0.35 };
+                arc.setAttribute('d',
+                    'M' + start.x + ' ' + start.y +
+                    ' A ' + r + ' ' + r + ' 0 0 0 ' + sweepEnd.x + ' ' + sweepEnd.y);
+
+                var cosv = Math.cos(ang);
+                cosReadout.textContent = cosv.toFixed(2);
+                angReadout.textContent = 'angle ' + Math.round(ang * 180 / Math.PI) + ' deg';
+
+                // Bar: zero at center.
+                var w = Math.abs(cosv) * (bw / 2);
+                if (cosv >= 0) {
+                    bar.setAttribute('x', bx + bw / 2);
+                    bar.setAttribute('width', w);
+                } else {
+                    bar.setAttribute('x', bx + bw / 2 - w);
+                    bar.setAttribute('width', w);
+                }
+                bar.setAttribute('class', 'bar-fill' + (cosv < 0 ? ' neg' : ''));
+            });
+
+            text(s, 40, 285, 'same direction: 1. orthogonal: 0. opposite: -1', 'lbl lbl-faint');
+        };
+
+        /* 7. Pooling: many token vectors become one sentence vector. */
+        A.pooling = function (host) {
+            var W = 640,
+                H = 300;
+            var s = svg(host, W, H);
+            var toks = ['a', 'very', 'long', 'wait', 'at', 'the', 'airport'];
+            var n = toks.length;
+            var tx = 60,
+                ty = 50,
+                bw = 72;
+            var bars = [];
+            for (var i = 0; i < n; i++) {
+                node('rect', {
+                    x: tx + i * bw, y: ty, width: bw - 8, height: 38, rx: 5, class: 'tok'
+                }, s);
+                text(s, tx + i * bw + (bw - 8) / 2, ty + 24, toks[i], 'lbl lbl-c');
+                // one highlighted dimension per token
+                var bar = node('rect', {
+                    x: tx + i * bw + 6, y: ty + 60, width: bw - 20, height: 10,
+                    rx: 5, class: 'dimbar', opacity: 0.25
+                }, s);
+                bars.push({ rect: bar, base: 0.2 + 0.7 * ((i * 37) % 10) / 10 });
+            }
+            text(s, tx, ty + 54, 'one dimension of each token vector', 'lbl lbl-faint');
+
+            // Pooling arrow and result.
+            var arrow = node('path', {
+                d: 'M' + (tx + 80) + ' 210 L ' + (tx + 460) + ' 210',
+                class: 'vec1', 'marker-end': ''
+            }, s);
+            arrow.setAttribute('opacity', 0);
+            var outBar = node('rect', {
+                x: tx + 230, y: 230, width: 200, height: 26, rx: 6,
+                class: 'dimbar out', opacity: 0
+            }, s);
+            var outLbl = text(s, tx + 330, 276, '', 'lbl lbl-faint lbl-c');
+
+            loop(4600, function (t) {
+                var mean = 0;
+                for (var i = 0; i < bars.length; i++) {
+                    var phase = Math.sin((t * Math.PI * 4) + i * 0.7) * 0.5 + 0.5;
+                    var v = bars[i].base * (0.4 + 0.6 * phase);
+                    bars[i].rect.setAttribute('opacity', v);
+                    mean += v;
+                }
+                mean /= bars.length;
+                var show = t > 0.45;
+                arrow.setAttribute('opacity', show ? 1 : 0);
+                outBar.setAttribute('opacity', show ? 1 : 0);
+                outBar.setAttribute('fill-opacity', mean + 0.3);
+                outLbl.textContent = show
+                    ? 'one vector for the whole sentence (mean of the ' + n + ')'
+                    : '';
+            });
+        };
+    })();
+</script>
