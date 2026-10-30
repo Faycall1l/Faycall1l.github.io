@@ -32,7 +32,7 @@ Everything after this section is an attempt to fix those two problems at once: p
 
 ## 2. The idea that made it possible
 
-The observation behind every embedding method is older than neural networks for NLP. J. R. Firth wrote it in 1957: "You shall know a word by the company it keeps." Zellig Harris had made the same argument for identifying morphemes in 1954. The statistical version fits in one sentence: words that appear in similar contexts have similar meanings.
+The observation behind every embedding method is older than neural networks for NLP. A line from 1957 puts it as a rule of thumb: "You shall know a word by the company it keeps." The statistical version fits in one sentence: words that appear in similar contexts have similar meanings.
 
 This is the distributional hypothesis, and it turns meaning into something countable. The word *dog* appears in contexts like "the dog barked", "walk the dog", "pet the dog". The word *cat* shares many of them: "pet the cat", "the cat sat". The word *quantum* appears in "the quantum field", "quantum mechanics" and shares almost none. Counting contexts already groups cat with dog and separates quantum from both.
 
@@ -44,7 +44,7 @@ A **static** embedding assigns one vector per vocabulary item, learned once from
 
 ### 3.1 word2vec
 
-Mikolov and colleagues (2013) learned embeddings as a side effect of a prediction task instead of compressing a count matrix. Two variants differ only in prediction direction:
+word2vec learns embeddings as a by-product of training on a prediction task. It never counts word pairs over the corpus first. Each step shows the model words that appear near each other in a sentence and asks it to predict one from the other; whatever makes that prediction work ends up encoded in the vectors. Two variants differ only in prediction direction:
 
 - **Skip-gram**: predict the surrounding words from the center word.
 - **CBOW** (continuous bag of words): predict the center word from the surrounding words.
@@ -66,9 +66,9 @@ The loop behind the figure runs over every position of every sentence in the cor
 
 Two implementation details make the training affordable:
 
-**Negative sampling.** Computing the probability of the predicted word against the full vocabulary requires one evaluation per vocabulary item: 100,000+ operations per training step, 3 million in the Google News setting. Negative sampling replaces that with a binary classifier over a handful of words: the observed word and k words that did not appear (k = 5 by default; the original paper suggests 2 to 10). Each step then costs k + 1 evaluations instead of V, and the geometric effect is the same: observed pairs are pulled together, random pairs are pushed apart.
+**Negative sampling.** Computing the probability of the predicted word against the full vocabulary requires one evaluation per vocabulary item: 100,000+ operations per training step, 3 million in the Google News setting. Negative sampling replaces that with a binary classifier over a handful of words: the observed word and k words that did not appear (k = 5 by default; 2 to 10 also works). Each step then costs k + 1 evaluations instead of V, and the geometric effect is the same: observed pairs are pulled together, random pairs are pushed apart.
 
-**Subsampling of frequent words.** Tokens like *the*, *a* and *of* appear in almost every window and carry little meaning, yet they dominate the step count. word2vec discards them randomly during training, with the discard probability rising with frequency (default frequency threshold t = 1e-5: a word occurring more than once per 100,000 tokens is eligible). The original paper reports that this both speeds up training and improves the resulting vectors.
+**Subsampling of frequent words.** Tokens like *the*, *a* and *of* appear in almost every window and carry little meaning, yet they dominate the step count. word2vec discards them randomly during training, with the discard probability rising with frequency (default frequency threshold t = 1e-5: a word occurring more than once per 100,000 tokens is eligible). This both speeds up training and improves the resulting vectors.
 
 Training at scale produces a space with arithmetic structure. The well-known example:
 
@@ -83,11 +83,11 @@ The result is approximate. Single clean relations work: *walking* to *walked* si
 
 ### 3.2 GloVe
 
-GloVe (Pennington et al., 2014) builds the global word-word co-occurrence matrix from the corpus in one counting pass, then factorizes it directly. The objective weights each cell by the logarithm of its count: pairs that co-occur often dominate the loss, and rare pairs still count but far less. Accuracy on word similarity and analogy tasks matches word2vec. The advantage is transparency: the training matrix is a table you can inspect, which made GloVe a standard tool for linguistic analysis.
+GloVe builds the global word-word co-occurrence matrix from the corpus in one counting pass, then factorizes it directly. The objective weights each cell by the logarithm of its count: pairs that co-occur often dominate the loss, and rare pairs still count but far less. Accuracy on word similarity and analogy tasks matches word2vec. The advantage is transparency: the training matrix is a table you can inspect, which made GloVe a standard tool for linguistic analysis.
 
 ### 3.3 fastText
 
-fastText (Bojanowski et al., 2017) keeps the word2vec objective but changes what a word is. Each word is represented as the sum of its character n-grams plus the word itself. For *airport*, the n-grams include sequences such as "air", "irp", "rpo", "por", "ort" (typical lengths 3 to 6), each with its own vector, shared across every word containing that sequence.
+fastText keeps the word2vec objective but changes what a word is. Each word is represented as the sum of its character n-grams plus the word itself. For *airport*, the n-grams include sequences such as "air", "irp", "rpo", "por", "ort" (typical lengths 3 to 6), each with its own vector, shared across every word containing that sequence.
 
 The consequence: a word never seen in training can still be composed from n-grams that were. *Reconfirm* receives a useful vector even if the exact token never occurred, because "confirm" and the affixes around it did. This helps languages where words change form frequently (a verb takes a dozen suffixes), and it handles typos at inference time. The cost is a larger model: every token now touches several stored vectors instead of one.
 
@@ -130,9 +130,9 @@ One warning that appears in every evaluation cycle: a similarity value is only m
 
 The fix for static embeddings came from models that read the whole input before producing any vector. The vector for a token becomes a function of the entire sentence, computed fresh each time the sentence is encoded.
 
-**ELMo** (Peters et al., 2018) built vectors from a pretrained **bidirectional LSTM** (a recurrent network that processes the sequence left to right and right to left simultaneously). The model is trained to predict the next and previous word, and the vectors handed downstream are learned combinations of internal states from several layers. Analysis showed the split that guided later work: lower layers carry syntax, higher layers carry meaning.
+**ELMo** builds vectors from a pretrained **bidirectional LSTM** (a recurrent network that processes the sequence left to right and right to left simultaneously). The model trains to predict the next and previous word, and the vectors handed downstream are learned combinations of internal states from several layers. The layers divide the work: lower layers carry syntax, higher layers carry meaning.
 
-**BERT** (Devlin et al., 2019) replaced recurrence with stacks of self-attention and pretrained with masked language modeling: hide 15% of the tokens and predict each hidden token from both the words before it and the words after it, which a left-to-right language model cannot do. Because every layer exchanges information between all positions, each output vector has been shaped by the whole input.
+**BERT** replaces recurrence with stacks of self-attention and pretrains with masked language modeling: hide 15% of the tokens and predict each hidden token from both the words before it and the words after it, which a left-to-right language model cannot do. Because every layer exchanges information between all positions, each output vector has been shaped by the whole input.
 
 BERT base specifications, since these numbers recur later: 12 layers, 768 hidden values per token, 12 attention heads per layer, about 110 million parameters, and a maximum input of 512 tokens.
 
@@ -187,11 +187,11 @@ The options: **mean pooling** averages all token vectors (a robust default that 
 
 Two architectures produce similarity scores, and their cost structures differ by orders of magnitude.
 
-**Cross-encoder**: feed the query and one candidate together through the model, read off one score. Accurate, because the query and candidate interact inside every layer. The cost: scoring one query against 1,000 candidates is 1,000 full forward passes, and every new query repeats all 1,000. The Sentence-BERT paper quantifies the extreme case: finding the most similar pair in a collection of 10,000 sentences requires about 50 million pair computations, roughly 65 hours with BERT.
+**Cross-encoder**: feed the query and one candidate together through the model, read off one score. Accurate, because the query and candidate interact inside every layer. The cost: scoring one query against 1,000 candidates is 1,000 full forward passes, and every new query repeats all 1,000. At the extreme, finding the most similar pair in a collection of 10,000 sentences requires about 50 million pair computations, roughly 65 hours with BERT.
 
 **Bi-encoder**: encode the query and each candidate separately into vectors, then compare with dot products. Every text is encoded once, ever. The same 10,000-sentence workload drops to about 5 seconds of comparison after encoding, because a dot product is a few hundred multiplications instead of a forward pass. The gap between the two architectures is a training problem: a bi-encoder never sees the query and candidate together, so it must be trained to place related texts near each other.
 
-Sentence-BERT (Reimers & Gurevych, 2019) closed that gap by fine-tuning a siamese BERT: two shared-weight encoders, pooling on each output, and a loss over sentence pairs.
+Sentence-BERT closes that gap by fine-tuning a siamese BERT: two shared-weight encoders, pooling on each output, and a loss over sentence pairs.
 
 <div class="img-scroll">
 <img src="/blog/embeddings/sbert-siamese.png" alt="Sentence-BERT architecture: two BERT encoders with pooling produce u and v, compared either by concatenation with a softmax classifier or by cosine similarity" />
@@ -215,7 +215,7 @@ A **positive** is a pair of texts that should match; a **negative** is a pair th
 
 *Figure 1 from Gao et al. (2021), [CC BY 4.0](https://aclanthology.org/2021.emnlp-main.552/). Left: unsupervised SimCSE encodes the same sentence twice under different dropout masks (dropout randomly zeroes activations during training; here it stays active during encoding to create two variants) and treats the two outputs as a positive pair, with other batch sentences as negatives. Right: supervised SimCSE uses natural language inference labels: entailment pairs are positives, contradiction pairs are hard negatives. Solid arrows are positive instances, dashed arrows negatives.*
 
-The SimCSE figure illustrates the two ends of the spectrum. On the left, the positive pair comes from dropout noise: no labeled data at all, and the paper reports it performs on par with earlier supervised methods. On the right, labeled entailment and contradiction pairs supply positives and negatives directly.
+The SimCSE figure illustrates the two ends of the spectrum. On the left, the positive pair comes from dropout noise: no labeled data at all, and the result matches earlier supervised methods. On the right, labeled entailment and contradiction pairs supply positives and negatives directly.
 
 **Hard negatives** decide the quality of the trained space. Random negatives from a corpus usually belong to different topics, and separating them teaches the model topic discrimination only. A negative that shares the topic but differs on the decisive detail (same product line, wrong model number; same event, wrong date) forces the model to use the features retrieval actually depends on. Selecting these examples is most of the engineering in retriever training.
 
@@ -233,7 +233,7 @@ The SimCSE figure illustrates the two ends of the spectrum. On the left, the pos
 
 A **wordpiece** is a subword unit produced by the tokenizer; a word like *airport* may split into two pieces. The limits column is what the encoder truncates at, covered below.
 
-**Dimension.** Smaller vectors cut index memory and speed up search; the accuracy cost depends on the model, so measure it rather than assume it. Matryoshka representation training (Kusupati et al., 2022) makes dimensions interchangeable: the model is trained so its first k outputs remain a good embedding at any trained size k, and the API models in the table expose this as a dimensions parameter. Reducing a 3072-dimensional model to 256 dimensions cuts storage by 12×, with a quality loss you measure on your own evaluation data.
+**Dimension.** Smaller vectors cut index memory and speed up search; the accuracy cost depends on the model, so measure it rather than assume it. Matryoshka representation training makes dimensions interchangeable: the model is trained so its first k outputs remain a good embedding at any trained size k, and the API models in the table expose this as a dimensions parameter. Reducing a 3072-dimensional model to 256 dimensions cuts storage by 12×, with a quality loss you measure on your own evaluation data.
 
 **Normalization.** Unit-normalize when the vector enters the index if you intend to compare with cosine, then compare with dot product (they are equal for unit vectors). Two failure patterns to check for in review: vectors normalized in one service but not another, and vectors from a model that already normalizes normalized again (double normalization is harmless; mixing normalized and raw vectors is not). Neither raises an error; the similarity values are just wrong by a bounded amount.
 
@@ -247,11 +247,11 @@ An **index** is the data structure that stores vectors and answers "which vector
 
 **Brute force** compares the query against all N stored vectors: for 1 million vectors of 768 dimensions that is 768 million multiply-adds per query, a matrix multiplication modern hardware completes within tens of milliseconds. Acceptable into the low millions of vectors, or at low query rates.
 
-**Approximate nearest neighbor (ANN)** search returns vectors close to the true nearest ones without guaranteeing exactness, trading a measurable amount of recall for latency. The dominant approach is graph-based. HNSW (Malkov and Yashunin, 2018) connects each vector to its near neighbors in a multi-layer graph: search walks greedily from an entry point, descending through layers that hold fewer, longer-range links, and reaches the neighborhood in O(log N) steps instead of scanning. The costs are memory (every vector stores graph links on top of its values) and build time.
+**Approximate nearest neighbor (ANN)** search returns vectors close to the true nearest ones without guaranteeing exactness, trading a measurable amount of recall for latency. The dominant approach is graph-based. HNSW connects each vector to its near neighbors in a multi-layer graph: search walks greedily from an entry point, descending through layers that hold fewer, longer-range links, and reaches the neighborhood in O(log N) steps instead of scanning. The costs are memory (every vector stores graph links on top of its values) and build time.
 
 **Quantization** compresses stored vectors: binary codes store 1 bit per dimension, so 768 dimensions occupy 96 bytes instead of the 3,072 bytes of 32-bit floats, a 32× reduction; product quantization splits each vector into blocks and replaces each block with a short codebook index. Both trade recall for RAM and are tunable per workload.
 
-Libraries such as FAISS (Johnson et al., 2017) implement these indexes for CPU and GPU. The index layer depends only on the vectors themselves: any encoder that yields comparable vectors can be indexed.
+Libraries such as FAISS implement these indexes for CPU and GPU. The index layer depends only on the vectors themselves: any encoder that yields comparable vectors can be indexed.
 
 Two rules hold across every implementation. First, vectors are comparable only within one model and version, so the index stores that identity alongside the vectors. Second, metadata filters (tenant, date, permission) interact with graph search: a filter applied after candidate generation can leave fewer than k results or none, because the filtered-out vectors were used to navigate. The usual answers are to over-fetch (request more than k candidates, then filter) or to fall back to brute force over the filtered subset; the choice trades correctness for speed explicitly.
 
@@ -273,8 +273,8 @@ recall@k describes the retriever before any downstream component sees the result
 
 Two standard benchmarks:
 
-- **MTEB** (Muennighoff et al., 2023): 56 datasets spanning retrieval, clustering, classification, similarity and related tasks, with per-task scores behind one aggregate. Read the task breakdown: an aggregate score hides a model that is strong on retrieval and weak on clustering. Small gaps between adjacent leaderboard entries are within noise; they do not survive changes of pooling or test set.
-- **BEIR** (Thakur et al., 2021): 18 zero-shot retrieval datasets built to test generalization. Models tuned on web-style text lose ground on scientific, legal and biomedical corpora, so in-domain evaluation replaces leaderboard position for specialized domains.
+- **MTEB**: 56 datasets spanning retrieval, clustering, classification, similarity and related tasks, with per-task scores behind one aggregate. Read the task breakdown: an aggregate score hides a model that is strong on retrieval and weak on clustering. Small gaps between adjacent leaderboard entries are within noise; they do not survive changes of pooling or test set.
+- **BEIR**: 18 zero-shot retrieval datasets built to test generalization. Models tuned on web-style text lose ground on scientific, legal and biomedical corpora, so in-domain evaluation replaces leaderboard position for specialized domains.
 
 Two procedural rules for your own work. Keep a held-out test set that never appears in training or development, so the number you report reflects data the model did not see. And account for contamination: embedding models trained on large web corpora have absorbed text from public benchmarks, which inflates benchmark scores relative to what you observe in production. A few hundred labeled query-document pairs from your own domain give a more trustworthy number than a leaderboard position.
 
