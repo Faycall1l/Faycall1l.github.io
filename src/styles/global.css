@@ -411,6 +411,18 @@ section h3 {
     border: 1px solid var(--hairline);
 }
 
+/* Reproduced figures: scroll instead of shrink on narrow screens, so
+   paper-figure labels stay legible (matches the .anim-svg floor). */
+.img-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.img-scroll img {
+    width: 100%;
+    min-width: 720px;
+}
+
 .prose figure {
     margin: 0 0 1rem;
 }
