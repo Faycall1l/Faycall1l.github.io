@@ -60,6 +60,37 @@ import Base from '../layouts/Base.astro';
                     </ul>
                 </div>
             </div>
+            <div class="entry">
+                <div class="entry-meta">
+                    <span class="org">CLMI-Bench</span>
+                    <span class="role-line">Clinical long-horizon memory benchmark</span>
+                    <span class="date">2026 to Present</span>
+                </div>
+                <div class="entry-body">
+                    <ul>
+                        <li>
+                            <strong>Design:</strong>
+                            a clinical long-horizon memory benchmark with two tracks: block/allow
+                            medication decisions from state stated earlier, and state fidelity over
+                            episodes of 200 to 3,200 turns. Each fact becomes a family of scenarios
+                            (stated, reversed, never stated, label-silent sibling, in-prompt control),
+                            and a system is credited only when the whole family is right. Gold comes
+                            from FDA label contraindications.
+                        </li>
+                        <li>
+                            <strong>Measurement:</strong>
+                            every table ships floors, an oracle ceiling and a full-context control;
+                            results carry cluster-bootstrap intervals and exact paired tests with
+                            Holm correction; test labels stay withheld under a published hash.
+                        </li>
+                        <li>
+                            <strong>Separate work from GroundMem:</strong>
+                            CLMI is the evaluation, and GroundMem is one system it evaluates,
+                            disclosed alongside a full-context model and retrieval-memory baselines.
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </section>
 
         <section id="experience">
