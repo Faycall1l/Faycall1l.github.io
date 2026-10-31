@@ -5,12 +5,12 @@ date: 2026-08-20
 tags: ["memory", "agents", "technical-report"]
 ---
 
-Most agent memory stores history first and governs it afterward, if at all. GroundMem reverses the order: every item is checked on the way in, versioned when it changes, and the system answers "I don't know" when it has no supporting evidence. This report describes the design, the measured standing against mem0 and cognee, and the approaches that failed. The failures are included because they constrain the design more than the wins do.
+Most agent memory stores history first and governs it afterward, if at all. GroundMem reverses the order: every item is checked on the way in, versioned when it changes, and the system answers "I don't know" when it has no supporting evidence. This report describes the design, the measured standing against mem0 and cognee, and the approaches that failed. The failures are included because they constrain the design more than the wins do. The measurement sections are dated snapshots; the design sections track the current implementation.
 
 **Summary of findings.**
 
 - On a matched 105-question LoCoMo slice, GroundMem reaches F1 0.423 against mem0's 0.435 and the highest exact match of the three (0.247 vs 0.148 vs 0.037).
-- On HaluMem QA (70 questions) GroundMem leads overall (0.457 vs 0.400 and 0.386) and abstains correctly on all 13 boundary probes.
+- On HaluMem QA (70 questions) GroundMem leads overall (0.457 vs 0.400 and 0.386) and abstains correctly on all 34 boundary probes across the standard and doubled-length variants (13 and 21).
 - Off the tuning slice, on the full 1,986-question corpus, the lead reverses: GroundMem F1 is 0.300, behind mem0 (0.411) and behind a no-memory base model given raw context (0.390). The headline claim cannot be F1 leadership.
 - The measured defensible edges are exact match, abstention honesty (0.991 vs 0.959 for raw context), and cited answers from roughly 1,350 context tokens per question.
 
@@ -72,7 +72,7 @@ A single checker adjudicates each candidate proposition. The formal model define
 flowchart LR
     X["Untrusted input"] --> SP["Split into<br/>atomic assertions"]
     SP --> PR["Propose<br/>conjectured triples"]
-    PR --> GT{"Span gate<br/>object overlap ≥ 0.6"}
+    PR --> GT{"Admission<br/>entailment vs cited span"}
     GT -- "fail" --> MISS["Extraction miss<br/>(never repaired)"]
     GT -- "pass" --> AD{"Adjudicator Γ"}
     AD -- "prohibitive norm fires" --> RF["REFUSE<br/>reason recorded"]
@@ -83,7 +83,7 @@ flowchart LR
 
 Three design decisions:
 
-- **The span gate is a threshold chosen by sweep.** The gate requires 60 percent of object tokens to occur in the source span, with all subject tokens present. A pilot sweep put 0.5 at the same recall as 0.6 but precision 0.82 versus 1.00, so 0.6 is the default, pinned by a test.
+- **Admission asks whether the span entails the claim.** The evaluated configuration runs a natural-language-inference cross-encoder (DeBERTa-v3-base, pinned by model id and revision) over each proposed claim and its cited span, and admits on the entailment label, which leaves no threshold to tune. The lexical rule the design started with, 60 percent of object tokens in the span with all subject tokens present, stays available as the ablation: a pilot sweep put 0.5 at the same recall as 0.6 but precision 0.82 versus 1.00.
 - **Closure uses the system clock, never model time.** When a conflicting value arrives, the old proposition's validity window closes at write time. A hallucinated date cannot rewrite history.
 - **Gate failures are extraction misses, never repairs.**
 
@@ -93,9 +93,20 @@ Governance is packaged as priority-ordered norms with a corroboration lifecycle 
 
 Reading is read-only and cited, through seven operations: overviews that start at syntheses, drill-downs that expand syntheses into propositions and then spans, coverage checks in the reverse direction, lateral walks with temporal and namespace filters, faceted slices by kind or provenance, time travel that reconstructs past states from validity windows, and provenance traces back to source spans for any returned item.
 
-Consultation is deterministic. It seeds entities by name overlap (at most 6), traverses at most 2 hops, filters on namespace equality and the active predicate `vf ≤ t < vt`, ranks the top 30 by a lexical score plus bonuses (subject, content, morphology, date, temporal intent, proximity), and abstains on an empty view. Temporal bonuses fire only when a nonzero content signal is present, a rule that came out of the failure analysis in §4. An empty view returns an explicit empty with a reason, never filler.
+Consultation is deterministic. It filters to the claims of the query's namespace that hold at the query time, ranks them by Okapi BM25 (k1 1.2, b 0.75) computed over each claim and its source text, optionally fuses semantic and cross-encoder ranks by reciprocal-rank fusion (k 60), and keeps the top 30. Graph traversal is a separate primitive: it seeds entities by name overlap and walks at most two hops, so lateral movement never mixes into retrieval scores. Scores are exposed, so tuning happens in visible parameters rather than in prompt wording, and an empty view returns an explicit empty with a reason, never filler. Every answer-or-abstain decision is recorded with one of five reasons: no claim matched, matching claims none of which holds at the query time, evidence the composer judged insufficient, a reply that cited nothing, or an answer that contradicts a competing holding claim.
 
-Retention is tiered without deletion: hot and cold tiers hold consultation cost flat while every byte stays drillable. The only destructive operation, `forget`, removes claims, never log entries.
+Retention is tiered without deletion: hot and cold tiers hold consultation cost flat while every byte stays drillable. The only destructive operation, `forget`, removes claims, never log entries. Memory is scoped: tenant, application, user and agent stamp every proposition at write time and constrain every read, so one agent's namespace cannot surface in another agent's answers.
+
+### 2.3 Components beyond the three layers
+
+Several pieces the design reviews called for have since landed in the package:
+
+- **Typed relations decide succession.** Kinds, single-valued slots and qualifiers decide which held claim a new claim replaces, so succession rides the normal write path; a Relate judge handles the cases kinds cannot decide. §4.5 measures the state before this change.
+- **Identity is a grounded claim.** Two mentions of the same entity form a retractable same-as claim; retracting it retracts its consequences.
+- **Time expressions normalize before extraction** through TIMEX3, so relative phrases and timestamps land in one representation.
+- **Evolution is a policy over closed windows.** Recurrence-to-pattern promotion turns repeated episode shapes into patterns, and retention tiers apply per kind. Both close windows; neither deletes.
+- **The repository ships with PostgreSQL** behind the same interface as the in-memory store, with a conformance suite run against both.
+- **Adapters are plugins.** A registry carries them, and four reference sets ship: healthcare, legal, finance, engineering, each supplying its own vocabulary, identity keys and domain predicates.
 
 ## 3. Measured standing
 
@@ -253,7 +264,7 @@ Exact match understates capability. Re-scoring the compact-configuration 12-ques
 
 ## 4. What did not work
 
-Each negative below removed an option from the design space. The repository's negatives file lists twelve earlier null results (span threshold 0.5, destructive succession, dual grounding paths, per-sentence LLM ingestion at 700 or more calls per conversation, a rule-based extractor yielding 5 propositions from 369 turns, a gate ablation that tied at 1.00 on clean data because nothing hallucinated, and others). The restudy round adds the following.
+Each negative below removed an option from the design space. The repository's negatives file now carries twenty entries (span threshold 0.5, destructive succession, dual grounding paths, per-sentence LLM ingestion at 700 or more calls per conversation, a rule-based extractor yielding 5 propositions from 369 turns, a gate ablation that tied at 1.00 on clean data because nothing hallucinated, and others). The restudy round added the following.
 
 ### 4.1 Retrieval and ranking
 
@@ -293,7 +304,7 @@ The obvious fix, a head-verb canonicalization, was tried and reverted:
 | Head-verb canon, unguarded | 0.404 | 0.528 |
 | Head-verb canon, guarded | 0.277 | 0.665 |
 
-The unguarded rule raises succession from 0.234 to 0.404 and costs 0.19 F1, because relations packed with their complements make "same act" undecidable lexically. Embedding-tier or slot-aware succession remains open.
+The unguarded rule raises succession from 0.234 to 0.404 and costs 0.19 F1, because relations packed with their complements make "same act" undecidable lexically. Typed relations have since landed as the replacement: kinds, single-valued slots and qualifiers decide which held claim a new claim replaces, with a Relate judge for the ambiguous cases. The numbers above predate that change, and the frozen-split measurement is what would settle it.
 
 ### 4.6 The pattern
 
@@ -330,7 +341,7 @@ Memanto is the closest relative on the write side, so the claim here is narrower
 
 ## 7. Next steps
 
-In order: slot-aware or embedding-tier succession to close the 36 stale pairs; composer selection among good evidence (the exposed bottleneck after ranking fixes); formal model definitions with multi-model evaluation; one unified ablation table (configuration by F1, exact match, abstention, cost); and judge accuracy reported next to exact match everywhere.
+In order: a frozen-split measurement of the typed-relation succession path on the 36 stale pairs (the mechanism has landed; see §4.5); composer selection among good evidence (the exposed bottleneck after ranking fixes); formal model definitions with multi-model evaluation; one unified ablation table (configuration by F1, exact match, abstention, cost); and judge accuracy reported next to exact match everywhere.
 
 Three claims would each constitute a publishable unit if they held at full-suite scale: citation precision at matched recall, temporal reconstruction accuracy, and unsupported-claim rate at bounded abstention cost. None is claimed as held yet. The supportable statement today: date precision and abstention honesty at lower cost than raw context, with F1 below the best baseline.
 
