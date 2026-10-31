@@ -1,22 +1,22 @@
 ---
-title: "GMem: Layered Agent Memory with Evidence Links"
+title: "GroundMem: Layered Agent Memory with Evidence Links"
 description: "Technical report: a three-layer representation contract with adjudicated writes, versioned facts, and measured abstention, with the full ledger of negatives."
 date: 2026-08-20
 tags: ["memory", "agents", "technical-report"]
 ---
 
-Most agent memory stores history first and governs it afterward, if at all. GMem reverses the order: every item is checked on the way in, versioned when it changes, and the system answers "I don't know" when it has no supporting evidence. This report describes the design, the measured standing against mem0 and cognee, and the approaches that failed. The failures are included because they constrain the design more than the wins do.
+Most agent memory stores history first and governs it afterward, if at all. GroundMem reverses the order: every item is checked on the way in, versioned when it changes, and the system answers "I don't know" when it has no supporting evidence. This report describes the design, the measured standing against mem0 and cognee, and the approaches that failed. The failures are included because they constrain the design more than the wins do.
 
 **Summary of findings.**
 
-- On a matched 105-question LoCoMo slice, GMem reaches F1 0.423 against mem0's 0.435 and the highest exact match of the three (0.247 vs 0.148 vs 0.037).
-- On HaluMem QA (70 questions) GMem leads overall (0.457 vs 0.400 and 0.386) and abstains correctly on all 13 boundary probes.
-- Off the tuning slice, on the full 1,986-question corpus, the lead reverses: GMem F1 is 0.300, behind mem0 (0.411) and behind a no-memory base model given raw context (0.390). The headline claim cannot be F1 leadership.
+- On a matched 105-question LoCoMo slice, GroundMem reaches F1 0.423 against mem0's 0.435 and the highest exact match of the three (0.247 vs 0.148 vs 0.037).
+- On HaluMem QA (70 questions) GroundMem leads overall (0.457 vs 0.400 and 0.386) and abstains correctly on all 13 boundary probes.
+- Off the tuning slice, on the full 1,986-question corpus, the lead reverses: GroundMem F1 is 0.300, behind mem0 (0.411) and behind a no-memory base model given raw context (0.390). The headline claim cannot be F1 leadership.
 - The measured defensible edges are exact match, abstention honesty (0.991 vs 0.959 for raw context), and cited answers from roughly 1,350 context tokens per question.
 
 ## 1. Problem
 
-Agent memories are predominantly flat token histories or planar entity graphs. Both collapse abstraction levels: a retrieved triple carries no auditable path to its source span, and a summary carries no path to its supporting facts. The survey literature names the consequence directly: no traceable access paths, no verifiable updates, hallucination without abstention (Hu et al., 2026, §7.7). GMem is one minimal attempt at that frontier, scoped to factual memory only. It makes no claim on experiential strategies, skills, parametric storage, or privacy controls.
+Agent memories are predominantly flat token histories or planar entity graphs. Both collapse abstraction levels: a retrieved triple carries no auditable path to its source span, and a summary carries no path to its supporting facts. The survey literature names the consequence directly: no traceable access paths, no verifiable updates, hallucination without abstention (Hu et al., 2026, §7.7). GroundMem is one minimal attempt at that frontier, scoped to factual memory only. It makes no claim on experiential strategies, skills, parametric storage, or privacy controls.
 
 ## 2. Architecture: three layers, one checker
 
@@ -108,10 +108,10 @@ October 2026 remeasure on LoCoMo full-QA, conversation 30 (105 questions):
 | Backend | F1 | EM | Wall time | Notes |
 |---|---|---|---|---|
 | mem0 2.2.1 | 0.435 | 0.148 | 223 s | verbose partials |
-| gmem | 0.423 | 0.247 | 594 s | highest exact match |
+| GroundMem | 0.423 | 0.247 | 594 s | highest exact match |
 | cognee 1.6.2 | 0.321 | 0.037 | 706 s | upstream regression noted in log |
 
-![Bar chart of F1 and exact match on LoCoMo 105 questions for gmem, mem0 and cognee](/blog/gmem/locomo-105.svg)
+![Bar chart of F1 and exact match on LoCoMo 105 questions for GroundMem, mem0 and cognee](/blog/groundmem/locomo-105.svg)
 
 The gap to mem0 on F1 is 0.012, about two questions. cognee fell from 0.443 to 0.321 on version 1.6.2 because its temporal search path raises `QueryInterval` validation errors and degrades silently; that is an upstream bug, not a harness artifact.
 
@@ -119,7 +119,7 @@ The gap to mem0 on F1 is 0.012, about two questions. cognee fell from 0.443 to 0
 
 HaluMem QA probes whether a memory system answers, corrects, or refuses. Twenty seeded sessions yield 70 questions across five types.
 
-| Slice | gmem | cognee 1.6.2 | mem0 2.2.1 |
+| Slice | GroundMem | cognee 1.6.2 | mem0 2.2.1 |
 |---|---|---|---|
 | All (70) | **0.457** | 0.400 | 0.386 |
 | Memory Boundary (13) | **1.000** | 0.769 | **1.000** |
@@ -128,14 +128,14 @@ HaluMem QA probes whether a memory system answers, corrects, or refuses. Twenty 
 | Dynamic Update (11) | 0.273 | 0.273 | 0.273 |
 | Memory Conflict (21) | 0.238 | **0.333** | 0.095 |
 
-![Grouped bars of HaluMem QA score per question type for three backends](/blog/gmem/halumem-slices.svg)
+![Grouped bars of HaluMem QA score per question type for three backends](/blog/groundmem/halumem-slices.svg)
 
 Per-slice notes:
 
-- **Boundary is a tie, and mem0's tie is accidental.** mem0 abstains most often (0.629) because its retriever frequently returns nothing, which is correct by luck. GMem scores 13 of 13 on this slice. The two only separate when a retriever returns something plausible.
-- **Conflict belongs to cognee.** Its graph context carries corrections that GMem's composer misses. Under a strict F1 scorer, GMem's conflict score was 0.048; four misses were correct but verbose and were recovered by a fairer polarity-plus-content scorer.
+- **Boundary is a tie, and mem0's tie is accidental.** mem0 abstains most often (0.629) because its retriever frequently returns nothing, which is correct by luck. GroundMem scores 13 of 13 on this slice. The two only separate when a retriever returns something plausible.
+- **Conflict belongs to cognee.** Its graph context carries corrections that GroundMem's composer misses. Under a strict F1 scorer, GroundMem's conflict score was 0.048; four misses were correct but verbose and were recovered by a fairer polarity-plus-content scorer.
 - **Dynamic update is a three-way tie at 0.273.** §4.5 traces this to a single mechanism.
-- **Over-answering is not the disease.** On this slice, every GMem abstention had non-empty evidence. The conservatism is on the composer side, facing retrieved but diffuse evidence.
+- **Over-answering is not the disease.** On this slice, every GroundMem abstention had non-empty evidence. The conservatism is on the composer side, facing retrieved but diffuse evidence.
 
 On the doubled-length, distractor-packed variant (HaluMem-Long, 81 questions), the overall score is flat (0.469 vs 0.457) and boundary stays at 21 of 21. What collapses is generalization, from 0.385 to 0.150: near-miss evidence outranks the gold turn and the composer answers confidently from it. The degradation is confined to one question type.
 
@@ -143,13 +143,13 @@ On the doubled-length, distractor-packed variant (HaluMem-Long, 81 questions), t
 
 The LoCoMo table above is on the conversation the system was tuned against. The next two tables are not.
 
-| Conversation | gmem F1 / EM | mem0 F1 / EM | cognee F1 / EM |
+| Conversation | GroundMem F1 / EM | mem0 F1 / EM | cognee F1 / EM |
 |---|---|---|---|
 | conv-30 (105Q, tuning) | 0.405 / 0.259 | 0.471 / 0.210 | 0.399 / 0.099 |
 | conv-44 (158Q) | 0.289 / 0.122 | 0.411 / 0.146 | timeout |
 | conv-43 (242Q) | 0.332 / 0.163 | 0.444 / 0.230 | 0.386 / 0.101 |
 
-![Grouped bars of F1 across LoCoMo conversations showing gmem behind mem0 off the tuning slice](/blog/gmem/slice-vs-full.svg)
+![Grouped bars of F1 across LoCoMo conversations showing GroundMem behind mem0 off the tuning slice](/blog/groundmem/slice-vs-full.svg)
 
 Across the full corpus (10 conversations, 1,986 questions, per-sample store reset), each backend with its intended configuration:
 
@@ -158,19 +158,19 @@ Across the full corpus (10 conversations, 1,986 questions, per-sample store rese
 | mem0 @ 20 | 0.411 | 0.155 | 0.180 | 0.991 | 2 | ~330 | ~4.1 h |
 | fullctx (base model, no memory) | 0.390 | 0.064 | 0.087 | 0.959 | 1,738 | ~21,700 | ~3.6 h |
 | cognee GRAPH_COMPLETION @ 20 | 0.352 | 0.055 | 0.087 | 0.872 | 1,608 | ~21,200 | ~4.2 h |
-| gmem llm @ 1 | 0.300 | 0.108 | 0.122 | 0.991 | 20 | ~1,350 | ~2.9 h |
+| GroundMem llm @ 1 | 0.300 | 0.108 | 0.122 | 0.991 | 20 | ~1,350 | ~2.9 h |
 
-![Horizontal bars of full-corpus F1 per backend with context token cost](/blog/gmem/fullcorpus-f1.svg)
+![Horizontal bars of full-corpus F1 per backend with context token cost](/blog/groundmem/fullcorpus-f1.svg)
 
-Three observations. First, a base model reading the raw conversation beats GMem on F1 (0.390 vs 0.300), which means retrieval and extraction destroy more information than the composer rules recover once the question is off the tuning slice. Second, GMem keeps its edges where the design predicts them: exact match over raw context (0.108 vs 0.064, driven by deterministic date handling) and abstention honesty (0.991 vs 0.959, because the base model hallucinates on about 4 percent of adversarial probes). Third, mem0 leads F1 while answering from about 330 tokens, a result GMem does not match on cost either.
+Three observations. First, a base model reading the raw conversation beats GroundMem on F1 (0.390 vs 0.300), which means retrieval and extraction destroy more information than the composer rules recover once the question is off the tuning slice. Second, GroundMem keeps its edges where the design predicts them: exact match over raw context (0.108 vs 0.064, driven by deterministic date handling) and abstention honesty (0.991 vs 0.959, because the base model hallucinates on about 4 percent of adversarial probes). Third, mem0 leads F1 while answering from about 330 tokens, a result GroundMem does not match on cost either.
 
 The first full-corpus run measured all ten conversations through one accumulating store and scored 0.286. A per-sample reset re-measured it at 0.300, with 9 questions fixed and 6 newly broken. The contamination effect is small, since retrieval is entity-anchored and foreign facts rarely surface. The invalidated number is kept in the ledger as a bound on the artifact, not deleted.
 
 ### 3.4 Where the errors come from
 
-The 1,986-question GMem run produced a classified failure split:
+The 1,986-question GroundMem run produced a classified failure split:
 
-![Horizontal bars of failure categories: temporal_drop 649, abstention_miss 495, resolution_split 165, extraction_miss 59, retrieval_miss 7](/blog/gmem/fail-split.svg)
+![Horizontal bars of failure categories: temporal_drop 649, abstention_miss 495, resolution_split 165, extraction_miss 59, retrieval_miss 7](/blog/groundmem/fail-split.svg)
 
 Of 1,375 classified failures, only 7 are retrieval misses and 59 are extraction misses. The mass is in temporal handling (649) and composer abstentions (495). Most failures come from composing and dating answers, not from finding or extracting the fact, though coverage@K below shows evidence is still incomplete.
 
@@ -188,7 +188,7 @@ A shrink-and-test control found that no case was fixed by simply supplying more 
 
 Evidence coverage measured offline from the recorded composer log (n = 1,576 matched questions) shows how slowly a wider window pays:
 
-![Line chart of evidence coverage at K: 0.181 at K=1, 0.302 at K=5, 0.363 at K=10, 0.423 at K=20](/blog/gmem/coverage-at-k.svg)
+![Line chart of evidence coverage at K: 0.181 at K=1, 0.302 at K=5, 0.363 at K=10, 0.423 at K=20](/blog/groundmem/coverage-at-k.svg)
 
 The offline pipeline reproduces the manifest F1 (0.294 vs 0.300) and gives the first interval on a headline number: bootstrap 95% CI [0.275, 0.311].
 
@@ -196,9 +196,9 @@ The offline pipeline reproduces the manifest F1 (0.294 vs 0.300) and gives the f
 
 An ablation disabled the deterministic date-answer rules (`COMPOSER_NO_OVERRIDE=1`) on a 12-question slice, leaving pure retrieval plus the LLM composer.
 
-![Bars of 12-question F1: gmem with date rules 0.705, without 0.556, graphiti 0.644, mem0 0.645, cognee 0.623](/blog/gmem/override-ablation.svg)
+![Bars of 12-question F1: GroundMem with date rules 0.705, without 0.556, graphiti 0.644, mem0 0.645, cognee 0.623](/blog/groundmem/override-ablation.svg)
 
-The rules contribute about +0.11 F1 and +0.17 EM. Without them GMem trails every external system on the slice. The LLM misreads dates even when the right facts are present ("next month" resolved from a raw span; "27 January" off by one day). So the lead on the tuning slice comes from validator-first date handling, not from superior retrieval. The design intends this, but the tuning-slice table should not be read as a retrieval win.
+The rules contribute about +0.11 F1 and +0.17 EM. Without them GroundMem trails every external system on the slice. The LLM misreads dates even when the right facts are present ("next month" resolved from a raw span; "27 January" off by one day). So the lead on the tuning slice comes from validator-first date handling, not from superior retrieval. The design intends this, but the tuning-slice table should not be read as a retrieval win.
 
 ### 3.6 Trust is model-dependent
 
@@ -213,7 +213,7 @@ The same pipeline was run on Qwen3-4B (a Kaggle 2×T4 server behind vLLM) to tes
 | Boundary probes answered wrongly | — | 13 of 13 |
 | Naive lexical floor F1 | — | 0.198 |
 
-![Bars comparing gmem F1 and EM on Gemma and Qwen3-4B](/blog/gmem/model-dependence.svg)
+![Bars comparing GroundMem F1 and EM on Gemma and Qwen3-4B](/blog/groundmem/model-dependence.svg)
 
 The SLM tax is about 0.06 F1 with coverage intact (3 extraction misses, same as before). But the 4B model answers everything, including all 13 boundary probes, wrongly. The trust story is model-dependent, not architecture-guaranteed. Memory still beats the lexical floor by +0.161 F1 on the same model.
 
@@ -229,7 +229,7 @@ LoCoMo QA rewards end-to-end answering and never probes the retriever. The LoCoM
 | BM25 | 0.012 | 0.000 | 0.005 | 0.042 | 212.1 |
 | RRF dense + BM25 | 0.025 | 0.002 | 0.022 | 0.090 | 142.7 |
 
-![Grouped bars of recall at 1, 5 and 20 for dense, BM25 and RRF on the LoCoMo-Plus probe](/blog/gmem/locomo-plus.svg)
+![Grouped bars of recall at 1, 5 and 20 for dense, BM25 and RRF on the LoCoMo-Plus probe](/blog/groundmem/locomo-plus.svg)
 
 First-stage retrieval is nearly blind on time-gap relational pairs. This reproduces the original benchmark's finding with an independent stack, and fusion does not rescue it. It is the likeliest ceiling on full-QA, since relationally linked evidence never reaches the answerer. A parallel preference-retention probe (113 items) found retention at 0.088 with no distractors, decaying to 0.044 at 50. The mean gold rank stays near 0 to 2, so ranking is fine; coverage is the disease, because preference questions share no content tokens with the stored fact ("bakeries" vs "gluten-free diet").
 
@@ -239,13 +239,13 @@ The hallucination side of the contribution is measured with a claim-level metric
 
 | System | Claims | Unsupported | Rate |
 |---|---|---|---|
-| gmem, heuristic v1 (full corpus) | 1,063 | 61 | 0.057 |
-| gmem, judge-calibrated | 1,063 | 49 | 0.046 |
+| GroundMem, heuristic v1 (full corpus) | 1,063 | 61 | 0.057 |
+| GroundMem, judge-calibrated | 1,063 | 49 | 0.046 |
 | base model, full context (12-Q) | 12 | 3 | 0.250 |
 
-The heuristic overcounts by about 20 percent; a cached-verdict LLM judge rescues paraphrase-supported claims. A citation-precision proxy (one minus the unsupported rate) reads 0.954 for GMem versus 0.750 for the base model, though the base-model sample is only 12 claims and the judge numbers await a human spot-check and a kappa gate before they count as claims. These numbers are calibration, not results.
+The heuristic overcounts by about 20 percent; a cached-verdict LLM judge rescues paraphrase-supported claims. A citation-precision proxy (one minus the unsupported rate) reads 0.954 for GroundMem versus 0.750 for the base model, though the base-model sample is only 12 claims and the judge numbers await a human spot-check and a kappa gate before they count as claims. These numbers are calibration, not results.
 
-Cost sits beside quality because the 2026 survey found only about a fifth of memory papers report any efficiency metric. GMem answers from roughly 1,350 context tokens against about 21,700 for raw context, a 16-fold reduction, and finishes the full corpus in about 2.9 hours versus 3.6 to 4.2 for the others. mem0 is cheaper still on context (about 330 tokens), so cost does not rescue the F1 deficit.
+Cost sits beside quality because the 2026 survey found only about a fifth of memory papers report any efficiency metric. GroundMem answers from roughly 1,350 context tokens against about 21,700 for raw context, a 16-fold reduction, and finishes the full corpus in about 2.9 hours versus 3.6 to 4.2 for the others. mem0 is cheaper still on context (about 330 tokens), so cost does not rescue the F1 deficit.
 
 ### 3.9 Judge accuracy versus exact match
 
@@ -281,7 +281,7 @@ Each negative below removed an option from the design space. The repository's ne
 
 Fifty original-to-updated pairs from HaluMem were replayed through a fresh store, then classified.
 
-![Horizontal bars: 11 superseded, 36 stale, 3 lost](/blog/gmem/succession.svg)
+![Horizontal bars: 11 superseded, 36 stale, 3 lost](/blog/groundmem/succession.svg)
 
 The succession rate over extracted pairs is 0.234. Extraction is fine (47 of 50 stored both sides). The failure is closure: adjudication compares raw relation strings, but the LLM emits tense and paraphrase variants across turns ("explored" vs "is exploring", "had" vs "has"), so both facts stay active. This is the mechanistic root of the 0.273 dynamic-update score.
 
@@ -309,7 +309,7 @@ Three 2025 to 2026 systems are the closest relatives. All three were checked aga
 
 **Memanto** (Abtahi et al., 2026) uses thirteen predefined memory categories. A built-in conflict check flags contradictions between same-type memories and asks the agent to supersede, retain or annotate before the contradiction is persisted, which is a write-time gate. It defines the "Memory Tax" as the cumulative increase in compute cost, latency and system complexity. All accuracy figures use Claude Sonnet 4 as judge, a different metric from token-F1, so the numbers should never be compared raw. Provenance is listed as a design goal; the architecture sections do not describe how it is stored. No abstention or hallucination rates are reported.
 
-| Property | A-MEM | PISA | Memanto | GMem |
+| Property | A-MEM | PISA | Memanto | GroundMem |
 |---|---|---|---|---|
 | Write-time gate | none, every interaction stored | similarity routing, no refusal | conflict check, agent resolves | adjudicator with 4 outcomes and recorded refusal reasons |
 | Superseded facts | overwritten | deactivated | supersede, retain or annotate | closed validity window, lineage kept |
@@ -321,7 +321,7 @@ Memanto is the closest relative on the write side, so the claim here is narrower
 
 ## 6. Threats to validity
 
-- **Shared composer and scorer.** Every external row measures retrieval under GMem's composer and token-F1/EM scorer on conversation-level slices. It is never a vendor end-to-end result. mem0's published 92.5 headline is managed-platform only and is not comparable.
+- **Shared composer and scorer.** Every external row measures retrieval under GroundMem's composer and token-F1/EM scorer on conversation-level slices. It is never a vendor end-to-end result. mem0's published 92.5 headline is managed-platform only and is not comparable.
 - **Tuning leakage.** The system was developed against conversation 30. The tuning-slice lead reverses off-slice, as §3.3 shows. All forward claims use full-suite numbers only.
 - **Version drift.** mem0 moved from 0.471 to 0.340 to 0.435 across versions, and cognee from 0.443 to 0.321. Pins are recorded and results are dated.
 - **Judge bias.** Same-model judging is declared; pinned judge versions and span reporting reduce it but do not eliminate it.
