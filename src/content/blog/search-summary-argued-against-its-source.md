@@ -7,11 +7,27 @@ tags: ["retrieval", "nlp", "rag", "essay"]
 
 I recently watched [Suicide of a Nation](https://youtu.be/iL3gpxD6_rs), the new video from [Shaun](https://www.youtube.com/@Shaun_vids), a channel that puts out something worth the wait roughly once every nine months. It's about a self-published book that ChatGPT helped write, complete with quotations that no source contains, and it warns against researching that way. Shaun was writing that section of the video when he went to look up one more source: Walker Connor's 2004 article "The Timelessness of Nations". Google's AI overview at the top of the results page told him what the article argues:
 
-> In the Timelessness of Nations 2004, political scientist Walker Connor argues that the concept of the nation is inherently primordial and psychologically ancient. He challenges modernist academic views by emphasizing that ethnonational bonds are rooted in deep, often subconscious ancestral attachments rather than recent political constructions. Key takeaways from the article include the myth of recent origins. Connor refutes scholars who date nationalism solely to the 18th century in the French Revolution, arguing that national identity predates modern state building.
+> In "The Timelessness of Nations" (2004), political scientist Walker Connor argues that the concept of the nation is inherently primordial and psychologically ancient. He challenges modernist academic views by emphasizing that ethnonational bonds are rooted in deep, often subconscious ancestral attachments rather than recent political constructions.
+>
+> Key takeaways from the article include:
+>
+> • The Myth of Recent Origins: Connor refutes scholars who date nationalism solely to the 18th century and the French Revolution, arguing that national identity predates modern state-building.
+
+<div class="img-scroll">
+<img src="/blog/search-summary/overview.jpg" alt="Google's AI overview asserting that Walker Connor argues the nation is inherently primordial and that national identity predates modern state-building, followed by a key takeaways list" />
+</div>
+
+*Screenshot from Shaun's [Suicide of a Nation](https://youtu.be/iL3gpxD6_rs): the overview as it appeared on the results page.*
 
 Shaun had just spent days reading Connor, so he noticed. I went and checked the abstract myself afterwards: the overview had it backwards. The paper's first sentence settles the matter:
 
 > Anthony Smith has criticized my conclusion that most of the peoples currently recognized as constituting nations acquired national consciousness only in the late nineteenth or early twentieth centuries.
+
+<div class="img-scroll">
+<img src="/blog/search-summary/paper.jpg" alt="First page of Connor's article in Nations and Nationalism, showing the abstract that begins 'Anthony Smith has criticized my conclusion'" />
+</div>
+
+*Screenshot from the same video: the first page of the article as printed.*
 
 Smith disputed the late dating, and the article is Connor's reply. The overview took the very position Connor was answering and filed it under his name. Shaun's own summary of the situation: "The Google AI summary of this article assigns Walker Connor to the incorrect side of the argument. It claims he is making the point that he is actually arguing against."
 
@@ -22,6 +38,12 @@ To see how the paper gets inverted, you have to know what the paper says. Connor
 Then comes the turn the title is about. The dating question, Connor argues, matters less than the argument assumes:
 
 > while in factual/chronological history a nation may be of recent vintage, in the popular perception of its members, it is 'eternal', 'beyond time', 'timeless'. And it is not facts but perceptions of facts that shape attitudes and behavior.
+
+<div class="img-scroll">
+<img src="/blog/search-summary/passage.jpg" alt="The passage quoted above as the video displays it, opening mid-sentence at 'nation emerged so difficult' and ending at 'perceptions of facts that shape attitudes and behavior'" />
+</div>
+
+*Screenshot from the same video: the passage quoted above as it appears in the article.*
 
 The timelessness in the title belongs to the members, not to the record. The record gives the nation a date, but the people inside it experience that nation as beyond time, and it is that experience that moves them. A nation can be recent on paper and still feel eternal to the people in it, and Connor's point is that this feeling is what drives behaviour.
 
@@ -44,6 +66,12 @@ flowchart TB
 Three things in that article make the inversion easy, and every one of them is visible on the page.
 
 Quoted opponents are text like any other. A rejoinder quotes the opposition at length, because you cannot rebut a claim without putting it in front of the reader. In the retrieved text, a sentence asserting that nations are primordial simply sits there inside a document by Connor, and nothing in it says who spoke. Dense similarity treats the opponent's claim and the author's claim as nearly the same content, since both talk about the same subject in the same words. Who is speaking belongs to the discourse structure, and content retrieval throws that away. The [embeddings tutorial](/blog/embeddings-from-one-hot-to-retrieval/) on this blog builds similarity as a distance between meanings in a passage; there is nowhere in that construction to put who holds the view.
+
+<div class="img-scroll">
+<img src="/blog/search-summary/smith.jpg" alt="A long passage from the article quoting Smith's argument, discussing mass participation, women's suffrage, and 'such a radical modernism', with 'Walker Connor' and 'radical modernism' underlined in red" />
+</div>
+
+*Screenshot from the same video: the article quoting Smith at length.*
 
 The title invites the flat reading. "The Timelessness of Nations," read without the paper, sounds like a claim that nations are old. Inside the paper it is a report about how members perceive their nation. Shaun names this cause first, and it is the one he would have fallen for himself if he had only seen the title.
 
