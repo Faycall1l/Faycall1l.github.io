@@ -44,18 +44,18 @@ import Base from '../layouts/Base.astro';
                         </li>
                         <li>
                             <strong>Model Context Protocol (MCP) integration:</strong>
-                            set up standard MCP servers so agents can call tools, retrieve context,
-                            and communicate with each other.
+                            set up the servers in the runtime so agents could call tools, fetch
+                            context, and talk to each other.
                         </li>
                         <li>
                             <strong>Bitemporal audit logs:</strong>
-                            dual-timeline logging to replay agent actions, roll back state, and
-                            inspect runtime behavior.
+                            dual-timeline logging that lets you replay agent actions, roll back state,
+                            and inspect runtime behaviour.
                         </li>
                         <li>
                             <strong>Schema &amp; rule induction:</strong>
-                            pipelines that combine LLMs with classical validation to turn unstructured
-                            text into schemas, graphs, and executable rules.
+                            built pipelines that pair LLMs with classical validation, turning
+                            unstructured text into schemas, graphs, and executable rules.
                         </li>
                     </ul>
                 </div>
@@ -70,23 +70,18 @@ import Base from '../layouts/Base.astro';
                     <ul>
                         <li>
                             <strong>Design:</strong>
-                            a clinical long-horizon memory benchmark with two tracks: block/allow
-                            medication decisions from state stated earlier, and state fidelity over
-                            episodes of 200 to 3,200 turns. Each fact becomes a family of scenarios
-                            (stated, reversed, never stated, label-silent sibling, in-prompt control),
-                            and a system is credited only when the whole family is right. Gold comes
-                            from FDA label contraindications.
+                            two tracks. One checks block/allow medication decisions that hinge on
+                            state from earlier in the episode; the other measures state fidelity
+                            across episodes of 200 to 3,200 turns. Each fact becomes a family of
+                            scenarios (stated, reversed, never stated, label-silent sibling, in-prompt
+                            control), and a system scores only when the whole family is right. Gold
+                            comes straight from FDA label contraindications.
                         </li>
                         <li>
                             <strong>Measurement:</strong>
-                            every table ships floors, an oracle ceiling and a full-context control;
-                            results carry cluster-bootstrap intervals and exact paired tests with
-                            Holm correction; test labels stay withheld under a published hash.
-                        </li>
-                        <li>
-                            <strong>Separate work from GroundMem:</strong>
-                            CLMI is the evaluation, and GroundMem is one system it evaluates,
-                            disclosed alongside a full-context model and retrieval-memory baselines.
+                            every table ships with floor scores, an oracle ceiling, and a full-context
+                            control. Results carry cluster-bootstrap intervals and exact paired tests
+                            with Holm correction, and test labels stay withheld under a published hash.
                         </li>
                     </ul>
                 </div>
@@ -107,7 +102,7 @@ import Base from '../layouts/Base.astro';
                     <ul>
                         <li>
                             <strong>Field telemetry ingestion:</strong>
-                            built ingestion microservices (Django, PostgreSQL, Apache Kafka)
+                            built microservices (Django, PostgreSQL, Apache Kafka)
                             that process live sensor streams from the gas plant.
                         </li>
                         <li>
@@ -140,18 +135,19 @@ import Base from '../layouts/Base.astro';
                     <ul>
                         <li>
                             <strong>Enterprise RAG pipelines:</strong>
-                            built end-to-end RAG systems (LangChain, LlamaIndex) over large
-                            collections of legal, technical, and engineering documents.
+                            built end-to-end RAG systems (LangChain, LlamaIndex) over the company's
+                            legal, technical, and engineering documents.
                         </li>
                         <li>
-                            <strong>Smarter querying:</strong>
-                            decomposed complex questions into parallel lookups across vector
-                            indexes and Neo4j graphs, coordinated through function calling.
+                            <strong>Question decomposition:</strong>
+                            split complex questions into parallel lookups across vector indexes and
+                            Neo4j graphs, with function calling to tie the pieces together.
                         </li>
                         <li>
                             <strong>Arabic + English search:</strong>
                             tuned hybrid vector/keyword search across both languages, with
-                            faster retrieval, better relevance, and async indexing.
+                            quicker retrieval, better relevance, and indexing that runs in the
+                            background.
                         </li>
                         <li>
                             <strong>Visual document retrieval:</strong>
@@ -297,12 +293,12 @@ import Base from '../layouts/Base.astro';
                             features with Isolation Forest to flag anomalous money flows. Built in 48 hours.
                         </li>
                         <li>
-                            <strong>Risk &amp; forecasting engine (1st place):</strong> time-series modeling
-                            and stochastic optimization to quantify operational risk.
+                            <strong>Risk &amp; forecasting engine (1st place):</strong> modelled time
+                            series with stochastic optimisation to put a number on operational risk.
                         </li>
                         <li>
-                            <strong>Graph optimizer (1st place):</strong> graph analytics and constraint
-                            programming for fast resource assignment under tight deadlines.
+                            <strong>Graph optimizer (1st place):</strong> combined graph analytics and
+                            constraint programming to assign resources fast under tight deadlines.
                         </li>
                     </ul>
                 </div>
