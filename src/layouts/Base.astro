@@ -1,0 +1,160 @@
+---
+import '../styles/global.css';
+
+interface Props {
+    title?: string;
+    description?: string;
+}
+
+const {
+    title = 'Faycal Amrouche',
+    description = 'AI engineer and researcher. I build agents that actually remember things, RAG systems, and infra that holds up.',
+} = Astro.props;
+
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+
+const links: Array<[string, string]> = [
+    ['about', 'About'],
+    ['research', 'Research'],
+    ['experience', 'Experience'],
+    ['competencies', 'Skills'],
+    ['education', 'Education'],
+    ['achievements', 'Awards'],
+    ['blog', 'Blog'],
+];
+---
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>{title}</title>
+        <meta name="description" content={description} />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,400&display=swap"
+            rel="stylesheet"
+        />
+        <link rel="icon" href={base + 'favicon.svg'} />
+        <script is:inline>
+            (function () {
+                function render() {
+                    var blocks = document.querySelectorAll('pre[data-language="mermaid"]');
+                    if (!blocks.length) return;
+                    var s = document.createElement('script');
+                    s.src = 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js';
+                    s.onload = function () {
+                        mermaid.initialize({
+                            startOnLoad: false,
+                            theme: 'neutral',
+                            themeVariables: {
+                                fontFamily: 'ui-monospace, Menlo, monospace',
+                                fontSize: '20px'
+                            },
+                            flowchart: {
+                                htmlLabels: true,
+                                useMaxWidth: true,
+                                padding: 18,
+                                nodeSpacing: 50,
+                                rankSpacing: 60
+                            }
+                        });
+                        var nodes = [];
+                        blocks.forEach(function (pre) {
+                            var lines = pre.querySelectorAll('.line');
+                            var text = lines.length
+                                ? Array.prototype.map.call(lines, function (l) {
+                                      return l.textContent;
+                                  }).join('\n')
+                                : pre.textContent;
+                            var div = document.createElement('div');
+                            div.className = 'mermaid';
+                            div.textContent = text;
+                            pre.replaceWith(div);
+                            nodes.push(div);
+                        });
+                        mermaid.run({ nodes: nodes });
+                    };
+                    document.head.appendChild(s);
+                }
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', render);
+                } else {
+                    render();
+                }
+            })();
+        </script>
+        <script is:inline>
+            try {
+                document.documentElement.dataset.theme =
+                    localStorage.getItem('theme') || 'dark';
+            } catch (e) {
+                document.documentElement.dataset.theme = 'dark';
+            }
+        </script>
+    </head>
+    <body id="top">
+        <div class="topbar">
+            <nav>
+                <a class="brand" href={base}>F. Amrouche</a>
+                <ul>
+                    {
+                        links.map(([id, label]) => (
+                            <li>
+                                <a
+                                    href={base + (id === 'blog' ? 'blog/' : `#${id}`)}
+                                    class:list={{ 'blog-link': id === 'blog' }}
+                                >
+                                    {label}
+                                </a>
+                            </li>
+                        ))
+                    }
+                </ul>
+                <button id="theme-toggle" type="button" aria-label="Toggle light and dark theme">
+                    ☀
+                </button>
+            </nav>
+        </div>
+        <slot />
+        <footer>
+            <p class="contact">
+                Algiers, Algeria · +213 542 09 58 37 · <a href="mailto:faycal.amrouche@ensia.edu.dz">faycal.amrouche@ensia.edu.dz</a>
+            </p>
+            <p class="contact">
+                <a href="https://github.com/Faycall1l" target="_blank" rel="noopener">github.com/Faycall1l</a> · <a href="https://linkedin.com/in/amrouche-faycal" target="_blank" rel="noopener">linkedin.com/in/amrouche-faycal</a>
+            </p>
+            <p class="fine">© 2026 Faycal Amrouche · Last updated August 2026</p>
+        </footer>
+        <script is:inline>
+            (function () {
+                var btn = document.getElementById('theme-toggle');
+                if (!btn) return;
+                function sync() {
+                    btn.textContent =
+                        document.documentElement.dataset.theme === 'light' ? '☾' : '☀';
+                }
+                btn.addEventListener('click', function () {
+                    var next =
+                        document.documentElement.dataset.theme === 'light'
+                            ? 'dark'
+                            : 'light';
+                    document.documentElement.dataset.theme = next;
+                    try {
+                        localStorage.setItem('theme', next);
+                    } catch (e) {}
+                    sync();
+                });
+                sync();
+            })();
+
+            // Open external links in a new tab.
+            document.querySelectorAll('a[href^="http"]').forEach(function (a) {
+                a.target = '_blank';
+                a.rel = 'noopener';
+            });
+        </script>
+    </body>
+</html>
