@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://faycall1l.github.io/sitemap-index.xml

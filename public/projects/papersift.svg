@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="8 0 196 208" width="196" height="208">
+  <defs>
+    <linearGradient id="wood" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0" stop-color="#5e3411"/>
+      <stop offset=".18" stop-color="#b9772f"/>
+      <stop offset=".36" stop-color="#f1cd92"/>
+      <stop offset=".6" stop-color="#c98a40"/>
+      <stop offset="1" stop-color="#5a300f"/>
+    </linearGradient>
+    <linearGradient id="woodTop" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0" stop-color="#b98445"/>
+      <stop offset=".4" stop-color="#fbe3b6"/>
+      <stop offset="1" stop-color="#a26a2c"/>
+    </linearGradient>
+    <linearGradient id="woodInner" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0" stop-color="#8a5a26"/>
+      <stop offset=".5" stop-color="#4a280c"/>
+      <stop offset="1" stop-color="#a06b30"/>
+    </linearGradient>
+    <linearGradient id="band" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0" stop-color="#3f4347"/>
+      <stop offset=".34" stop-color="#eef1f3"/>
+      <stop offset=".6" stop-color="#9aa1a8"/>
+      <stop offset="1" stop-color="#34383c"/>
+    </linearGradient>
+    <radialGradient id="floor" cx=".4" cy=".35" r=".8">
+      <stop offset="0" stop-color="#f4f6f7"/>
+      <stop offset="1" stop-color="#8d949b"/>
+    </radialGradient>
+    <radialGradient id="shadow">
+      <stop offset="0" stop-color="#000" stop-opacity=".38"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="sheet" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#d9dde2"/>
+    </linearGradient>
+    <linearGradient id="gloss" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity=".55"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="ink" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#a98152"/>
+      <stop offset="1" stop-color="#6a4420"/>
+    </linearGradient>
+    <linearGradient id="red" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#e2623a"/>
+      <stop offset="1" stop-color="#9c2c14"/>
+    </linearGradient>
+    <pattern id="mesh" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="scale(1 .42) rotate(45)">
+      <path d="M0 0H7M0 0V7" stroke="#4d545b" stroke-width="1.1" fill="none"/>
+    </pattern>
+    <clipPath id="opening"><ellipse cx="104" cy="74" rx="70" ry="21"/></clipPath>
+    <g id="page">
+      <path d="M0 0h25l9 9v37H0z" fill="url(#sheet)" stroke="#6f767d" stroke-width="1.2" stroke-linejoin="round"/>
+      <path d="M25 0v9h9z" fill="#b9c0c7" stroke="#6f767d" stroke-width="1.2" stroke-linejoin="round"/>
+      <path d="M5 16h24M5 22h24M5 28h24M5 34h16" stroke="#9aa2aa" stroke-width="1.6"/>
+    </g>
+  </defs>
+
+  <ellipse cx="104" cy="198" rx="86" ry="11" fill="url(#shadow)"/>
+
+  <ellipse cx="104" cy="74" rx="82" ry="28" fill="url(#woodTop)" stroke="#4a280c" stroke-width="1.5"/>
+  <g clip-path="url(#opening)">
+    <rect x="30" y="50" width="150" height="50" fill="url(#woodInner)"/>
+    <ellipse cx="104" cy="98" rx="70" ry="21" fill="url(#floor)"/>
+    <ellipse cx="104" cy="98" rx="70" ry="21" fill="url(#mesh)"/>
+    <ellipse cx="104" cy="98" rx="70" ry="21" fill="none" stroke="#2c1606" stroke-opacity=".5" stroke-width="5"/>
+  </g>
+  <ellipse cx="104" cy="74" rx="70" ry="21" fill="none" stroke="#4a280c" stroke-width="1.2"/>
+
+  <use href="#page" transform="translate(58 14) rotate(-14)"/>
+  <use href="#page" transform="translate(118 8) rotate(16)"/>
+  <use href="#page" transform="translate(88 6) rotate(-2)"/>
+
+  <path d="M34 78A70 21 0 0 0 174 78L186 74A82 28 0 0 1 22 74z" fill="url(#woodTop)"/>
+  <path d="M34 78A70 21 0 0 0 174 78" fill="none" stroke="#4a280c" stroke-width="1.2"/>
+  <path d="M22 74v34a82 28 0 0 0 164 0V74a82 28 0 0 1-164 0z" fill="url(#wood)" stroke="#4a280c" stroke-width="1.5" stroke-linejoin="round"/>
+  <path d="M22 96a82 28 0 0 0 164 0v9a82 28 0 0 1-164 0z" fill="url(#band)" stroke="#2b2f33" stroke-width="1"/>
+  <circle cx="104" cy="128.5" r="2" fill="#2b2f33"/>
+
+  <g fill="#c9ced3" stroke="#6f767d" stroke-width=".8">
+    <path d="M62 146l7-2 2 6-7 2z"/>
+    <path d="M140 150l6 3-3 5-6-3z"/>
+    <path d="M150 168l5-4 4 5-5 4z"/>
+    <path d="M54 170l6 1-1 6-6-1z"/>
+  </g>
+  <use href="#page" transform="translate(84 142) rotate(7)"/>
+  <path d="M96 172l6 7 13-17" fill="none" stroke="#3f9b3f" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" transform="rotate(7 84 142)"/>
+
+  <g font-family="Georgia, 'Times New Roman', serif" font-size="74">
+    <text x="213" y="129" fill="#000" fill-opacity=".18">paper<tspan>sift</tspan></text>
+    <text x="211" y="126" fill="url(#ink)">paper<tspan fill="url(#red)">sift</tspan></text>
+  </g>
+</svg>

@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 560" width="1280" height="560" role="img" aria-label="One term, many systems">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#51606f"/></marker></defs>
+<rect x="16" y="16" width="1248" height="528" rx="10" fill="#f4f8fc" stroke="#d3dfec" stroke-width="1.2"/>
+<text x="42" y="50" fill="#20568a" font-family="Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="19" font-weight="700" letter-spacing="0.3">One term, many systems</text>
+<line x1="42" y1="62" x2="1238" y2="62" stroke="#dbe5f0" stroke-width="1.2"/>
+<rect x="40" y="100" width="1200" height="68" rx="5" fill="#ffffff" stroke="#dbe5f0" stroke-width="1"/>
+<path d="M 40 105 a 5 5 0 0 1 5 -5 L 185 100 L 185 168 L 45 168 a 5 5 0 0 1 -5 -5 z" fill="#2e9e6b"/>
+<text x="54" y="141" fill="#ffffff" font-family="Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="13" font-weight="700">Hospital system</text>
+<rect x="40" y="180" width="1200" height="68" rx="5" fill="#ffffff" stroke="#dbe5f0" stroke-width="1"/>
+<path d="M 40 185 a 5 5 0 0 1 5 -5 L 185 180 L 185 248 L 45 248 a 5 5 0 0 1 -5 -5 z" fill="#2f7fbf"/>
+<text x="54" y="221" fill="#ffffff" font-family="Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="13" font-weight="700">Research database</text>
+<rect x="40" y="260" width="1200" height="68" rx="5" fill="#ffffff" stroke="#dbe5f0" stroke-width="1"/>
+<path d="M 40 265 a 5 5 0 0 1 5 -5 L 185 260 L 185 328 L 45 328 a 5 5 0 0 1 -5 -5 z" fill="#cf9f16"/>
+<text x="54" y="301" fill="#ffffff" font-family="Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="13" font-weight="700">Shared ontology</text>
+<rect x="40" y="340" width="1200" height="68" rx="5" fill="#ffffff" stroke="#dbe5f0" stroke-width="1"/>
+<path d="M 40 345 a 5 5 0 0 1 5 -5 L 185 340 L 185 408 L 45 408 a 5 5 0 0 1 -5 -5 z" fill="#8657b5"/>
+<text x="54" y="381" fill="#ffffff" font-family="Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="13" font-weight="700">Query service</text>
+<rect x="40" y="420" width="1200" height="68" rx="5" fill="#ffffff" stroke="#dbe5f0" stroke-width="1"/>
+<path d="M 40 425 a 5 5 0 0 1 5 -5 L 185 420 L 185 488 L 45 488 a 5 5 0 0 1 -5 -5 z" fill="#cc5281"/>
+<text x="54" y="461" fill="#ffffff" font-family="Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="13" font-weight="700">Consumer</text>
+<rect x="230" y="109" width="280" height="50" rx="6" fill="#ffffff" stroke="#a9bfd6" stroke-width="1.2"/>
+<text x="244" y="129" fill="#2c6ba0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="11" font-weight="700" letter-spacing="1">LOCAL LABEL</text><text x="244" y="151" fill="#38424f" font-family="Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="13" text-anchor="start">heart attack</text><rect x="230" y="189" width="280" height="50" rx="6" fill="#ffffff" stroke="#a9bfd6" stroke-width="1.2"/>
+<text x="244" y="209" fill="#2c6ba0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="11" font-weight="700" letter-spacing="1">LOCAL LABEL</text><text x="244" y="231" fill="#38424f" font-family="Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="13" text-anchor="start">MI</text><rect x="600" y="269" width="300" height="50" rx="6" fill="#fdf8e8" stroke="#a9bfd6" stroke-width="1.2"/>
+<text x="614" y="289" fill="#8a6a06" font-family="Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="11" font-weight="700" letter-spacing="1">SHARED TERM</text><text x="614" y="311" fill="#38424f" font-family="Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="13" text-anchor="start">Myocardial infarction</text><rect x="940" y="349" width="280" height="50" rx="6" fill="#ffffff" stroke="#a9bfd6" stroke-width="1.2"/>
+<text x="954" y="369" fill="#8657b5" font-family="Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="11" font-weight="700" letter-spacing="1">COMPETENCY Q</text><text x="954" y="391" fill="#38424f" font-family="Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="13" text-anchor="start">find all MI cases</text><rect x="940" y="429" width="280" height="50" rx="6" fill="#ffffff" stroke="#a9bfd6" stroke-width="1.2"/>
+<text x="954" y="449" fill="#cc5281" font-family="Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="11" font-weight="700" letter-spacing="1">RESULT</text><text x="954" y="471" fill="#38424f" font-family="Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="13" text-anchor="start">one merged answer</text><path d="M 510 134 L 550 134 L 550 292 L 596 292" fill="none" stroke="#51606f" stroke-width="1.2" marker-end="url(#a)"/>
+<path d="M 510 214 L 570 214 L 570 296 L 596 296" fill="none" stroke="#51606f" stroke-width="1.2" marker-end="url(#a)"/>
+<text x="556" y="264" fill="#2c6ba0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="12" font-weight="600">align</text><path d="M 900 294 L 924 294 L 924 374 L 936 374" fill="none" stroke="#51606f" stroke-width="1.2" marker-end="url(#a)"/>
+<path d="M 1080 399 L 1080 429" fill="none" stroke="#51606f" stroke-width="1.2" marker-end="url(#a)"/>
+<text x="1092" y="418" fill="#2c6ba0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="12" font-weight="600">query</text><text x="60" y="510" fill="#38424f" font-family="Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="12" font-weight="600">Each store keeps its own labels; the ontology supplies the term the query is written in.</text></svg>

@@ -1,0 +1,413 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Faycal Amrouche | AI Engineer & AI Researcher">
+    <header>
+        <h1>Faycal Amrouche</h1>
+        <p class="role">AI Engineer · AI Researcher · Enterprise Data Architect</p>
+        <p class="contact">
+            Algiers, Algeria · +213 542 09 58 37 · <a href="mailto:faycal.amrouche@ensia.edu.dz">faycal.amrouche@ensia.edu.dz</a>
+        </p>
+        <p class="contact">
+            <a href="https://github.com/Faycall1l" target="_blank" rel="noopener">github.com/Faycall1l</a> · <a href="https://linkedin.com/in/amrouche-faycal" target="_blank" rel="noopener">linkedin.com/in/amrouche-faycal</a>
+        </p>
+    </header>
+
+    <main>
+        <section id="about">
+            <h2><span class="sec-num">01</span>About</h2>
+            <p>
+                AI engineer and independent researcher working on context and memory for
+                LLM agents. I have built agent runtimes, RAG systems, and live telemetry
+                pipelines in industry.
+            </p>
+        </section>
+
+        <section id="research">
+            <h2><span class="sec-num">02</span>Research</h2>
+
+            <div class="entry">
+                <div class="entry-meta">
+                    <span class="org">Insight SFI Research Centre, University College Dublin</span>
+                    <span class="place">Dublin, Ireland · Remote</span>
+                    <span class="role-line">AI Agent Systems Researcher <em>(Supervisor: Prof. Boualem Benatallah)</em></span>
+                    <span class="date">Sept 2025 to Sept 2026</span>
+                </div>
+                <div class="entry-body">
+                    <ul>
+                        <li>
+                            <strong>Agentic memory runtime (GroundMem):</strong>
+                            built a Neo4j-backed memory layer that validates writes as they arrive,
+                            so long-running agents do not drift, mix up memories, or hallucinate
+                            (LangChain/AutoGen).
+                        </li>
+                        <li>
+                            <strong>Model Context Protocol (MCP) integration:</strong>
+                            set up the servers in the runtime so agents could call tools, fetch
+                            context, and talk to each other.
+                        </li>
+                        <li>
+                            <strong>Bitemporal audit logs:</strong>
+                            dual-timeline logging that lets you replay agent actions, roll back state,
+                            and inspect runtime behaviour.
+                        </li>
+                        <li>
+                            <strong>Schema &amp; rule induction:</strong>
+                            built pipelines that pair LLMs with classical validation, turning
+                            unstructured text into schemas, graphs, and executable rules.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="entry">
+                <div class="entry-meta">
+                    <span class="org">CLMI-Bench</span>
+                    <span class="role-line">Clinical long-horizon memory benchmark</span>
+                    <span class="date">2026 to Present</span>
+                </div>
+                <div class="entry-body">
+                    <ul>
+                        <li>
+                            <strong>Design:</strong>
+                            two tracks. One checks block/allow medication decisions that hinge on
+                            state from earlier in the episode; the other measures state fidelity
+                            across episodes of 200 to 3,200 turns. Each fact becomes a family of
+                            scenarios (stated, reversed, never stated, label-silent sibling, in-prompt
+                            control), and a system scores only when the whole family is right. Gold
+                            comes straight from FDA label contraindications.
+                        </li>
+                        <li>
+                            <strong>Measurement:</strong>
+                            every table ships with floor scores, an oracle ceiling, and a full-context
+                            control. Results carry cluster-bootstrap intervals and exact paired tests
+                            with Holm correction, and test labels stay withheld under a published hash.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="projects">
+            <h2><span class="sec-num">03</span>Selected Projects</h2>
+
+            <div class="projects-grid">
+                <a class="project-card" href="https://github.com/Faycall1l/awesome-agent-memory" target="_blank" rel="noopener">
+                    <div class="project-head">
+                        <span class="project-icon"><img src="/projects/agent-memory.svg" alt="" /></span>
+                        <span class="project-title">awesome-agent-memory</span>
+                    </div>
+                    <p class="project-desc">A curated map of 179 entries on agent memory: 131 papers, 28 tools and 15 articles, organised around storage, consolidation, retrieval and forgetting.</p>
+                    <div class="project-foot"><span>Survey · Python</span><span aria-hidden="true">↗</span></div>
+                </a>
+
+                <a class="project-card" href="https://github.com/Faycall1l/papersift" target="_blank" rel="noopener">
+                    <div class="project-head">
+                        <span class="project-icon"><img src="/projects/papersift.svg" alt="" /></span>
+                        <span class="project-title">papersift</span>
+                    </div>
+                    <p class="project-desc">Systematic-review tool that searches five indexes, removes duplicates and guides screening, keeping the counts a PRISMA 2020 flow diagram needs.</p>
+                    <div class="project-foot"><span>Python · PRISMA · MCP</span><span aria-hidden="true">↗</span></div>
+                </a>
+
+                <a class="project-card" href="https://github.com/Faycall1l/wicket-gate" target="_blank" rel="noopener">
+                    <div class="project-head">
+                        <span class="project-icon mono">WG</span>
+                        <span class="project-title">wicket-gate</span>
+                    </div>
+                    <p class="project-desc">Graded safety checks for LLM agents scaling workloads on an edge cluster, measured on a real Kubernetes cluster: allow, repair, ask, escalate or deny.</p>
+                    <div class="project-foot"><span>Python · Kubernetes · Safety</span><span aria-hidden="true">↗</span></div>
+                </a>
+
+                <a class="project-card" href="https://github.com/Faycall1l/kaggle-competition-skills" target="_blank" rel="noopener">
+                    <div class="project-head">
+                        <span class="project-icon mono">KC</span>
+                        <span class="project-title">kaggle-competition-skills</span>
+                    </div>
+                    <p class="project-desc">Agent skills for Kaggle competition work via the CLI: download, push and monitor kernels, fetch logs, submit and poll, with a modelling playbook and a learnings loop.</p>
+                    <div class="project-foot"><span>Python · Agent skills</span><span aria-hidden="true">↗</span></div>
+                </a>
+
+                <a class="project-card" href="https://github.com/Faycall1l/Baleen" target="_blank" rel="noopener">
+                    <div class="project-head">
+                        <span class="project-icon"><img src="/projects/baleen.svg" alt="" /></span>
+                        <span class="project-title">Baleen</span>
+                    </div>
+                    <p class="project-desc">Knowledge-graph workbench that turns congressional trades, insider filings and options flow into one queryable Neo4j graph with text-to-Cypher.</p>
+                    <div class="project-foot"><span>Neo4j · FastAPI · React</span><span aria-hidden="true">↗</span></div>
+                </a>
+
+                <a class="project-card" href="https://github.com/Faycall1l/Recommendation-Engine" target="_blank" rel="noopener">
+                    <div class="project-head">
+                        <span class="project-icon"><img src="/projects/recagent.svg" alt="" /></span>
+                        <span class="project-title">RecAgent</span>
+                    </div>
+                    <p class="project-desc">Plan-execute-reflect agent that ranks recommendations from collaborative-filtering evidence, with verifiable traces and contrastive explanations.</p>
+                    <div class="project-foot"><span>LLM agents · vLLM</span><span aria-hidden="true">↗</span></div>
+                </a>
+
+                <a class="project-card" href="https://github.com/Faycall1l/bouncer" target="_blank" rel="noopener">
+                    <div class="project-head">
+                        <span class="project-icon mono">BO</span>
+                        <span class="project-title">bouncer</span>
+                    </div>
+                    <p class="project-desc">Programmable live-chat moderation in one 30ms System One pass: per-server rules in, typed decisions out, with no retraining per community.</p>
+                    <div class="project-foot"><span>Python · Laya · Jev</span><span aria-hidden="true">↗</span></div>
+                </a>
+
+                <a class="project-card" href="https://github.com/Faycall1l/migrateLLM" target="_blank" rel="noopener">
+                    <div class="project-head">
+                        <span class="project-icon mono">mL</span>
+                        <span class="project-title">migrateLLM</span>
+                    </div>
+                    <p class="project-desc">Switch a LangChain application from Mistral Cloud to self-hosted vLLM without rewriting code, with retries, PII guards and evaluation built in.</p>
+                    <div class="project-foot"><span>vLLM · LoRA · LangChain</span><span aria-hidden="true">↗</span></div>
+                </a>
+            </div>
+            <p class="projects-more"><a href="https://github.com/Faycall1l?tab=repositories" target="_blank" rel="noopener">All public repositories ↗</a></p>
+        </section>
+
+        <section id="experience">
+            <h2><span class="sec-num">04</span>Industry Experience</h2>
+
+            <div class="entry">
+                <div class="entry-meta">
+                    <span class="org">TotalEnergies</span>
+                    <span class="place">Timimoun, Algeria</span>
+                    <span class="role-line">Industrial AI &amp; Systems Engineering Intern</span>
+                    <span class="date">June 2025 to Sept 2025</span>
+                </div>
+                <div class="entry-body">
+                    <ul>
+                        <li>
+                            <strong>Field telemetry ingestion:</strong>
+                            built microservices (Django, PostgreSQL, Apache Kafka)
+                            that process live sensor streams from the gas plant.
+                        </li>
+                        <li>
+                            <strong>Reporting speedup:</strong>
+                            reworked the reporting pipelines and cut admin/compliance
+                            reporting from 15 days to under an hour.
+                        </li>
+                        <li>
+                            <strong>Telemetry chat assistant:</strong>
+                            built a LangChain agent that lets site engineers ask questions in
+                            plain English over live Kafka streams and get quick diagnostics.
+                        </li>
+                        <li>
+                            <strong>Noise filters:</strong>
+                            added statistical checks that catch bad sensor readings and spikes
+                            before they reach the database.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="entry">
+                <div class="entry-meta">
+                    <span class="org">Qantra AI</span>
+                    <span class="place">Remote, Algeria</span>
+                    <span class="role-line">Enterprise Agentic RAG &amp; Software Engineering Intern</span>
+                    <span class="date">May 2025 to Sept 2025</span>
+                </div>
+                <div class="entry-body">
+                    <ul>
+                        <li>
+                            <strong>Enterprise RAG pipelines:</strong>
+                            built end-to-end RAG systems (LangChain, LlamaIndex) over the company's
+                            legal, technical, and engineering documents.
+                        </li>
+                        <li>
+                            <strong>Question decomposition:</strong>
+                            split complex questions into parallel lookups across vector indexes and
+                            Neo4j graphs, with function calling to tie the pieces together.
+                        </li>
+                        <li>
+                            <strong>Arabic + English search:</strong>
+                            tuned hybrid vector/keyword search across both languages, with
+                            quicker retrieval, better relevance, and indexing that runs in the
+                            background.
+                        </li>
+                        <li>
+                            <strong>Visual document retrieval:</strong>
+                            used ColPali for visual embeddings, indexing document pages as
+                            images with multi-vector late-interaction matching.
+                        </li>
+                        <li>
+                            <strong>Backend integration:</strong>
+                            shipped Python/FastAPI endpoints connecting the RAG pipelines to
+                            company databases and authentication.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="entry">
+                <div class="entry-meta">
+                    <span class="org">Schlumberger (SLB)</span>
+                    <span class="place">Algiers, Algeria</span>
+                    <span class="role-line">Data Science Intern, Geophysical Time-Series Analytics</span>
+                    <span class="date">Aug 2024 to Sept 2024</span>
+                </div>
+                <div class="entry-body">
+                    <ul>
+                        <li>
+                            <strong>Signal processing:</strong>
+                            applied digital filters (Fourier, Butterworth, Wavelet) and
+                            cross-validation to non-stationary environmental data.
+                        </li>
+                        <li>
+                            <strong>Forecasting &amp; risk:</strong>
+                            built time-series regression and classification models for key
+                            environmental variables, with strict train/test separation to avoid
+                            leakage.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="competencies">
+            <h2><span class="sec-num">05</span>Core Competencies</h2>
+
+            <div class="entry">
+                <div class="entry-meta">
+                    <span class="org">Agentic Frameworks &amp; Multi-Agent Systems</span>
+                </div>
+                <div class="entry-body">
+                    <p>LangChain · LlamaIndex · AutoGen · CrewAI · LangGraph · Model Context Protocol (MCP) · ReAct planning agents · multi-agent orchestration loops · self-healing workflows · tool &amp; function calling · LLM guardrails &amp; trajectory logging</p>
+                </div>
+            </div>
+
+            <div class="entry">
+                <div class="entry-meta">
+                    <span class="org">Neuro-Symbolic AI &amp; Knowledge Representation</span>
+                </div>
+                <div class="entry-body">
+                    <p>Knowledge graphs (Neo4j/Cypher) · constraint satisfaction problems (CSP) · rule induction · pattern mining · automated reasoning · symbolic schema validation · cognitive distillation · program induction</p>
+                </div>
+            </div>
+
+            <div class="entry">
+                <div class="entry-meta">
+                    <span class="org">Enterprise RAG &amp; Memory Architectures</span>
+                </div>
+                <div class="entry-body">
+                    <p>Agentic RAG · Graph RAG · vector databases (ChromaDB, Pinecone, Qdrant, FAISS) · visual document retrieval (ColPali) · hybrid search (dense + sparse/BM25) · transactional active-memory runtimes · bitemporal audit ledgers · context compression &amp; chunking</p>
+                </div>
+            </div>
+
+            <div class="entry">
+                <div class="entry-meta">
+                    <span class="org">Industrial IoT, Telemetry &amp; Signal Processing</span>
+                </div>
+                <div class="entry-body">
+                    <p>SCADA stream ingestion · time-series analytics · digital signal processing (Fourier, Butterworth, Wavelet) · predictive maintenance · remaining useful life (RUL) estimation · real-time anomaly detection</p>
+                </div>
+            </div>
+
+            <div class="entry">
+                <div class="entry-meta">
+                    <span class="org">Systems Infrastructure, Microservices &amp; Edge AI</span>
+                </div>
+                <div class="entry-body">
+                    <p>Python · C++ · Java · FastAPI · Django · Apache Kafka · PostgreSQL · Redis · Docker · asynchronous microservices · RESTful/gRPC APIs · Linux · AWQ quantization · local air-gapped LLM execution (Ollama, vLLM) · reinforcement learning</p>
+                </div>
+            </div>
+
+            <div class="entry">
+                <div class="entry-meta">
+                    <span class="org">Modern AI Tooling &amp; Developer Stack</span>
+                </div>
+                <div class="entry-body">
+                    <p>AI-assisted workflows (Cursor, Claude Code, Gemini CLI) · GitHub Actions · PyTorch · Hugging Face Transformers · Scikit-Learn · NetworkX · system profiling pipelines</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="education">
+            <h2><span class="sec-num">06</span>Education</h2>
+
+            <div class="entry">
+                <div class="entry-meta">
+                    <span class="org">National Higher School of Artificial Intelligence (ENSIA)</span>
+                    <span class="place">Algiers, Algeria</span>
+                    <span class="role-line">State Engineer Degree in AI &amp; Master of Science in AI (Dual Degree)</span>
+                    <span class="date">Sept 2021 to June 2026</span>
+                </div>
+                <div class="entry-body">
+                    <ul>
+                        <li>
+                            <strong>Grad thesis:</strong> grounded memory for agents that stays reliable under
+                            noisy, long-horizon stress tests (17.88/20).
+                        </li>
+                        <li>
+                            <strong>Earlier:</strong> ranked 1st in the state of Tipasa
+                            on the national Bac exam (18.84/20), top 1% in the country.
+                        </li>
+                        <li>
+                            <strong>What I studied:</strong> distributed systems, agentic workflows,
+                            databases, NLP, reasoning, knowledge representation, constraint
+                            programming &amp; optimization, hybrid AI, security, graph theory, stats.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="achievements">
+            <h2><span class="sec-num">07</span>Selected Achievements</h2>
+
+            <div class="entry">
+                <div class="entry-meta">
+                    <span class="org">National AI &amp; Algorithmic Engineering Hackathons</span>
+                    <span class="place">Algeria</span>
+                    <span class="role-line">10-time champion (6x 1st place, 3x 2nd place)</span>
+                    <span class="date">Sept 2021 to Present</span>
+                </div>
+                <div class="entry-body">
+                    <ul>
+                        <li>
+                            <strong>Real-time fraud detector (1st place):</strong> combined Neo4j graph
+                            features with Isolation Forest to flag anomalous money flows. Built in 48 hours.
+                        </li>
+                        <li>
+                            <strong>Risk &amp; forecasting engine (1st place):</strong> modelled time
+                            series with stochastic optimisation to put a number on operational risk.
+                        </li>
+                        <li>
+                            <strong>Graph optimizer (1st place):</strong> combined graph analytics and
+                            constraint programming to assign resources fast under tight deadlines.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="entry">
+                <div class="entry-meta">
+                    <span class="org">Community Leadership</span>
+                </div>
+                <div class="entry-body">
+                    <p>
+                        Tech lead &amp; IT manager at GDG/GDSC ENSIA. Ran hackathons, tech
+                        meetups, and hands-on workshops on Docker, backends, and building
+                        agents with LangChain/LlamaIndex.
+                    </p>
+                </div>
+            </div>
+
+            <div class="entry">
+                <div class="entry-meta">
+                    <span class="org">Languages</span>
+                </div>
+                <div class="entry-body">
+                    <ul>
+                        <li><strong>English</strong>: Fluent (IELTS 8.0/9.0)</li>
+                        <li><strong>French</strong>: Fluent (TCF C1)</li>
+                        <li><strong>Arabic</strong>: Native (formal register)</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+</Base>
